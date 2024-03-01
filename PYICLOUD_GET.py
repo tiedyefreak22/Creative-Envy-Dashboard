@@ -8,17 +8,18 @@ import time
 from tqdm import tqdm
 from dateutil.parser import parse
 from pyicloud import PyiCloudService
+import numpy as np
 
 # For retrying connection after timeouts and errors
 MAX_RETRIES = 5
 WAIT_SECONDS = 5
 
-username = "olivine8910@gmail.com"
-password = "sadnav-diqtyf-boQni"
-size = "original"
-force_size = 0
-download_videos = 0
-directory = "./Photos"
+# username = "olivine8910@gmail.com"
+# password = "sadnav-diqtyf-boQni"
+# size = "original"
+# force_size = 0
+# download_videos = 0
+# directory = "./Photos"
 
 # CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 # @click.command(context_settings=CONTEXT_SETTINGS, options_metavar='<options>')
@@ -41,7 +42,7 @@ directory = "./Photos"
 #     help='Only download the requested size (default: download original if requested size is not available)',
 #     is_flag=True)
 
-def download(directory, username, password, size, download_videos, force_size):
+def download(directory = "./Photos", username = "olivine8910@gmail.com", password = "sadnav-diqtyf-boQni1", size = "original", download_videos = 0, force_size = 0):
     """Download/Refresh 50 iCloud photos from favorites to a local directory"""
     try:
         files = os.listdir(directory)
@@ -57,7 +58,9 @@ def download(directory, username, password, size, download_videos, force_size):
     print("Looking up all photos...")
     #all_photos = icloud.photos.all
     all_photos = icloud.photos.albums['Favorites'] #only download from favorites
-    photos_count = len(all_photos.photos)
+    photos_count = 50
+    p = np.random.permutation(len(list(all_photos)))
+    random_file_list = [list(all_photos)[i] for i in p[0:photos_count]]
 
     directory = directory.rstrip('/')
 
@@ -66,12 +69,12 @@ def download(directory, username, password, size, download_videos, force_size):
     else:
         print("Downloading %d %s photos to %s/ ..." % (photos_count, size, directory))
 
-    pbar = tqdm(all_photos[:50], total=photos_count) # limit number of downloads to 50
+    pbar = tqdm(random_file_list, total=photos_count) # limit number of downloads to 50
 
     for photo in pbar:
         for i in range(MAX_RETRIES):
             try:
-                if not download_videos and not photo.filename.lower().endswith(('.png', '.jpg', '.jpeg')):
+                if not download_videos and not photo.filename.lower().endswith(('.png', '.jpg', '.jpeg', '.HEIC', '.tiff', '.tif')):
                     pbar.set_description("Skipping %s, only downloading photos." % photo.filename)
                     continue
 
@@ -97,31 +100,48 @@ def download(directory, username, password, size, download_videos, force_size):
 def authenticate(username, password):
     print("Signing in...")
 
-    if password:
-        icloud = PyiCloudService(username, password)
-    else:
-        icloud = PyiCloudService(username)
+    api = PyiCloudService(username, password)
 
-    if icloud.requires_2fa:
-        print("Two-factor authentication required. Your trusted devices are:")
+    if api.requires_2fa:
+        print("Two-factor authentication required.")
+        code = input("Enter the code you received of one of your approved devices: ")
+        result = api.validate_2fa_code(code)
+        print("Code validation result: %s" % result)
 
-        devices = icloud.trusted_devices
+        if not result:
+            print("Failed to verify security code")
+            sys.exit(1)
+
+        if not api.is_trusted_session:
+            print("Session is not trusted. Requesting trust...")
+            result = api.trust_session()
+            print("Session trust result %s" % result)
+
+            if not result:
+                print("Failed to request trust. You will likely be prompted for the code again in the coming weeks")
+    elif api.requires_2sa:
+        import click
+        print("Two-step authentication required. Your trusted devices are:")
+
+        devices = api.trusted_devices
         for i, device in enumerate(devices):
-            print("  %s: %s" % (i, device.get('deviceName',
-                "SMS to %s" % device.get('phoneNumber'))))
+            print(
+                "  %s: %s" % (i, device.get('deviceName',
+                "SMS to %s" % device.get('phoneNumber')))
+            )
 
         device = click.prompt('Which device would you like to use?', default=0)
         device = devices[device]
-        if not icloud.send_verification_code(device):
+        if not api.send_verification_code(device):
             print("Failed to send verification code")
             sys.exit(1)
 
         code = click.prompt('Please enter validation code')
-        if not icloud.validate_verification_code(device, code):
+        if not api.validate_verification_code(device, code):
             print("Failed to verify verification code")
             sys.exit(1)
 
-    return icloud
+    return api
 
 def truncate_middle(s, n):
     if len(s) <= n:
