@@ -42,7 +42,7 @@ WAIT_SECONDS = 5
 #     help='Only download the requested size (default: download original if requested size is not available)',
 #     is_flag=True)
 
-def download(directory = "./Photos", username = "olivine8910@gmail.com", password = "sadnav-diqtyf-boQni1", size = "original", download_videos = 0, force_size = 0):
+def download(directory = "C:/Users/khard/OneDrive/Documents/GitHub/Creative-Envy-Dashboard/Photos", username = "olivine8910@gmail.com", password = "sadnav-diqtyf-boQni1", size = "original", download_videos = 0, force_size = 0):
     """Download/Refresh 50 iCloud photos from favorites to a local directory"""
     try:
         files = os.listdir(directory)
@@ -77,8 +77,14 @@ def download(directory = "./Photos", username = "olivine8910@gmail.com", passwor
                 if not download_videos and not photo.filename.lower().endswith(('.png', '.jpg', '.jpeg', '.HEIC', '.tiff', '.tif')):
                     pbar.set_description("Skipping %s, only downloading photos." % photo.filename)
                     continue
-
-                created_date = parse(photo.created)
+                
+                date_path = ""
+                created_date = photo.created
+                if isinstance(created_date, str):
+                    created_date = parse(photo.created)
+                # else:
+                #     created_date = photo.created
+                # created_date = parse(photo.created)
                 date_path = '{:%Y/%m/%d}'.format(created_date)
                 download_dir = '/'.join((directory, date_path))
 
@@ -149,7 +155,7 @@ def truncate_middle(s, n):
     n_2 = int(n) / 2 - 2
     n_1 = n - n_2 - 4
     if n_2 < 1: n_2 = 1
-    return u'{0}...{1}'.format(s[:n_1], s[-n_2:])
+    return u'{0}...{1}'.format(s[:int(n_1)], s[-int(n_2):])
 
 def download_photo(photo, size, force_size, download_dir, pbar):
     filename_with_size = photo.filename.replace('.', '-%s.' % size)
