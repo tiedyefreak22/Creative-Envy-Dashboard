@@ -1,13 +1,14 @@
+import sys
+if "Tkinter" not in sys.modules:
+    from tkinter import *
 from PIL import Image, ImageTk
 Image.CUBIC = Image.BICUBIC
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
-import tkinter as tk
 import os, time, sys, queue, datetime
 from csv import writer
 from datetime import datetime, timedelta
 from threading import Thread, Event
-from tkinter import filedialog, Canvas, Label, LabelFrame, Frame, PhotoImage, Button, Entry, Scrollbar, StringVar, IntVar, DoubleVar#, ttk 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 import multiprocessing as mp
@@ -30,9 +31,9 @@ sys.path.append("PYICLOUD_GET")
 import PYICLOUD_GET
 
 # root window (parent to all), controller to Frames
-class Windows(tk.Tk):
+class Windows(Tk):
     def __init__(self, *args, **kwargs):
-        tk.Tk.__init__(self, *args, **kwargs)
+        Tk.__init__(self, *args, **kwargs)
         self.shared_data = {
             "window_geometry":    [IntVar(self, 1280),  IntVar(self, 800)],
             "padding":     IntVar(self, 5),
@@ -50,6 +51,7 @@ class Windows(tk.Tk):
         self.geometry(str(self.shared_data["window_geometry"][0].get()) + "x" + str(self.shared_data["window_geometry"][1].get()))
         self.resizable(False, False)
         self.container = Frame(self)
+        #self.container = Toplevel(self)
         self.container.grid_rowconfigure(0, weight=1)
         self.container.grid_columnconfigure(0, weight=1)
         main_notebook = ttk.Notebook(
@@ -74,9 +76,9 @@ class Windows(tk.Tk):
             index = main_notebook.index(main_notebook.select())
         main_notebook.bind("<<NotebookTabChanged>>", on_tab_change)
 
-class Pane1(tk.Frame): # Weather Dashboard; child to Notebook
+class Pane1(Frame): # Weather Dashboard; child to Notebook
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
+        Frame.__init__(self, parent)
         self.controller = controller
         
         # Pane1 Objects
@@ -117,9 +119,9 @@ class Pane1(tk.Frame): # Weather Dashboard; child to Notebook
             meters[-1].grid(row = floor((i-4)/5) + 1, column = (i - 4) % 5, sticky="nsew", padx=int(self.controller.shared_data["padding"].get()), pady=int(self.controller.shared_data["padding"].get()), ipadx=int(self.controller.shared_data["padding"].get()), ipady=int(self.controller.shared_data["padding"].get())) # for some reason ipad works better on meter than LF
             i = i + 1
 
-class Pane2(tk.Frame): # Bee Dashboard
+class Pane2(Frame): # Bee Dashboard
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
+        Frame.__init__(self, parent)
         self.controller = controller
         
         # Pane1 Objects
@@ -160,17 +162,39 @@ class Pane2(tk.Frame): # Bee Dashboard
             meters[-1].grid(row = floor((i-4)/5) + 1, column = (i - 4) % 5, sticky="nsew", padx=int(self.controller.shared_data["padding"].get()), pady=int(self.controller.shared_data["padding"].get()), ipadx=int(self.controller.shared_data["padding"].get()), ipady=int(self.controller.shared_data["padding"].get())) # for some reason ipad works better on meter than LF
             i = i + 1
 
-class Pane3(tk.Frame): # Picture Frame
+class Pane3(Frame): # Picture Frame
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
+        Frame.__init__(self, parent)
         self.controller = controller
         directory = "PhotosB/"
         file_paths = []
-        ext = ('.png', '.jpg', '.jpeg', '.HEIC', '.tiff', '.tif', '.raw', '.arw', '.dng')        
+        ext = ('.png', '.jpg', '.jpeg', '.HEIC', '.tiff', '.tif')
+        raw_ext = ('.raw', '.arw', '.dng')
         for root, dirs, files in os.walk(directory):
             for file in files:
                 if file.lower().endswith(tuple(ext)):
                     file_paths.append(os.path.join(root, file))
+                elif file.lower().endswith(tuple(ext)):
+                    # pre, ext = os.path.splitext(filename)
+                    # print(os.path.join(directory, filename))
+                    # filename = os.rename(os.path.join(directory, filename), os.path.join(directory, pre + '.RAW'))
+                    try:
+                        # img = np.fromfile(os.path.join(directory, filename))
+                        # img = raw.raw_image
+                        with rawpy.imread(np.fromfile("Test/DSC1160-medium.RAW", allow_pickle=True)) as raw:
+                            print(f'raw type:                     {raw.raw_type}')                      # raw type (flat or stack, e.g., Foveon sensor)
+                            print(f'number of colors:             {raw.num_colors}')                    # number of different color components, e.g., 3 for common RGB Bayer sensors with two green identical green sensors 
+                            print(f'color description:            {raw.color_desc}')                    # describes the various color components
+                            print(f'raw pattern:                  {raw.raw_pattern.tolist()}')          # decribes the pattern of the Bayer sensor
+                            print(f'black levellos:                 {raw.black_level_per_channel}')       # black level correction
+                            print(f'white level:                  {raw.white_level}')                   # camera white level
+                            print(f'color matrix:                 {raw.color_matrix.tolist()}')         # camera specific color matrix, usually obtained from a list in rawpy (not from the raw file)
+                            print(f'XYZ to RGB conversion matrix: {raw.rgb_xyz_matrix.tolist()}')       # camera specific XYZ to camara RGB conversion matrix
+                            print(f'camera white balance:         {raw.camera_whitebalance}')           # the picture's white balance as determined by the camera
+                            print(f'daylight white balance:       {raw.daylight_whitebalance}')         # the camera's daylight white balance
+                        file_paths.append(os.path.join(root, file))
+                    except:
+                        pass
         random_filenames = []
         p = np.random.permutation(len(list(file_paths)))
         [random_filenames.append(list(file_paths)[i]) for i in p]
@@ -178,34 +202,40 @@ class Pane3(tk.Frame): # Picture Frame
         for i in random_filenames:
             if i.lower().endswith('.jpg'):
                 chosen = i
-            # else:
-            #     # raw = rawpy.imread(filename)
-            #     # file = raw.raw_image_visible
-            #     pass
-
 
         # Pane3 Objects
-        #path = Path(chosen)
-        #print(path)
-        img = ImageTk.PhotoImage(image = Image.open(chosen))
-        # Create a photoimage object of the image in the path
-        canvas1 = tk.Canvas(
-            self,
-            width=str(self.controller.shared_data["notebook_geometry"][0].get()),
-            height=str(self.controller.shared_data["notebook_geometry"][1].get()),
-        )
-        canvas1.create_rectangle(0, 0, int(self.controller.shared_data["notebook_geometry"][0].get()), int(self.controller.shared_data["notebook_geometry"][1].get()), fill="#444444")
-        canvas1.create_rectangle(20, 20, int(self.controller.shared_data["notebook_geometry"][0].get()) - 20, int(self.controller.shared_data["notebook_geometry"][1].get()) - 50, fill="black")
-        #canvas1.create_image(20, 20, int(self.controller.shared_data["notebook_geometry"][0].get()) - 20, int(self.controller.shared_data["notebook_geometry"][1].get()) - 50, image=chosen)
-        canvas1.grid()
+        #root = Toplevel()
+        #root.wm_title("Sample Image")
+        make_frame = LabelFrame(self, text=chosen, width=100, height=100)
+        #make_frame = LabelFrame(root, text="Sample Image", width=100, height=100)
+        make_frame.pack()
+
+        # create the PIL image object:
+        PIL_image = Image.open(chosen)
+        original_w = np.shape(PIL_image)[1]
+        original_h = np.shape(PIL_image)[0]
+        aspect = original_h/original_w
+
+        constraining_dim = min(self.controller.shared_data["notebook_geometry"][0].get(), self.controller.shared_data["notebook_geometry"][1].get())
+        minor_constraint = min(constraining_dim/original_w, constraining_dim/original_h)
+        width = int(original_w * minor_constraint)
+        height = int(original_h * minor_constraint)
+        PIL_image_small = PIL_image.resize((width,height), Image.Resampling.LANCZOS)
         
-class Pane4(tk.Frame): # Alarm Control
+        # now create the ImageTk PhotoImage:
+        img = ImageTk.PhotoImage(image=PIL_image_small)
+        in_frame = Label(make_frame, image = img)
+        in_frame.pack()
+
+        # root.mainloop()        
+        
+class Pane4(Frame): # Alarm Control
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
+        Frame.__init__(self, parent)
         self.controller = controller
         
         # Pane4 Objects
-        canvas1 = tk.Canvas(
+        canvas1 = Canvas(
             self,
             width=str(self.controller.shared_data["notebook_geometry"][0].get()),
             height=str(self.controller.shared_data["notebook_geometry"][1].get()),
