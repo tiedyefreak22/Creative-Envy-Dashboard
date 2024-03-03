@@ -62,12 +62,10 @@ class Windows(Tk):
         tab_names = ["Weather", "Bees", "Photos",  "Alarm"]
         for i, F in enumerate([Pane1, Pane2, Pane3, Pane4]):
             frame = F(main_notebook, self)
-            #main_notebook.add(frame, text= 'Tab %s' % (i + 1)) # "self." adds to this instance, ...(self) adds to parent instance
             main_notebook.add(frame, text=tab_names[i]) # "self." adds to this instance, ...(self) adds to parent instance
         main_notebook.grid(
             row=0,
             column=0,
-            #sticky="nsew",
             padx=(int(self.shared_data["padding"].get()), int(self.shared_data["padding"].get())),
             pady=(int(self.shared_data["padding"].get()), int(self.shared_data["padding"].get())),
         )
@@ -175,12 +173,7 @@ class Pane3(Frame): # Picture Frame
                 if file.lower().endswith(tuple(ext)):
                     file_paths.append(os.path.join(root, file))
                 elif file.lower().endswith(tuple(ext)):
-                    # pre, ext = os.path.splitext(filename)
-                    # print(os.path.join(directory, filename))
-                    # filename = os.rename(os.path.join(directory, filename), os.path.join(directory, pre + '.RAW'))
                     try:
-                        # img = np.fromfile(os.path.join(directory, filename))
-                        # img = raw.raw_image
                         with rawpy.imread(np.fromfile("Test/DSC1160-medium.RAW", allow_pickle=True)) as raw:
                             print(f'raw type:                     {raw.raw_type}')                      # raw type (flat or stack, e.g., Foveon sensor)
                             print(f'number of colors:             {raw.num_colors}')                    # number of different color components, e.g., 3 for common RGB Bayer sensors with two green identical green sensors 
@@ -223,8 +216,9 @@ class Pane3(Frame): # Picture Frame
         PIL_image_small = PIL_image.resize((width,height), Image.Resampling.LANCZOS)
         
         # now create the ImageTk PhotoImage:
-        img = ImageTk.PhotoImage(image=PIL_image_small)
+        img = ImageTk.PhotoImage(image=PIL_image_small)        
         in_frame = Label(make_frame, image = img)
+        in_frame.image = img
         in_frame.pack()
 
         # root.mainloop()        
