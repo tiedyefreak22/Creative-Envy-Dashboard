@@ -11,6 +11,7 @@ from pyicloud import PyiCloudService
 import numpy as np
 import asyncio
 import aiomultiprocess
+import shutil
 
 # For retrying connection after timeouts and errors
 MAX_RETRIES = 5
@@ -45,21 +46,26 @@ WAIT_SECONDS = 5
 #     is_flag=True)
 
 def cycle_files():
-    directoryA = "C:/Users/khard/OneDrive/Documents/GitHub/Creative-Envy-Dashboard/PhotosA"
-    directoryB = "C:/Users/khard/OneDrive/Documents/GitHub/Creative-Envy-Dashboard/PhotosB"
+    directoryA = "PhotosA/"
+    directoryB = "PhotosB/"
     if len(os.listdir(directoryA)) > 0:
-        try:
-            files = os.listdir(directory)
-            for file in files:
-                file_pathA = os.path.join(directory, file)
-                file_pathB = os.path.join(directoryB, file)
-                # if os.path.isfile(file_path):
-                os.remove(file_pathB)
-                os.rename(file_pathA, file_pathB)
-        except OSError:
-            print("Error")
+        # try:
+        filesB = os.listdir(directoryB)
+        for file in filesB:
+            file_pathB = os.path.join(directoryB, file)
+            try:
+                shutil.rmtree(file_pathB)
+            except:
+                "Error"
+        filesA = os.listdir(directoryA)
+        for file in filesA:
+            file_pathA = os.path.join(directoryA, file)
+            file_pathB = os.path.join(directoryB, file)
+            os.rename(file_pathA, file_pathB)
+        # except OSError:
+        #     print("Error")
 
-def download(directory = "C:/Users/khard/OneDrive/Documents/GitHub/Creative-Envy-Dashboard/PhotosA", username = "olivine8910@gmail.com", password = "sadnav-diqtyf-boQni1", size = "medium", download_videos = 0, force_size = 1):
+def download(directory = "C:/Users/khard/OneDrive/Documents/GitHub/Creative-Envy-Dashboard/PhotosA", username = "olivine8910@gmail.com", password = "sadnav-diqtyf-boQni1", size = "original", download_videos = 0, force_size = 0):
     """Download/Refresh 50 iCloud photos from favorites to a local directory"""
     icloud = authenticate(username, password)
 
@@ -82,7 +88,7 @@ def download(directory = "C:/Users/khard/OneDrive/Documents/GitHub/Creative-Envy
     for photo in pbar:
         for i in range(MAX_RETRIES):
             try:
-                if not download_videos and not photo.filename.lower().endswith(('.png', '.jpg', '.jpeg', '.HEIC', '.tiff', '.tif', '.raw', '.arw')):
+                if not download_videos and not photo.filename.lower().endswith(('.png', '.jpg', '.jpeg', '.HEIC', '.tiff', '.tif', '.raw', '.arw', '.dng')):
                     pbar.set_description("Skipping %s, only downloading photos." % photo.filename)
                     continue
                 
