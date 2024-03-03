@@ -23,6 +23,7 @@ import numpy as np
 import rawpy
 import imageio
 import time
+from pathlib import Path
 sys.path.append("BEE_WEATHER_DATA")
 from BEE_WEATHER_DATA import BROODMINDER_GET, AMBIENT_GET
 sys.path.append("PYICLOUD_GET")
@@ -163,7 +164,6 @@ class Pane3(tk.Frame): # Picture Frame
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
-        
         directory = "PhotosB/"
         file_paths = []
         ext = ('.png', '.jpg', '.jpeg', '.HEIC', '.tiff', '.tif', '.raw', '.arw', '.dng')        
@@ -176,14 +176,19 @@ class Pane3(tk.Frame): # Picture Frame
         [random_filenames.append(list(file_paths)[i]) for i in p]
         chosen = []
         for i in random_filenames:
-            if i.lower().endswith('.raw') or i.lower().endswith('.arw'):
-                # raw = rawpy.imread(filename)
-                # file = raw.raw_image_visible
-                pass
-            else:
+            if i.lower().endswith('.jpg'):
                 chosen = i
+            # else:
+            #     # raw = rawpy.imread(filename)
+            #     # file = raw.raw_image_visible
+            #     pass
+
 
         # Pane3 Objects
+        #path = Path(chosen)
+        #print(path)
+        img = ImageTk.PhotoImage(image = Image.open(chosen))
+        # Create a photoimage object of the image in the path
         canvas1 = tk.Canvas(
             self,
             width=str(self.controller.shared_data["notebook_geometry"][0].get()),
@@ -191,10 +196,8 @@ class Pane3(tk.Frame): # Picture Frame
         )
         canvas1.create_rectangle(0, 0, int(self.controller.shared_data["notebook_geometry"][0].get()), int(self.controller.shared_data["notebook_geometry"][1].get()), fill="#444444")
         canvas1.create_rectangle(20, 20, int(self.controller.shared_data["notebook_geometry"][0].get()) - 20, int(self.controller.shared_data["notebook_geometry"][1].get()) - 50, fill="black")
-        img = PhotoImage(Image.open(chosen))
-        #img = ImageTk.PhotoImage(Image.open(chosen))
-        #canvas1.create_image(20,20, int(self.controller.shared_data["notebook_geometry"][0].get()) - 20, int(self.controller.shared_data["notebook_geometry"][1].get()) - 50, image=img)
-        canvas1.grid(row=0, column=0)
+        #canvas1.create_image(20, 20, int(self.controller.shared_data["notebook_geometry"][0].get()) - 20, int(self.controller.shared_data["notebook_geometry"][1].get()) - 50, image=chosen)
+        canvas1.grid()
         
 class Pane4(tk.Frame): # Alarm Control
     def __init__(self, parent, controller):
