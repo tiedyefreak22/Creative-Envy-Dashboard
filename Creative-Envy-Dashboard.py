@@ -40,18 +40,17 @@ class Windows(Tk):
             "num_rows":    IntVar(self, 3),
             "num_cols":    IntVar(self, 5),
         }
-        self.shared_data.update({"notebook_geometry": [IntVar(self, int(self.shared_data["window_geometry"][0].get()) - (int(self.shared_data["padding"].get()) * 3)), # width
-                                                       IntVar(self, int(self.shared_data["window_geometry"][1].get()) - (int(self.shared_data["padding"].get()) * 9)), # height
+        self.shared_data.update({"notebook_geometry": [IntVar(self, int(self.shared_data["window_geometry"][0].get()) - (int(self.shared_data["padding"].get()) * 5)), # width
+                                                       IntVar(self, int(self.shared_data["window_geometry"][1].get()) - (int(self.shared_data["padding"].get()) * 11)), # height
                                                       ]})
-        self.shared_data.update({"LF_geometry": [IntVar(self, (int(self.shared_data["notebook_geometry"][0].get()) - (int(self.shared_data["padding"].get()) * int(self.shared_data["num_cols"].get()) * 2 - 1)) / int(self.shared_data["num_cols"].get())), # width
-                                                 IntVar(self, (int(self.shared_data["notebook_geometry"][1].get()) - (int(self.shared_data["padding"].get()) * int(self.shared_data["num_rows"].get()) * 2)) / int(self.shared_data["num_rows"].get()) - 30), # height
+        self.shared_data.update({"LF_geometry": [IntVar(self, (int(self.shared_data["notebook_geometry"][0].get()) - (int(self.shared_data["padding"].get()) * int(self.shared_data["num_cols"].get()) * 2)) / int(self.shared_data["num_cols"].get())), # width
+                                                 IntVar(self, ((int(self.shared_data["notebook_geometry"][1].get()) - (int(self.shared_data["padding"].get()) * int(self.shared_data["num_rows"].get()) * 2)) / int(self.shared_data["num_rows"].get())) - 30), # height (notebook tabs appear to be 30 pix)
                                                 ]})
         self.wm_title("Creative Envy Dashboard")
         ttk.Style("darkly")
         self.geometry(str(self.shared_data["window_geometry"][0].get()) + "x" + str(self.shared_data["window_geometry"][1].get()))
         self.resizable(False, False)
         self.container = Frame(self)
-        #self.container = Toplevel(self)
         self.container.grid_rowconfigure(0, weight=1)
         self.container.grid_columnconfigure(0, weight=1)
         main_notebook = ttk.Notebook(
@@ -68,6 +67,8 @@ class Windows(Tk):
             column=0,
             padx=(int(self.shared_data["padding"].get()), int(self.shared_data["padding"].get())),
             pady=(int(self.shared_data["padding"].get()), int(self.shared_data["padding"].get())),
+            ipadx=int(self.shared_data["padding"].get()),
+            ipady=int(self.shared_data["padding"].get()),
         )
         
         def on_tab_change(event):
@@ -95,7 +96,15 @@ class Pane1(Frame): # Weather Dashboard; child to Notebook
                 text=lf_labels[i],
             ))
             if i == 2:
-                lfs[-1].grid(row = floor(i/5), column = i % 5, columnspan = 2, sticky="nsew", padx=int(self.controller.shared_data["padding"].get()), pady=int(self.controller.shared_data["padding"].get()))
+                lfs[-1].grid(
+                    row = floor(i/5),
+                    column = i % 5, columnspan = 2,
+                    sticky="nsew",
+                    padx=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
+                    pady=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
+                    ipadx=int(self.controller.shared_data["padding"].get()),
+                    ipady=int(self.controller.shared_data["padding"].get()),
+                )
                 i = i + 2
             else:
                 lfs[-1].grid(row = floor(i/5), column = i % 5, sticky="nsew", padx=int(self.controller.shared_data["padding"].get()), pady=int(self.controller.shared_data["padding"].get()))
@@ -114,11 +123,19 @@ class Pane1(Frame): # Weather Dashboard; child to Notebook
                 showtext=True,
                 interactive=False,
             ))
-            meters[-1].grid(row = floor((i-4)/5) + 1, column = (i - 4) % 5, sticky="nsew", padx=int(self.controller.shared_data["padding"].get()), pady=int(self.controller.shared_data["padding"].get()), ipadx=int(self.controller.shared_data["padding"].get()), ipady=int(self.controller.shared_data["padding"].get())) # for some reason ipad works better on meter than LF
+            meters[-1].grid(
+                row = floor((i-4)/5) + 1,
+                column = (i - 4) % 5,
+                sticky="nsew",
+                padx=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
+                pady=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
+                ipadx=int(self.controller.shared_data["padding"].get()),
+                ipady=int(self.controller.shared_data["padding"].get()),
+            ) # for some reason ipad works better on meter than LF
             i = i + 1
 
 class Pane2(Frame): # Bee Dashboard
-    def __init__(self, parent, controller):
+     def __init__(self, parent, controller):
         Frame.__init__(self, parent)
         self.controller = controller
         
@@ -138,7 +155,15 @@ class Pane2(Frame): # Bee Dashboard
                 text=lf_labels[i],
             ))
             if i == 2:
-                lfs[-1].grid(row = floor(i/5), column = i % 5, columnspan = 2, sticky="nsew", padx=int(self.controller.shared_data["padding"].get()), pady=int(self.controller.shared_data["padding"].get()))
+                lfs[-1].grid(
+                    row = floor(i/5),
+                    column = i % 5, columnspan = 2,
+                    sticky="nsew",
+                    padx=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
+                    pady=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
+                    ipadx=int(self.controller.shared_data["padding"].get()),
+                    ipady=int(self.controller.shared_data["padding"].get()),
+                )
                 i = i + 2
             else:
                 lfs[-1].grid(row = floor(i/5), column = i % 5, sticky="nsew", padx=int(self.controller.shared_data["padding"].get()), pady=int(self.controller.shared_data["padding"].get()))
@@ -157,7 +182,15 @@ class Pane2(Frame): # Bee Dashboard
                 showtext=True,
                 interactive=False,
             ))
-            meters[-1].grid(row = floor((i-4)/5) + 1, column = (i - 4) % 5, sticky="nsew", padx=int(self.controller.shared_data["padding"].get()), pady=int(self.controller.shared_data["padding"].get()), ipadx=int(self.controller.shared_data["padding"].get()), ipady=int(self.controller.shared_data["padding"].get())) # for some reason ipad works better on meter than LF
+            meters[-1].grid(
+                row = floor((i-4)/5) + 1,
+                column = (i - 4) % 5,
+                sticky="nsew",
+                padx=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
+                pady=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
+                ipadx=int(self.controller.shared_data["padding"].get()),
+                ipady=int(self.controller.shared_data["padding"].get()),
+            ) # for some reason ipad works better on meter than LF
             i = i + 1
 
 class Pane3(Frame): # Picture Frame
@@ -197,11 +230,19 @@ class Pane3(Frame): # Picture Frame
                 chosen = i
 
         # Pane3 Objects
-        #root = Toplevel()
-        #root.wm_title("Sample Image")
-        make_frame = LabelFrame(self, text=chosen, width=100, height=100)
-        #make_frame = LabelFrame(root, text="Sample Image", width=100, height=100)
-        make_frame.pack()
+        make_frame = LabelFrame(
+            self,
+            width=self.controller.shared_data["notebook_geometry"][0].get() - 2 * self.controller.shared_data["padding"].get(),
+            height=self.controller.shared_data["notebook_geometry"][1].get() - 2 * self.controller.shared_data["padding"].get(),
+        )
+        make_frame.grid(
+            row=0,
+            column=0,
+            padx=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
+            pady=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
+            ipadx=int(self.controller.shared_data["padding"].get()),
+            ipady=int(self.controller.shared_data["padding"].get()),
+        )
 
         # create the PIL image object:
         PIL_image = Image.open(chosen)
@@ -217,11 +258,11 @@ class Pane3(Frame): # Picture Frame
         
         # now create the ImageTk PhotoImage:
         img = ImageTk.PhotoImage(image=PIL_image_small)        
-        in_frame = Label(make_frame, image = img)
+        in_frame = Button(make_frame, image = img)
         in_frame.image = img
-        in_frame.pack()
+        in_frame.place(relx=0.5, rely=0.5, anchor=CENTER)
 
-        # root.mainloop()        
+        # root.mainloop()
         
 class Pane4(Frame): # Alarm Control
     def __init__(self, parent, controller):
@@ -233,7 +274,14 @@ class Pane4(Frame): # Alarm Control
             self,
             width=str(self.controller.shared_data["notebook_geometry"][0].get()),
             height=str(self.controller.shared_data["notebook_geometry"][1].get()),
-        ).grid(row=0, column=0)
+        ).grid(
+            row=0,
+            column=0,
+            padx=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
+            pady=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
+            ipadx=int(self.controller.shared_data["padding"].get()),
+            ipady=int(self.controller.shared_data["padding"].get()),
+        )
 
 def main():
     windows = Windows()
