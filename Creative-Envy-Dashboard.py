@@ -24,6 +24,7 @@ import numpy as np
 import rawpy
 import imageio
 import time
+import random
 from pathlib import Path
 sys.path.append("BEE_WEATHER_DATA")
 from BEE_WEATHER_DATA import BROODMINDER_GET, AMBIENT_GET
@@ -221,13 +222,13 @@ class Pane3(Frame): # Picture Frame
                         file_paths.append(os.path.join(root, file))
                     except:
                         pass
-        random_filenames = []
-        p = np.random.permutation(len(list(file_paths)))
-        [random_filenames.append(list(file_paths)[i]) for i in p]
-        chosen = []
-        for i in random_filenames:
-            if i.lower().endswith('.jpg'):
-                chosen = i
+        # random_filenames = []
+        # p = np.random.permutation(len(list(file_paths)))
+        # [random_filenames.append(list(file_paths)[i]) for i in p]
+        # chosen = []
+        # for i in random_filenames:
+        #     if i.lower().endswith('.jpg'):
+        #         chosen = i
 
         # Pane3 Objects
         make_frame = LabelFrame(
@@ -243,26 +244,34 @@ class Pane3(Frame): # Picture Frame
             ipadx=int(self.controller.shared_data["padding"].get()),
             ipady=int(self.controller.shared_data["padding"].get()),
         )
+        
+        def config_pic():
+            rand_pic = file_paths[random.randint(0,len(file_paths) - 1)]
+            PIL_image = Image.open(rand_pic)
+            original_w = np.shape(PIL_image)[1]
+            original_h = np.shape(PIL_image)[0]
+            aspect = original_h/original_w
+
+            constraining_dim = min(self.controller.shared_data["notebook_geometry"][0].get(), self.controller.shared_data["notebook_geometry"][1].get())
+            minor_constraint = min(constraining_dim/original_w, constraining_dim/original_h)
+            width = int(original_w * minor_constraint)
+            height = int(original_h * minor_constraint)
+            PIL_image_small = PIL_image.resize((width,height), Image.Resampling.LANCZOS)
+
+            # now create the ImageTk PhotoImage:
+            img = ImageTk.PhotoImage(image=PIL_image_small)
+            return img
+        
+        def change_pic():
+            img = config_pic()
+            in_frame.configure(image = img)
+            in_frame.image = img
 
         # create the PIL image object:
-        PIL_image = Image.open(chosen)
-        original_w = np.shape(PIL_image)[1]
-        original_h = np.shape(PIL_image)[0]
-        aspect = original_h/original_w
-
-        constraining_dim = min(self.controller.shared_data["notebook_geometry"][0].get(), self.controller.shared_data["notebook_geometry"][1].get())
-        minor_constraint = min(constraining_dim/original_w, constraining_dim/original_h)
-        width = int(original_w * minor_constraint)
-        height = int(original_h * minor_constraint)
-        PIL_image_small = PIL_image.resize((width,height), Image.Resampling.LANCZOS)
-        
-        # now create the ImageTk PhotoImage:
-        img = ImageTk.PhotoImage(image=PIL_image_small)        
-        in_frame = Button(make_frame, image = img)
-        in_frame.image = img
+        img = config_pic()
+        in_frame = Button(make_frame, command = change_pic)
+        change_pic()
         in_frame.place(relx=0.5, rely=0.5, anchor=CENTER)
-
-        # root.mainloop()
         
 class Pane4(Frame): # Alarm Control
     def __init__(self, parent, controller):
