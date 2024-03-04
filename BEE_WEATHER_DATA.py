@@ -6,6 +6,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 import os
+import pandas as pd
+from glob import glob
 
 def BROODMINDER_GET():
     #Login to Broodminder, Get Beehive data, and format
@@ -89,6 +91,59 @@ def BROODMINDER_GET():
 
     # close the browser window
     driver.quit()
+
+def READ_HIVE(hive_name):
+    directory = "Broodminder/"
+    
+    # Check for new download data
+    Hive = pd.DataFrame()
+    res = [f for f in glob(directory + "*.csv") if hive_name in f and "Master" not in f]
+    filename = ""
+    for f in res:
+        filename = f
+        Hive = pd.read_csv(f)
+        Hive.drop('App', axis=1, inplace=True)
+        Hive.drop('Record_Type', axis=1, inplace=True)
+        Hive.drop('Radar', axis=1, inplace=True)
+        Hive.drop('UTC_TimeStamp', axis=1, inplace=True)
+        Hive.drop('Local_TimeStamp', axis=1, inplace=True)
+        Hive.drop('Metric', axis=1, inplace=True)
+        Hive.drop('Audio', axis=1, inplace=True)
+        #Hive.to_csv(directory + hive_name + " Master.csv", mode='w', index=False, header=True)
+
+    # Load master file
+    Hive_master = pd.read_csv(directory + hive_name + " Master.csv")
+    if not res == []:
+        new_Hive_master = pd.concat([Hive, Hive_master]).astype(str).drop_duplicates(subset=['Unix_Time'], keep='last').reset_index(drop=True)
+        new_Hive_master.to_csv(directory + hive_name + " Master.csv", mode='w', index=False, header=True)
+        os.remove(filename)
+    Hive_master = pd.read_csv(directory + hive_name + " Master.csv")
+    return Hive_master
+
+def READ_BEE_WEATHER():
+    directory = "Broodminder/"
+    
+    # Check for new download data
+    Bee_Weather = pd.DataFrame()
+    res = [f for f in glob(directory + "*.csv") if "KevBec Apiary_weather" in f and "Master" not in f]
+    filename = ""
+    for f in res:
+        filename = f
+        Bee_Weather = pd.read_csv(f)
+        Bee_Weather.drop('DownloadTimeStamp', axis=1, inplace=True)
+        Bee_Weather.drop('UTC_TimeStamp', axis=1, inplace=True)
+        Bee_Weather.drop('Local_TimeStamp', axis=1, inplace=True)
+        Bee_Weather.drop('Metric', axis=1, inplace=True)
+        #Bee_Weather.to_csv(directory + "KevBec Apiary_weather" + " Master.csv", mode='w', index=False, header=True)
+
+    # Load master file
+    Bee_Weather_master = pd.read_csv(directory + "KevBec Apiary_weather" + " Master.csv")
+    if not res == []:
+        new_Bee_Weather_master = pd.concat([Bee_Weather, Bee_Weather_master]).astype(str).drop_duplicates(subset=['Unix_Time'], keep='last').reset_index(drop=True)
+        new_Bee_Weather_master.to_csv(directory + "KevBec Apiary_weather" + " Master.csv", mode='w', index=False, header=True)
+        os.remove(filename)
+    Bee_Weather_master = pd.read_csv(directory + "KevBec Apiary_weather" + " Master.csv")
+    return Bee_Weather_master
 
 def BROODMINDER_PANDAS():
     NewLeftHive = pd.DataFrame()
