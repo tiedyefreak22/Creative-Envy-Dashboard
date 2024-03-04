@@ -222,14 +222,6 @@ class Pane3(Frame): # Picture Frame
                         file_paths.append(os.path.join(root, file))
                     except:
                         pass
-        # random_filenames = []
-        # p = np.random.permutation(len(list(file_paths)))
-        # [random_filenames.append(list(file_paths)[i]) for i in p]
-        # chosen = []
-        # for i in random_filenames:
-        #     if i.lower().endswith('.jpg'):
-        #         chosen = i
-
         # Pane3 Objects
         make_frame = LabelFrame(
             self,
