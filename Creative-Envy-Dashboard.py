@@ -27,7 +27,7 @@ import time
 import random
 from pathlib import Path
 sys.path.append("BEE_WEATHER_DATA")
-from BEE_WEATHER_DATA import BROODMINDER_GET, AMBIENT_GET
+from BEE_WEATHER_DATA import BROODMINDER_GET, AMBIENT_GET, READ_HIVE, PROCESS_HIVE, READ_BEE_WEATHER, PROCESS_BEE_WEATHER
 sys.path.append("PYICLOUD_GET")
 import PYICLOUD_GET
 
@@ -139,6 +139,10 @@ class Pane2(Frame): # Bee Dashboard
      def __init__(self, parent, controller):
         Frame.__init__(self, parent)
         self.controller = controller
+        
+        hive_name = "New Left Hive"
+        Hive = PROCESS_HIVE(hive_name)
+        Bee_Weather = PROCESS_BEE_WEATHER()
         
         # Pane1 Objects
         # Loop to create LabelFrames
@@ -292,15 +296,15 @@ if __name__ == '__main__': # runs main if in python script
     t1 = threading.Thread(target=main,args=())
     t2 = threading.Thread(target=PYICLOUD_GET.cycle_files,args=())
     t3 = threading.Thread(target=PYICLOUD_GET.download,args=())
-    t4 = threading.Thread(target=BROODMINDER_GET,args=())
-    t5 = threading.Thread(target=AMBIENT_GET,args=())
+    #t4 = threading.Thread(target=BROODMINDER_GET,args=())
+    #t5 = threading.Thread(target=AMBIENT_GET,args=())
     t1.start()
     t2.start()
     t3.start()
-    t4.start()
-    t5.start()
+    #t4.start()
+    #t5.start()
     t1.join()
     t2.join()
     t3.join()
-    t4.join()
-    t5.join()
+    #t4.join()
+    #t5.join()

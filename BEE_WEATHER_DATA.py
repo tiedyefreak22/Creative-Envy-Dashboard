@@ -8,6 +8,8 @@ from selenium.webdriver.chrome.options import Options
 import os
 import pandas as pd
 from glob import glob
+import numpy as np
+from scipy.interpolate import CubicSpline, UnivariateSpline
 
 def BROODMINDER_GET():
     #Login to Broodminder, Get Beehive data, and format
@@ -116,7 +118,7 @@ def READ_HIVE(hive_name):
     if not res == []:
         new_Hive_master = pd.concat([Hive, Hive_master]).astype(str).drop_duplicates(subset=['Unix_Time'], keep='last').reset_index(drop=True)
         new_Hive_master.to_csv(directory + hive_name + " Master.csv", mode='w', index=False, header=True)
-        os.remove(filename)
+        #os.remove(filename)
     Hive_master = pd.read_csv(directory + hive_name + " Master.csv")
     return Hive_master
 
@@ -141,195 +143,79 @@ def READ_BEE_WEATHER():
     if not res == []:
         new_Bee_Weather_master = pd.concat([Bee_Weather, Bee_Weather_master]).astype(str).drop_duplicates(subset=['Unix_Time'], keep='last').reset_index(drop=True)
         new_Bee_Weather_master.to_csv(directory + "KevBec Apiary_weather" + " Master.csv", mode='w', index=False, header=True)
-        os.remove(filename)
+        #os.remove(filename)
     Bee_Weather_master = pd.read_csv(directory + "KevBec Apiary_weather" + " Master.csv")
     return Bee_Weather_master
 
-def BROODMINDER_PANDAS():
-    NewLeftHive = pd.DataFrame()
-    NewHiveWeather = pd.DataFrame()
-    NewRightHive = pd.DataFrame()
-    OldLeftHive = pd.DataFrame()
-    OldHiveWeather = pd.DataFrame()
-    OldRightHive = pd.DataFrame()
-
-    filename = "Left Hive_combined_readings_20[a-zA-Z0-9\-\_\.]*.csv"
-    for f in glob('/Users/kevinhardin/Downloads/'+filename):
-        NewLeftHive = pd.read_csv(f)
-        NewLeftHive.drop('App', axis=1, inplace=True)
-        NewLeftHive.drop('Record_Type', axis=1, inplace=True)
-        NewLeftHive.drop('DownloadTimeStamp', axis=1, inplace=True)
-        NewLeftHive.drop('UTC_TimeStamp', axis=1, inplace=True)
-        NewLeftHive.drop('Local_TimeStamp', axis=1, inplace=True)
-        NewLeftHive.drop('Metric', axis=1, inplace=True)
-        NewLeftHive.drop(' WeightLRaw', axis=1, inplace=True)
-        NewLeftHive.drop(' WeightRRaw', axis=1, inplace=True)
-        NewLeftHive = NewLeftHive[['Unix_Time','Device','Hive_Position','Sample','Battery','Temperature','Humidity','Scaled_Weight',' Weight_Scale_Factor',' Weight',' WeightL',' WeightR']]
-        send2trash(f)
-
-    filename = "Left Hive_weather_20[a-zA-Z0-9\-\_\.]*.csv"
-    for f in glob('/Users/kevinhardin/Downloads/'+filename):
-        NewHiveWeather = pd.read_csv(f)
-        NewHiveWeather.drop('DownloadTimeStamp', axis=1, inplace=True)
-        NewHiveWeather.drop('UTC_TimeStamp', axis=1, inplace=True)
-        NewHiveWeather.drop('Local_TimeStamp', axis=1, inplace=True)
-        NewHiveWeather.drop('Metric', axis=1, inplace=True)
-        send2trash(f)
-
-    filename = "Right Hive_combined_readings_20[a-zA-Z0-9\-\_\.]*.csv"
-    for f in glob('/Users/kevinhardin/Downloads/'+filename):
-        NewRightHive = pd.read_csv(f)
-        NewRightHive.drop('App', axis=1, inplace=True)
-        NewRightHive.drop('Record_Type', axis=1, inplace=True)
-        NewRightHive.drop('DownloadTimeStamp', axis=1, inplace=True)
-        NewRightHive.drop('UTC_TimeStamp', axis=1, inplace=True)
-        NewRightHive.drop('Local_TimeStamp', axis=1, inplace=True)
-        NewRightHive.drop('Metric', axis=1, inplace=True)
-        NewRightHive.drop(' WeightLRaw', axis=1, inplace=True)
-        NewRightHive.drop(' WeightRRaw', axis=1, inplace=True)
-        NewRightHive = NewRightHive[['Unix_Time','Device','Hive_Position','Sample','Battery','Temperature','Humidity','Scaled_Weight',' Weight_Scale_Factor',' Weight',' WeightL',' WeightR']]
-        send2trash(f)
-
-    for f in glob(filename1):
-        OldLeftHive = pd.read_csv(f)
-        fields = OldLeftHive.columns
-        new_entries = pd.concat([OldLeftHive,NewLeftHive]).astype(str).drop_duplicates(subset=['Unix_Time'], keep='last').reset_index(drop=True)
-        new_entries.to_csv(filename1, mode='w', index=False, header=True)
-
-    for f in glob(filename2):
-        OldHiveWeather = pd.read_csv(f)
-        fields = OldHiveWeather.columns
-        new_entries = pd.concat([OldHiveWeather,NewHiveWeather]).astype(str).drop_duplicates(subset=['Unix_Time'], keep='last').reset_index(drop=True)
-        new_entries.to_csv(filename2, mode='w', index=False, header=True)
-
-    for f in glob(filename3):
-        OldRightHive = pd.read_csv(f)
-        fields = OldRightHive.columns
-        new_entries = pd.concat([OldRightHive,NewRightHive]).astype(str).drop_duplicates(subset=['Unix_Time'], keep='last').reset_index(drop=True)
-        new_entries.to_csv(filename3, mode='w', index=False, header=True)
-
-    LeftHive = pd.read_csv(filename1)
-    HiveWeather = pd.read_csv(filename2)
-    RightHive = pd.read_csv(filename3)
-
-    # LeftHive resampled and interpolated to five minutes
-    LeftHive['Unix_Time'] = LeftHive['Unix_Time'].astype('int64')
-    LeftHive['Unix_Time'] = pd.to_datetime(LeftHive['Unix_Time'], unit='s', origin='unix')
+def PROCESS_HIVE(hive_name):
+    metrics = ["Weight", "Humidity", "Temperature"]
+    Hive = READ_HIVE(hive_name)
+    Unique_Dev_Names = Hive.Hive_Position.unique()
+    Unique_Devs = Hive.Device.unique()
+    Devices = {}
+    Graph = 0
+    for i, Device in enumerate(Unique_Devs):
+        Devices.update({Unique_Dev_Names[i]: Hive[Hive['Device'] == Device]})
     
-    # RightHive resampled and interpolated to five minutes
-    RightHive['Unix_Time'] = RightHive['Unix_Time'].astype('int64')
-    RightHive['Unix_Time'] = pd.to_datetime(RightHive['Unix_Time'], unit='s', origin='unix')
+    if Graph:
+        fig, ax = plt.subplots(1, 3, figsize=(30, 5))
+    for j, metric in enumerate(metrics):
+        for i, Device in enumerate(Unique_Devs):
+            Devices[list(Devices.keys())[i]] = Devices[list(Devices.keys())[i]].sort_values(by=["Unix_Time"])
+            # Resample and cubic-spline-interpolate to five minutes
+            x = []
+            y = []
+            for k, value in enumerate(Devices[list(Devices.keys())[i]][str(metrics[j])]):
+                if not np.isnan(value):
+                    x.append(int(Devices[list(Devices.keys())[i]]["Unix_Time"].tolist()[k]))
+                    y.append(value)
+                    
+            if not np.shape(x)[0] == 0:
+                Temp_DF = pd.DataFrame()
+                cs = UnivariateSpline(x, y)
+                xs = np.arange(min(x), max(x), 300)
+                Temp_DF["Unix_Time"] = xs
+                Temp_DF[str('Interp_' + metrics[j])] = cs(xs)
+                Devices[list(Devices.keys())[i]] = pd.concat([Temp_DF, Devices[list(Devices.keys())[i]]], axis=0, join='outer')
+                Devices[list(Devices.keys())[i]] = Devices[list(Devices.keys())[i]].sort_values(by=["Unix_Time"])
+                
+                if Graph:
+                    ax[j].plot(Devices[list(Devices.keys())[i]]["Unix_Time"], Devices[list(Devices.keys())[i]][str("Interp_" + metrics[j])], label=str(Unique_Dev_Names[i] + ' ' + metrics[j]))
+                    ax[j].legend(loc='lower left', ncol=2)
     
-    # HiveWeather resampled and interpolated to five minutes
-    HiveWeather['Unix_Time'] = HiveWeather['Unix_Time'].astype('int64')
-    HiveWeather['Unix_Time'] = pd.to_datetime(HiveWeather['Unix_Time'], unit='s', origin='unix')
+    return Devices
+
+def PROCESS_BEE_WEATHER():
+    Bee_Weather = READ_BEE_WEATHER()
+    metrics = [i for i in list(Bee_Weather.keys()) if not "Unix_Time" in i]
+    Graph = 0
+    rows = 2
+    cols = 4
     
-    RightUpper = RightHive[RightHive['Device'] == '56:0B:D1']
-    RightLower = RightHive[RightHive['Device'] == '47:13:0C']
-    RightScale = RightHive[RightHive['Device'] == '49:02:8D']
-    LeftUpper = LeftHive[LeftHive['Device'] == '56:0B:D0']
-    LeftLower = LeftHive[LeftHive['Device'] == '47:13:E4']
-    LeftScale = LeftHive[LeftHive['Device'] == '49:02:8C']
+    if Graph:
+        fig, ax = plt.subplots(rows, cols, figsize=(30, 10))
+    for i, metric in enumerate(metrics):
+        Bee_Weather = Bee_Weather.sort_values(by=["Unix_Time"])
+        # Resample and cubic-spline-interpolate to five minutes
+        x = []
+        y = []
+        for j, value in enumerate(Bee_Weather[str(metric)]):
+            if not np.isnan(value):
+                x.append(int(Bee_Weather["Unix_Time"].tolist()[j]))
+                y.append(value)
 
-    # Should downsampling be "mean" instead of asfreq?  Need to specify and align start date/time? 1652133991
-
-#     # Sort based on device
-#     LeftUpper = LeftHive[LeftHive['Device'] == '56:0B:D0']
-#     LeftLower = LeftHive[LeftHive['Device'] == '47:13:E4']
-#     LeftScale = LeftHive[LeftHive['Device'] == '49:02:8C']
-
-    # LeftUpper resampled and interpolated to five minutes (no weight measurements)
-    LeftUpper = LeftUpper.set_index('Unix_Time',drop=False,inplace=False)
-    LeftUpper.drop('Device', axis=1, inplace=True)
-    LeftUpper.drop('Hive_Position', axis=1, inplace=True)
-    LeftUpper.drop('Sample', axis=1, inplace=True)
-    LeftUpper.drop('Scaled_Weight', axis=1, inplace=True)
-    LeftUpper.drop(' Weight_Scale_Factor', axis=1, inplace=True)
-    LeftUpper.drop(' Weight', axis=1, inplace=True)
-    LeftUpper.drop(' WeightL', axis=1, inplace=True)
-    LeftUpper.drop(' WeightR', axis=1, inplace=True)
-    LeftUpper_upsampled = LeftUpper.resample('1s').mean()
-    LeftUpper_interpolated = LeftUpper_upsampled[LeftUpper_upsampled.columns[1::]].interpolate(method='linear')
-    LeftUpper_downsampled = LeftUpper_interpolated.resample('300s').mean()
-    # LeftUpper_downsampled.iloc[:, 0]
-
-    # LeftLower resampled and interpolated to five minutes (no weight or humidity measurements)
-    LeftLower = LeftLower.set_index('Unix_Time',drop = False)
-    LeftLower.drop('Device', axis=1, inplace=True)
-    LeftLower.drop('Hive_Position', axis=1, inplace=True)
-    LeftLower.drop('Sample', axis=1, inplace=True)
-    LeftLower.drop('Scaled_Weight', axis=1, inplace=True)
-    LeftLower.drop(' Weight_Scale_Factor', axis=1, inplace=True)
-    LeftLower.drop(' Weight', axis=1, inplace=True)
-    LeftLower.drop(' WeightL', axis=1, inplace=True)
-    LeftLower.drop(' WeightR', axis=1, inplace=True)
-    LeftLower.drop('Humidity', axis=1, inplace=True)
-    LeftLower_upsampled = LeftLower.resample('1s').mean()
-    LeftLower_interpolated = LeftLower_upsampled[LeftLower_upsampled.columns[1::]].interpolate(method='linear')
-    LeftLower_downsampled = LeftLower_interpolated.resample('300s').mean()
-
-     # LeftScale resampled and interpolated to five minutes (no humidity measurements)
-    LeftScale = LeftScale.set_index('Unix_Time',drop = False)
-    LeftScale.drop('Device', axis=1, inplace=True)
-    LeftScale.drop('Hive_Position', axis=1, inplace=True)
-    LeftScale.drop('Sample', axis=1, inplace=True)
-    LeftScale.drop('Humidity', axis=1, inplace=True)
-    LeftScale_upsampled = LeftScale.resample('1s').mean()
-    LeftScale_interpolated = LeftScale_upsampled[LeftScale_upsampled.columns[1::]].interpolate(method='linear')
-    LeftScale_downsampled = LeftScale_interpolated.resample('300s').mean()
-    LeftAvg = LeftScale_downsampled['Scaled_Weight'].resample('1d').mean()
-
-#     RightUpper = RightHive[RightHive['Device'] == '56:0B:D1']
-#     RightLower = RightHive[RightHive['Device'] == '47:13:0C']
-#     RightScale = RightHive[RightHive['Device'] == '49:02:8D']
-
-    # RightUpper resampled and interpolated to five minutes (no weight measurements)
-    RightUpper = RightUpper.set_index('Unix_Time',drop = False)
-    RightUpper.drop('Device', axis=1, inplace=True)
-    RightUpper.drop('Hive_Position', axis=1, inplace=True)
-    RightUpper.drop('Sample', axis=1, inplace=True)
-    RightUpper.drop('Scaled_Weight', axis=1, inplace=True)
-    RightUpper.drop(' Weight_Scale_Factor', axis=1, inplace=True)
-    RightUpper.drop(' Weight', axis=1, inplace=True)
-    RightUpper.drop(' WeightL', axis=1, inplace=True)
-    RightUpper.drop(' WeightR', axis=1, inplace=True)
-    RightUpper_upsampled = RightUpper.resample('1s').mean()
-    RightUpper_interpolated = RightUpper_upsampled[RightUpper_upsampled.columns[1::]].interpolate(method='linear')
-    RightUpper_downsampled = RightUpper_interpolated.resample('300s').mean()
-
-    # RightLower resampled and interpolated to five minutes (no weight or humidity measurements)
-    RightLower = RightLower.set_index('Unix_Time',drop = False)
-    RightLower.drop('Device', axis=1, inplace=True)
-    RightLower.drop('Hive_Position', axis=1, inplace=True)
-    RightLower.drop('Sample', axis=1, inplace=True)
-    RightLower.drop('Scaled_Weight', axis=1, inplace=True)
-    RightLower.drop(' Weight_Scale_Factor', axis=1, inplace=True)
-    RightLower.drop(' Weight', axis=1, inplace=True)
-    RightLower.drop(' WeightL', axis=1, inplace=True)
-    RightLower.drop(' WeightR', axis=1, inplace=True)
-    RightLower.drop('Humidity', axis=1, inplace=True)
-    RightLower_upsampled = RightLower.resample('1s').mean()
-    RightLower_interpolated = RightLower_upsampled[RightLower_upsampled.columns[1::]].interpolate(method='linear')
-    RightLower_downsampled = RightLower_interpolated.resample('300s').mean()
-
-    # RightScale resampled and interpolated to five minutes (no humidity measurements)
-    RightScale = RightScale.set_index('Unix_Time',drop = False)
-    RightScale.drop('Device', axis=1, inplace=True)
-    RightScale.drop('Hive_Position', axis=1, inplace=True)
-    RightScale.drop('Sample', axis=1, inplace=True)
-    RightScale.drop('Humidity', axis=1, inplace=True)
-    RightScale_upsampled = RightScale.resample('1s').mean()
-    RightScale_interpolated = RightScale_upsampled[RightScale_upsampled.columns[1::]].interpolate(method='linear')
-    RightScale_downsampled = RightScale_interpolated.resample('300s').mean()
-    RightAvg = RightScale_downsampled['Scaled_Weight'].resample('1d').mean()
-
-    HiveWeather = HiveWeather.set_index('Unix_Time',drop = False)
-    HiveWeather_upsampled = HiveWeather.resample('1s').mean()
-    HiveWeather_interpolated = HiveWeather_upsampled[HiveWeather_upsampled.columns[1::]].interpolate(method='linear')
-    HiveWeather_downsampled = HiveWeather_interpolated.resample('300s').mean()
-
-    # return dataframes for CSV files
-    #return(LeftUpper_downsampled,LeftLower_downsampled,LeftScale_downsampled,LeftAvg,RightUpper_downsampled,RightLower_downsampled,RightScale_downsampled,RightAvg,HiveWeather)
+        if not np.shape(x)[0] == 0:
+            Temp_DF = pd.DataFrame()
+            cs = UnivariateSpline(x, y)
+            xs = np.arange(min(x), max(x), 300)
+            Temp_DF["Unix_Time"] = xs
+            Temp_DF[str('Interp_' + metric)] = cs(xs)
+            Bee_Weather = pd.concat([Temp_DF, Bee_Weather], axis=0, join='outer')
+            Bee_Weather = Bee_Weather.sort_values(by=["Unix_Time"])
+            
+            if Graph:
+                ax[floor(i/cols), i % cols].plot(Bee_Weather["Unix_Time"], Bee_Weather[str("Interp_" + metrics[i])], label=str(metrics[i]))
+                ax[floor(i/cols), i % cols].legend(loc='lower left', ncol=2)
 
 def AMBIENT_GET():
     # Get Ambient data via URL and format
