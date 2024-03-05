@@ -30,6 +30,8 @@ sys.path.append("BEE_WEATHER_DATA")
 from BEE_WEATHER_DATA import BROODMINDER_GET, AMBIENT_GET, READ_HIVE, PROCESS_HIVE, READ_BEE_WEATHER, PROCESS_BEE_WEATHER
 sys.path.append("PYICLOUD_GET")
 import PYICLOUD_GET
+import pandas as pd
+from IPython.display import display
 
 # root window (parent to all), controller to Frames
 class Windows(Tk):
@@ -40,6 +42,7 @@ class Windows(Tk):
             "padding":     IntVar(self, 5),
             "num_rows":    IntVar(self, 3),
             "num_cols":    IntVar(self, 5),
+            "hive_name":    StringVar(self, "New Left Hive")
         }
         self.shared_data.update({"notebook_geometry": [IntVar(self, int(self.shared_data["window_geometry"][0].get()) - (int(self.shared_data["padding"].get()) * 5)), # width
                                                        IntVar(self, int(self.shared_data["window_geometry"][1].get()) - (int(self.shared_data["padding"].get()) * 11)), # height
@@ -140,10 +143,11 @@ class Pane2(Frame): # Bee Dashboard
         Frame.__init__(self, parent)
         self.controller = controller
         
-        hive_name = "New Left Hive"
-        Hive = PROCESS_HIVE(hive_name)
-        Bee_Weather = PROCESS_BEE_WEATHER()
-        
+        directory = "Broodminder/"
+        hive_name = str(self.controller.shared_data["hive_name"].get())
+        Bee_Weather_Processed = PROCESS_BEE_WEATHER()
+        Hive_Processed = PROCESS_HIVE(hive_name)
+
         # Pane1 Objects
         # Loop to create LabelFrames
         lfs = []
@@ -265,7 +269,12 @@ class Pane3(Frame): # Picture Frame
 
         # create the PIL image object:
         img = config_pic()
-        in_frame = Button(make_frame, command = change_pic)
+        in_frame = Button(
+            make_frame,
+            command = change_pic,
+            width=self.controller.shared_data["notebook_geometry"][0].get() - 2 * self.controller.shared_data["padding"].get(),
+            height=self.controller.shared_data["notebook_geometry"][1].get() - 2 * self.controller.shared_data["padding"].get(),
+        )
         change_pic()
         in_frame.place(relx=0.5, rely=0.5, anchor=CENTER)
         
@@ -296,7 +305,7 @@ if __name__ == '__main__': # runs main if in python script
     t1 = threading.Thread(target=main,args=())
     t2 = threading.Thread(target=PYICLOUD_GET.cycle_files,args=())
     t3 = threading.Thread(target=PYICLOUD_GET.download,args=())
-    #t4 = threading.Thread(target=BROODMINDER_GET,args=())
+    #t4 = threading.Thread(target=BROODMINDER_GET,args=str(self.controller.shared_data["hive_name"].get()))
     #t5 = threading.Thread(target=AMBIENT_GET,args=())
     t1.start()
     t2.start()

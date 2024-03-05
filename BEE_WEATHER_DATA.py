@@ -9,24 +9,14 @@ import os
 import pandas as pd
 from glob import glob
 import numpy as np
-from scipy.interpolate import CubicSpline, UnivariateSpline
+from scipy.interpolate import CubicSpline, UnivariateSpline, InterpolatedUnivariateSpline, interp1d
+import re
+from math import floor
+import matplotlib.pyplot as plt
 
-def BROODMINDER_GET():
+def BROODMINDER_GET(hive_name):
     #Login to Broodminder, Get Beehive data, and format
-    # path arg is path to chromedriver.exe
-    #s = Service('/Users/kevinhardin/PythonScripts/chromedriver')
-    #s = Service(str(path))
-    
-    directory = "Broodminder/"
-    try:
-        files = os.listdir(directory)
-        for file in files:
-            file_path = os.path.join(directory, file)
-            if os.path.isfile(file_path):
-                os.remove(file_path)
-    except OSError:
-        print("Error")
-        
+    directory = "Broodminder/"        
     options = Options()
     options.add_experimental_option("prefs", {
       "download.default_directory": r"C:\Users\khard\OneDrive\Documents\GitHub\Creative-Envy-Dashboard\Broodminder",
@@ -57,20 +47,16 @@ def BROODMINDER_GET():
     driver.find_element(by=By.NAME, value="password").send_keys(password)
 
     # click login button
-    #driver.find_element(by=By.XPATH, value="/html/body/app-root/app-default/div/app-login/div/mat-tab-group/div/mat-tab-body[1]/div/div/mat-card/form/div/button/span").click()
     driver.find_element(by=By.XPATH, value="/html/body/app-root/app-default/div/app-login/div/mat-tab-group/div/mat-tab-body[1]/div/div/mat-card/form/div/button").click()
 
     t.sleep(3)
 
     # download left hive data
-    # URL = 'https://mybroodminder.com/app/hive/4c146db0cb534e1d8d56f8e4c7b49c0d?start=1648872000&range=9'
     URL = 'https://mybroodminder.com/app/dashboard/hives?hiveIds=6b5cb8b012cb45038eacc24770a2fff7&weaIds=37a0763f69e04c2c823013928e067d68'
     driver.get(URL)
     t.sleep(3)
     driver.find_element(by=By.XPATH, value="/html/body/app-root/app-core/mat-sidenav-container/mat-sidenav-content/div/div/app-hives-dashboard/div[2]/div[2]/mat-icon").click()
     t.sleep(1)
-    # driver.find_element(by=By.XPATH, value="/html/body/app-root/app-core/mat-sidenav-container/mat-sidenav-content/div/div/app-hives-dashboard/div[2]/div[2]/mat-icon").click()
-    # t.sleep(1)
     driver.find_element(by=By.XPATH, value="/html/body/div[3]/div[2]/div/div/div/button[4]/span").click()
     t.sleep(1)
     driver.find_element(by=By.XPATH, value="/html/body/div[3]/div[2]/div/mat-dialog-container/div/div/div/div[2]/div[2]/mat-checkbox/div/div/input").click()
@@ -79,31 +65,28 @@ def BROODMINDER_GET():
     t.sleep(1)
     driver.find_element(by=By.XPATH, value="/html/body/div[3]/div[2]/div/mat-dialog-container/div/div/div/div[2]/div[4]/button/span[2]").click()
     t.sleep(3)
-    
-    # # download weather data for both
-    # driver.find_element(by=By.XPATH, value="/html/body/app-root/app-core/mat-sidenav-container/mat-sidenav-content/div/div/app-hive-landing/div[3]/button[2]/span").click()
-    # t.sleep(1)
-
-    # # download right hive data
-    # URL = "https://mybroodminder.com/app/hive/74ab0c07e39e429a929c9a5a6ac86392?start=1648872000&&range=9"
-    # driver.get(URL)
-    # t.sleep(5)
-    # driver.find_element(by=By.XPATH, value="/html/body/app-root/app-core/mat-sidenav-container/mat-sidenav-content/div/div/app-hive-landing/div[3]/button[1]/span").click()
-    # t.sleep(1)
 
     # close the browser window
     driver.quit()
+    
+    READ_HIVE(hive_name)
+    READ_BEE_WEATHER()
 
-def READ_HIVE(hive_name):
+def READ_HIVE(hive_name: str):
     directory = "Broodminder/"
     
     # Check for new download data
     Hive = pd.DataFrame()
-    res = [f for f in glob(directory + "*.csv") if hive_name in f and "Master" not in f]
     filename = ""
-    for f in res:
-        filename = f
-        Hive = pd.read_csv(f)
+    for test_str in os.listdir(directory):
+        regex = str(hive_name) + r"_combined_readings_20[a-zA-Z0-9\-\_\.]*.csv"
+        matches = re.finditer(regex, test_str, re.MULTILINE)
+        for matchNum, match in enumerate(matches, start=1):
+            filename = directory + match.group()
+
+    # Load master file
+    if filename:
+        Hive = pd.read_csv(filename)
         Hive.drop('App', axis=1, inplace=True)
         Hive.drop('Record_Type', axis=1, inplace=True)
         Hive.drop('Radar', axis=1, inplace=True)
@@ -111,15 +94,18 @@ def READ_HIVE(hive_name):
         Hive.drop('Local_TimeStamp', axis=1, inplace=True)
         Hive.drop('Metric', axis=1, inplace=True)
         Hive.drop('Audio', axis=1, inplace=True)
-        #Hive.to_csv(directory + hive_name + " Master.csv", mode='w', index=False, header=True)
+        
+        if os.path.exists(str(directory + str(hive_name) + " Master.csv")):
+            Hive_master = pd.read_csv(str(directory + str(hive_name) + " Master.csv"))
+            Hive_master = pd.concat([Hive, Hive_master]).astype(str).drop_duplicates(subset=['Unix_Time'], keep='last').reset_index(drop=True)
+        else:
+            Hive_master = Hive
 
-    # Load master file
-    Hive_master = pd.read_csv(directory + hive_name + " Master.csv")
-    if not res == []:
-        new_Hive_master = pd.concat([Hive, Hive_master]).astype(str).drop_duplicates(subset=['Unix_Time'], keep='last').reset_index(drop=True)
-        new_Hive_master.to_csv(directory + hive_name + " Master.csv", mode='w', index=False, header=True)
-        #os.remove(filename)
-    Hive_master = pd.read_csv(directory + hive_name + " Master.csv")
+        Hive_master.to_csv(directory + hive_name + " Master.csv", mode='w', index=False, header=True)
+        os.remove(filename)
+    elif os.path.exists(str(directory + str(hive_name) + " Master.csv")):
+        Hive_master = pd.read_csv(str(directory + str(hive_name) + " Master.csv"))
+        
     return Hive_master
 
 def READ_BEE_WEATHER():
@@ -127,42 +113,49 @@ def READ_BEE_WEATHER():
     
     # Check for new download data
     Bee_Weather = pd.DataFrame()
-    res = [f for f in glob(directory + "*.csv") if "KevBec Apiary_weather" in f and "Master" not in f]
     filename = ""
-    for f in res:
-        filename = f
-        Bee_Weather = pd.read_csv(f)
+    for test_str in os.listdir(directory):
+        regex = r"KevBec Apiary_weather_20[a-zA-Z0-9\-\_\.]*.csv"
+        matches = re.finditer(regex, test_str, re.MULTILINE)
+        for matchNum, match in enumerate(matches, start=1):
+            filename = directory + match.group()
+    
+    # Load master file
+    if filename:
+        Bee_Weather = pd.read_csv(filename)
         Bee_Weather.drop('DownloadTimeStamp', axis=1, inplace=True)
         Bee_Weather.drop('UTC_TimeStamp', axis=1, inplace=True)
         Bee_Weather.drop('Local_TimeStamp', axis=1, inplace=True)
         Bee_Weather.drop('Metric', axis=1, inplace=True)
-        #Bee_Weather.to_csv(directory + "KevBec Apiary_weather" + " Master.csv", mode='w', index=False, header=True)
-
-    # Load master file
-    Bee_Weather_master = pd.read_csv(directory + "KevBec Apiary_weather" + " Master.csv")
-    if not res == []:
-        new_Bee_Weather_master = pd.concat([Bee_Weather, Bee_Weather_master]).astype(str).drop_duplicates(subset=['Unix_Time'], keep='last').reset_index(drop=True)
-        new_Bee_Weather_master.to_csv(directory + "KevBec Apiary_weather" + " Master.csv", mode='w', index=False, header=True)
-        #os.remove(filename)
-    Bee_Weather_master = pd.read_csv(directory + "KevBec Apiary_weather" + " Master.csv")
+        
+        if os.path.exists(directory + "KevBec Apiary_weather Master.csv"):
+            Bee_Weather_master = pd.read_csv(directory + "KevBec Apiary_weather Master.csv")        
+            Bee_Weather_master = pd.concat([Bee_Weather, Bee_Weather_master]).astype(str).drop_duplicates(subset=['Unix_Time'], keep='last').reset_index(drop=True)
+        else:
+            Bee_Weather_master = Bee_Weather
+            
+        Bee_Weather.to_csv(directory + "KevBec Apiary_weather Master.csv", mode='w', index=False, header=True)
+        os.remove(filename)
+    elif os.path.exists(directory + "KevBec Apiary_weather Master.csv"):
+         Bee_Weather_master = pd.read_csv(directory + "KevBec Apiary_weather Master.csv")
     return Bee_Weather_master
 
-def PROCESS_HIVE(hive_name):
+def PROCESS_HIVE(hive_name: str):
+    directory = "Broodminder/"
     metrics = ["Weight", "Humidity", "Temperature"]
     Hive = READ_HIVE(hive_name)
     Unique_Dev_Names = Hive.Hive_Position.unique()
     Unique_Devs = Hive.Device.unique()
     Devices = {}
-    Graph = 0
+
     for i, Device in enumerate(Unique_Devs):
         Devices.update({Unique_Dev_Names[i]: Hive[Hive['Device'] == Device]})
-    
-    if Graph:
-        fig, ax = plt.subplots(1, 3, figsize=(30, 5))
+
     for j, metric in enumerate(metrics):
         for i, Device in enumerate(Unique_Devs):
             Devices[list(Devices.keys())[i]] = Devices[list(Devices.keys())[i]].sort_values(by=["Unix_Time"])
-            # Resample and cubic-spline-interpolate to five minutes
+            
+            # Resample and spline-interpolate to five minutes
             x = []
             y = []
             for k, value in enumerate(Devices[list(Devices.keys())[i]][str(metrics[j])]):
@@ -172,31 +165,24 @@ def PROCESS_HIVE(hive_name):
                     
             if not np.shape(x)[0] == 0:
                 Temp_DF = pd.DataFrame()
-                cs = UnivariateSpline(x, y)
+                cs = UnivariateSpline(x, y, k=5)
                 xs = np.arange(min(x), max(x), 300)
                 Temp_DF["Unix_Time"] = xs
                 Temp_DF[str('Interp_' + metrics[j])] = cs(xs)
                 Devices[list(Devices.keys())[i]] = pd.concat([Temp_DF, Devices[list(Devices.keys())[i]]], axis=0, join='outer')
                 Devices[list(Devices.keys())[i]] = Devices[list(Devices.keys())[i]].sort_values(by=["Unix_Time"])
-                
-                if Graph:
-                    ax[j].plot(Devices[list(Devices.keys())[i]]["Unix_Time"], Devices[list(Devices.keys())[i]][str("Interp_" + metrics[j])], label=str(Unique_Dev_Names[i] + ' ' + metrics[j]))
-                    ax[j].legend(loc='lower left', ncol=2)
-    
     return Devices
 
 def PROCESS_BEE_WEATHER():
+    directory = "Broodminder/"
     Bee_Weather = READ_BEE_WEATHER()
     metrics = [i for i in list(Bee_Weather.keys()) if not "Unix_Time" in i]
-    Graph = 0
-    rows = 2
-    cols = 4
+    metric_num = len(metrics)
     
-    if Graph:
-        fig, ax = plt.subplots(rows, cols, figsize=(30, 10))
     for i, metric in enumerate(metrics):
         Bee_Weather = Bee_Weather.sort_values(by=["Unix_Time"])
-        # Resample and cubic-spline-interpolate to five minutes
+        
+        # Resample and spline-interpolate to five minutes
         x = []
         y = []
         for j, value in enumerate(Bee_Weather[str(metric)]):
@@ -206,16 +192,13 @@ def PROCESS_BEE_WEATHER():
 
         if not np.shape(x)[0] == 0:
             Temp_DF = pd.DataFrame()
-            cs = UnivariateSpline(x, y)
+            cs = UnivariateSpline(x, y, k=5)
             xs = np.arange(min(x), max(x), 300)
             Temp_DF["Unix_Time"] = xs
             Temp_DF[str('Interp_' + metric)] = cs(xs)
             Bee_Weather = pd.concat([Temp_DF, Bee_Weather], axis=0, join='outer')
             Bee_Weather = Bee_Weather.sort_values(by=["Unix_Time"])
-            
-            if Graph:
-                ax[floor(i/cols), i % cols].plot(Bee_Weather["Unix_Time"], Bee_Weather[str("Interp_" + metrics[i])], label=str(metrics[i]))
-                ax[floor(i/cols), i % cols].legend(loc='lower left', ncol=2)
+    return Bee_Weather
 
 def AMBIENT_GET():
     # Get Ambient data via URL and format
