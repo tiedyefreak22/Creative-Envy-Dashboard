@@ -72,7 +72,7 @@ def download(directory = "C:/Users/khard/OneDrive/Documents/GitHub/Creative-Envy
     print("Looking up all photos...")
     #all_photos = icloud.photos.all
     all_photos = icloud.photos.albums['Favorites'] #only download from favorites
-    photos_count = 50
+    photos_count = 200
     p = np.random.permutation(len(list(all_photos)))
     random_file_list = [list(all_photos)[i] for i in p[0:photos_count]]
 

@@ -208,7 +208,7 @@ class Pane3(Frame): # Picture Frame
         self.controller = controller
         directory = "PhotosB/"
         file_paths = []
-        ext = ('.png', '.jpg', '.jpeg', '.HEIC', '.tiff', '.tif')
+        ext = ('.png', '.jpg', '.jpeg', '.heic', '.tiff', '.tif')
         raw_ext = ('.raw', '.arw', '.dng')
         for root, dirs, files in os.walk(directory):
             for file in files:
