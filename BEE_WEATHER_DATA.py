@@ -9,7 +9,7 @@ import os
 import pandas as pd
 from glob import glob
 import numpy as np
-from scipy.interpolate import CubicSpline, UnivariateSpline, InterpolatedUnivariateSpline, interp1d
+from scipy.interpolate import CubicSpline, UnivariateSpline, InterpolatedUnivariateSpline, interp1d, splrep
 import re
 from math import floor
 import matplotlib.pyplot as plt
@@ -155,7 +155,7 @@ def PROCESS_HIVE(hive_name: str, interp=0):
     
     Week_Devices = {}
     for i in range(len(Devices)):
-        Week_Devices[list(Devices.keys())[i]] = Devices[list(Devices.keys())[i]]#).iloc[-intervals:]
+        Week_Devices[list(Devices.keys())[i]] = Devices[list(Devices.keys())[i]]
 
     for i, key in enumerate(list(Week_Devices.keys())):
         for j, cat in enumerate(Week_Devices[str(key)]):
@@ -195,30 +195,57 @@ def PROCESS_BEE_WEATHER(interp=0):
     
     for i, metric in enumerate(metrics):
         Bee_Weather = Bee_Weather.sort_values(by=["Unix_Time"])
-        
-        if interp:
-            #Resample and spline-interpolate to five minutes
-            x = []
-            y = []
-            for j, value in enumerate(Bee_Weather[str(metric)]):
-                if not np.isnan(value):
-                    x.append(int(Bee_Weather["Unix_Time"].tolist()[j]))
-                    y.append(value)
+    Week_Devices = pd.DataFrame()
+    for i in range(len(Bee_Weather.keys())):
+        Week_Devices[list(Bee_Weather.keys())[i]] = Bee_Weather[list(Bee_Weather.keys())[i]]
 
-            if not np.shape(x)[0] == 0:
-                Temp_DF = pd.DataFrame()
-                cs = UnivariateSpline(x, y, k=5)
-                xs = np.arange(min(x), max(x), 300)
-                Temp_DF["Unix_Time"] = xs
-                Temp_DF[str('Interp_' + metric)] = cs(xs)
-                if i == 0:
-                    Interps = Temp_DF
-                else:
-                    Interps = pd.concat([Temp_DF, Interps], axis=0, join='outer')
-                Interps = Bee_Weather.sort_values(by=["Unix_Time"])
-            return Interps.iloc[-intervals:]
-        else:
-            return Bee_Weather.iloc[-intervals:]
+    for j, cat in enumerate(Week_Devices):
+        if Week_Devices[str(cat)].isnull().all():
+            Week_Devices = Week_Devices.drop(columns=[str(cat)])
+    Week_Devices = Week_Devices.sort_values(by=["Unix_Time"])
+    int_Unix = [int(i) for i in Week_Devices["Unix_Time"]]
+    Week_Devices = Week_Devices.loc[Week_Devices[Week_Devices["Unix_Time"] >= max(int_Unix) - 604800].index[0]:]
+    if interp:
+        Interps = dict.fromkeys(list(Week_Devices.keys()))
+        Temp_DF = pd.DataFrame()
+        for j, cat in enumerate(list(Week_Devices.keys())):
+            Temp_Dict = {}
+            if not str(cat) == "Device" and not str(cat) == "Hive_Position" and not str(cat) == "Unix_Time" and not str(cat) == "Sample":
+                x = [int(i) for i in Week_Devices["Unix_Time"].tolist()]
+                y = Week_Devices[str(cat)]
+                if not np.shape(x)[0] == 0:
+                    cs = UnivariateSpline(x, y, k=5)
+                    xs = np.arange(min(x), max(x), span)
+                    Temp_Dict = {"Unix_Time": xs, str('Interp_' + str(cat)): cs(xs)}
+            Temp_DF = pd.concat([Temp_DF, pd.DataFrame(Temp_Dict)], axis=0, join='outer')
+        Interps = Temp_DF
+        return Interps
+    else:
+        return Week_Devices
+            
+            
+#             #Resample and spline-interpolate to five minutes
+#             x = []
+#             y = []
+#             for j, value in enumerate(Bee_Weather[str(metric)]):
+#                 if not np.isnan(value):
+#                     x.append(int(Bee_Weather["Unix_Time"].tolist()[j]))
+#                     y.append(value)
+
+#             if not np.shape(x)[0] == 0:
+#                 Temp_DF = pd.DataFrame()
+#                 cs = UnivariateSpline(x, y, k=5)
+#                 xs = np.arange(min(x), max(x), 300)
+#                 Temp_DF["Unix_Time"] = xs
+#                 Temp_DF[str('Interp_' + metric)] = cs(xs)
+#                 if i == 0:
+#                     Interps = Temp_DF
+#                 else:
+#                     Interps = pd.concat([Temp_DF, Interps], axis=0, join='outer')
+#                 Interps = Bee_Weather.sort_values(by=["Unix_Time"])
+#             return Interps.iloc[-intervals:]
+#         else:
+#             return Bee_Weather.iloc[-intervals:]
 
 def AMBIENT_GET():
     # Get Ambient data via URL and format
@@ -372,30 +399,33 @@ def PROCESS_AMBIENT(interp=0):
     for i, metric in enumerate(metrics):
         Ambient = Ambient.sort_values(by=["dateutc"])
         
-        if interp:
-            # Resample and spline-interpolate to five minutes
-            x = []
-            y = []
-            if i < len(metrics) - 1:
-                for j, value in enumerate(Ambient[str(metric)]):
-                    if not np.isnan(value):
-                        x.append(int(Ambient["dateutc"].tolist()[j]))
-                        y.append(value)
+    Week_Devices = pd.DataFrame()
+    for i in range(len(Ambient.keys())):
+        Week_Devices[list(Ambient.keys())[i]] = Ambient[list(Ambient.keys())[i]]
 
+    for j, cat in enumerate(Week_Devices):
+        if Week_Devices[str(cat)].isnull().all():
+            Week_Devices = Week_Devices.drop(columns=[str(cat)])
+    Week_Devices = Week_Devices.sort_values(by=["Unix_Time"])
+    int_Unix = [int(i) for i in Week_Devices["Unix_Time"]]
+    Week_Devices = Week_Devices.loc[Week_Devices[Week_Devices["Unix_Time"] >= max(int_Unix) - 604800].index[0]:]
+    if interp:
+        Interps = dict.fromkeys(list(Week_Devices.keys()))
+        Temp_DF = pd.DataFrame()
+        for j, cat in enumerate(list(Week_Devices.keys())):
+            Temp_Dict = {}
+            if not str(cat) == "Device" and not str(cat) == "Hive_Position" and not str(cat) == "Unix_Time" and not str(cat) == "Sample":
+                x = [int(i) for i in Week_Devices["Unix_Time"].tolist()]
+                y = Week_Devices[str(cat)]
                 if not np.shape(x)[0] == 0:
-                    Temp_DF = pd.DataFrame()
                     cs = UnivariateSpline(x, y, k=5)
                     xs = np.arange(min(x), max(x), span)
-                    Temp_DF["dateutc"] = xs
-                    Temp_DF[str('Interp_' + metric)] = cs(xs)
-                    if i == 0:
-                        Interps = Temp_DF
-                    else:
-                        Interps = pd.concat([Temp_DF, Interps], axis=0, join='outer')
-                    Interps = Ambient.sort_values(by=["dateutc"])
-            return Interps.iloc[-intervals:]
-        else:
-            return Ambient.iloc[-intervals:]
+                    Temp_Dict = {"Unix_Time": xs, str('Interp_' + str(cat)): cs(xs)}
+            Temp_DF = pd.concat([Temp_DF, pd.DataFrame(Temp_Dict)], axis=0, join='outer')
+        Interps = Temp_DF
+        return Interps
+    else:
+        return Week_Devices
 
 def GRAPH_DATA(Data): #Pandas DF
     metrics = [i for i in list(Data.keys()) if not i == "dateutc" and not i == "lastRain" and not i == "Unix_Time" and not i == "Sample" and not i == "w1" and not i == "w2" and not i == "w3" and not i == "w4"]
