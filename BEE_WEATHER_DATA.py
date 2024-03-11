@@ -13,9 +13,11 @@ from scipy.interpolate import CubicSpline, UnivariateSpline, InterpolatedUnivari
 import re
 from math import floor
 import matplotlib.pyplot as plt
-from decouple import config
+#from decouple import config
 import requests
 from io import BytesIO
+from PIL import Image
+from datetime import datetime
 
 def BROODMINDER_GET(hive_name):
     #Login to Broodminder, Get Beehive data, and format
@@ -425,29 +427,30 @@ def GRAPH_DATA(Data): #Pandas DF
     plt.show()
 
 def GET_FORECAST():
-    api_key = '<YOUR_API_KEY>'
-    lat = 44.34
-    lon = 10.99
+    api_key = '6076127529eb62ab78ea542909f0a2ef'
+    lat = 40.907220
+    lon = -111.894300
+    query_params = {'lat': lat, 'lon': lon, 'appid': api_key, 'units': 'imperial'}
+
     
-    api_endpoint = 'https://api.openweathermap.org/data/2.5/forecast'
+    api_endpoint = f'https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={api_key}'
     query_params = {'lat': lat, 'lon': lon, 'appid': api_key, 'units': 'imperial'}
     
     response = requests.get(api_endpoint, params=query_params)
     
     if response.status_code == 200:
         data = response.json()
+        return data
     else:
         # Handle errors
         print(f'Error: {response.status_code} - {response.text}')
-    
-    return data
 
 def get_moon_image_number():
     now = datetime.utcnow()
     janone = datetime(now.year, 1, 1, 0, 0, 0)
     moon_image_number = round((now - janone).total_seconds() / 3600)
-    
-    return moon_image_number <= total_images
+
+    return moon_image_number
 
 def GET_MOON_IMAGE(size, save=0):
     total_images = 8760
@@ -456,7 +459,7 @@ def GET_MOON_IMAGE(size, save=0):
     moon_path = "/vis/a000000/a005100/a005187"
     image = None
     pixmap = None
-    moon_image_number = 1
+    moon_image_number = get_moon_image_number()
 
     if size > 2160:
         url = moon_domain+moon_path+"/frames/5760x3240_16x9_30p/" \
@@ -469,11 +472,11 @@ def GET_MOON_IMAGE(size, save=0):
                                               f"moon.{moon_image_number:04d}.jpg"
     response = requests.get(url)
     img = Image.open(BytesIO(response.content))
-    size = img.size()
+    #size = img.shape()
     if save:
         img.save(f"moon/moon.{moon_image_number:04d}.tiff")
     
-    return pix
+    return img
     
 # if __name__ == '__main__':
 #     BROODMINDER_GET()
