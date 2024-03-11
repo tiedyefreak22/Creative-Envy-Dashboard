@@ -9,10 +9,13 @@ import os
 import pandas as pd
 from glob import glob
 import numpy as np
-from scipy.interpolate import CubicSpline, UnivariateSpline, InterpolatedUnivariateSpline, interp1d, splrep
+from scipy.interpolate import CubicSpline, UnivariateSpline, InterpolatedUnivariateSpline, interp1d, splrep, PchipInterpolator
 import re
 from math import floor
 import matplotlib.pyplot as plt
+from decouple import config
+import requests
+from io import BytesIO
 
 def BROODMINDER_GET(hive_name):
     #Login to Broodminder, Get Beehive data, and format
@@ -175,7 +178,7 @@ def PROCESS_HIVE(hive_name: str, interp=0):
                     x = [int(i) for i in Week_Devices[str(key)]["Unix_Time"].tolist()]
                     y = Week_Devices[str(key)][str(cat)]
                     if not np.shape(x)[0] == 0:
-                        cs = UnivariateSpline(x, y, k=5)
+                        cs = PchipInterpolator(x, y)
                         xs = np.arange(min(x), max(x), span)
                         Temp_Dict = {"Unix_Time": xs, str('Interp_' + str(cat)): cs(xs)}
                 Temp_DF = pd.concat([Temp_DF, pd.DataFrame(Temp_Dict)], axis=0, join='outer')
@@ -214,7 +217,7 @@ def PROCESS_BEE_WEATHER(interp=0):
                 x = [int(i) for i in Week_Devices["Unix_Time"].tolist()]
                 y = Week_Devices[str(cat)]
                 if not np.shape(x)[0] == 0:
-                    cs = UnivariateSpline(x, y, k=5)
+                    cs = PchipInterpolator(x, y)
                     xs = np.arange(min(x), max(x), span)
                     Temp_Dict = {"Unix_Time": xs, str('Interp_' + str(cat)): cs(xs)}
             Temp_DF = pd.concat([Temp_DF, pd.DataFrame(Temp_Dict)], axis=0, join='outer')
@@ -222,30 +225,6 @@ def PROCESS_BEE_WEATHER(interp=0):
         return Interps
     else:
         return Week_Devices
-            
-            
-#             #Resample and spline-interpolate to five minutes
-#             x = []
-#             y = []
-#             for j, value in enumerate(Bee_Weather[str(metric)]):
-#                 if not np.isnan(value):
-#                     x.append(int(Bee_Weather["Unix_Time"].tolist()[j]))
-#                     y.append(value)
-
-#             if not np.shape(x)[0] == 0:
-#                 Temp_DF = pd.DataFrame()
-#                 cs = UnivariateSpline(x, y, k=5)
-#                 xs = np.arange(min(x), max(x), 300)
-#                 Temp_DF["Unix_Time"] = xs
-#                 Temp_DF[str('Interp_' + metric)] = cs(xs)
-#                 if i == 0:
-#                     Interps = Temp_DF
-#                 else:
-#                     Interps = pd.concat([Temp_DF, Interps], axis=0, join='outer')
-#                 Interps = Bee_Weather.sort_values(by=["Unix_Time"])
-#             return Interps.iloc[-intervals:]
-#         else:
-#             return Bee_Weather.iloc[-intervals:]
 
 def AMBIENT_GET():
     # Get Ambient data via URL and format
@@ -418,7 +397,7 @@ def PROCESS_AMBIENT(interp=0):
                 x = [int(i) for i in Week_Devices["Unix_Time"].tolist()]
                 y = Week_Devices[str(cat)]
                 if not np.shape(x)[0] == 0:
-                    cs = UnivariateSpline(x, y, k=5)
+                    cs = PchipInterpolator(x, y)
                     xs = np.arange(min(x), max(x), span)
                     Temp_Dict = {"Unix_Time": xs, str('Interp_' + str(cat)): cs(xs)}
             Temp_DF = pd.concat([Temp_DF, pd.DataFrame(Temp_Dict)], axis=0, join='outer')
@@ -428,7 +407,7 @@ def PROCESS_AMBIENT(interp=0):
         return Week_Devices
 
 def GRAPH_DATA(Data): #Pandas DF
-    metrics = [i for i in list(Data.keys()) if not i == "dateutc" and not i == "lastRain" and not i == "Unix_Time" and not i == "Sample" and not i == "w1" and not i == "w2" and not i == "w3" and not i == "w4"]
+    metrics = [key for key in Data.keys() if key not in ["dateutc", "Device", "Hive_Position", "lastRain", "Unix_Time", "Sample", "w1", "w2", "w3", "w4", "Weight_Scale_Factor"]]
     metric_num = len(metrics)
 
     ncols = 4
@@ -444,6 +423,57 @@ def GRAPH_DATA(Data): #Pandas DF
         except:
             pass
     plt.show()
+
+def GET_FORECAST():
+    api_key = '<YOUR_API_KEY>'
+    lat = 44.34
+    lon = 10.99
+    
+    api_endpoint = 'https://api.openweathermap.org/data/2.5/forecast'
+    query_params = {'lat': lat, 'lon': lon, 'appid': api_key, 'units': 'imperial'}
+    
+    response = requests.get(api_endpoint, params=query_params)
+    
+    if response.status_code == 200:
+        data = response.json()
+    else:
+        # Handle errors
+        print(f'Error: {response.status_code} - {response.text}')
+    
+    return data
+
+def get_moon_image_number():
+    now = datetime.utcnow()
+    janone = datetime(now.year, 1, 1, 0, 0, 0)
+    moon_image_number = round((now - janone).total_seconds() / 3600)
+    
+    return moon_image_number <= total_images
+
+def GET_MOON_IMAGE(size, save=0):
+    total_images = 8760
+    moon_domain = "https://svs.gsfc.nasa.gov"
+    # https://svs.gsfc.nasa.gov/vis/a000000/a005100/a005187/frames/216x216_1x1_30p/moon.8597.jpg
+    moon_path = "/vis/a000000/a005100/a005187"
+    image = None
+    pixmap = None
+    moon_image_number = 1
+
+    if size > 2160:
+        url = moon_domain+moon_path+"/frames/5760x3240_16x9_30p/" \
+              f"plain/moon.{moon_image_number:04d}.tif"
+    elif size > 216:
+        url = moon_domain+moon_path+"/frames/3840x2160_16x9_30p/" \
+          f"plain/moon.{moon_image_number:04d}.tif"
+    else:
+        url = moon_domain + moon_path + "/frames/216x216_1x1_30p/" \
+                                              f"moon.{moon_image_number:04d}.jpg"
+    response = requests.get(url)
+    img = Image.open(BytesIO(response.content))
+    size = img.size()
+    if save:
+        img.save(f"moon/moon.{moon_image_number:04d}.tiff")
+    
+    return pix
     
 # if __name__ == '__main__':
 #     BROODMINDER_GET()
