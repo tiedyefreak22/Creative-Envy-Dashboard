@@ -387,21 +387,21 @@ def PROCESS_AMBIENT(interp=0):
     for j, cat in enumerate(Week_Devices):
         if Week_Devices[str(cat)].isnull().all():
             Week_Devices = Week_Devices.drop(columns=[str(cat)])
-    Week_Devices = Week_Devices.sort_values(by=["Unix_Time"])
-    int_Unix = [int(i) for i in Week_Devices["Unix_Time"]]
-    Week_Devices = Week_Devices.loc[Week_Devices[Week_Devices["Unix_Time"] >= max(int_Unix) - 604800].index[0]:]
+    Week_Devices = Week_Devices.sort_values(by=["dateutc"])
+    int_Unix = [int(i) for i in Week_Devices["dateutc"]]
+    Week_Devices = Week_Devices.loc[Week_Devices[Week_Devices["dateutc"] >= max(int_Unix) - 604800].index[0]:]
     if interp:
         Interps = dict.fromkeys(list(Week_Devices.keys()))
         Temp_DF = pd.DataFrame()
         for j, cat in enumerate(list(Week_Devices.keys())):
             Temp_Dict = {}
-            if not str(cat) == "Device" and not str(cat) == "Hive_Position" and not str(cat) == "Unix_Time" and not str(cat) == "Sample":
-                x = [int(i) for i in Week_Devices["Unix_Time"].tolist()]
+            if not str(cat) == "Device" and not str(cat) == "Hive_Position" and not str(cat) == "dateutc" and not str(cat) == "Sample":
+                x = [int(i) for i in Week_Devices["dateutc"].tolist()]
                 y = Week_Devices[str(cat)]
                 if not np.shape(x)[0] == 0:
                     cs = PchipInterpolator(x, y)
                     xs = np.arange(min(x), max(x), span)
-                    Temp_Dict = {"Unix_Time": xs, str('Interp_' + str(cat)): cs(xs)}
+                    Temp_Dict = {"dateutc": xs, str('Interp_' + str(cat)): cs(xs)}
             Temp_DF = pd.concat([Temp_DF, pd.DataFrame(Temp_Dict)], axis=0, join='outer')
         Interps = Temp_DF
         return Interps
@@ -477,6 +477,26 @@ def GET_MOON_IMAGE(size, save=0):
         img.save(f"moon/moon.{moon_image_number:04d}.tiff")
     
     return img
+
+def PROCESS_FORECAST(interp=0):
+    data = GET_FORECAST()
+    response = pd.DataFrame()
+    for key in data:
+        if key == "list":
+            cur_dict = {}
+            for key2 in data[key]:
+                for key3, value in key2.items():
+                    if key3 == "main":
+                        for key4, value2 in key2[key3].items():
+                            cur_dict.update({key4: value2})
+                    if key3 == "weather":
+                        for key4, value2 in key2[key3][0].items():
+                            cur_dict.update({key4: value2})
+                    else:
+                        cur_dict.update({key3: value})
+                response = pd.concat([response, pd.DataFrame(cur_dict, index=[key2["dt"]])], axis=0, join='outer')
+    response = response.drop(columns=["dt"])
+    return response
     
 # if __name__ == '__main__':
 #     BROODMINDER_GET()

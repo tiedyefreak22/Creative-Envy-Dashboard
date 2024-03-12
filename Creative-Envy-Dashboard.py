@@ -84,6 +84,11 @@ class Pane1(Frame): # Weather Dashboard; child to Notebook
         Frame.__init__(self, parent)
         self.controller = controller
         
+        # Get data
+        moon_img = GET_MOON_IMAGE(216, save=1)
+        forecast_data = PROCESS_FORECAST(data)
+        ambient_data = PROCESS_AMBIENT()
+        
         # Pane1 Objects
         # Loop to create LabelFrames
         lfs = []
