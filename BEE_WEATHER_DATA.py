@@ -17,7 +17,18 @@ import matplotlib.pyplot as plt
 import requests
 from io import BytesIO
 from PIL import Image
-from datetime import datetime
+import json
+from datetime import date, datetime, timedelta
+import urllib.request
+import ssl
+import re
+import array
+import time as t
+import csv
+from csv import writer
+import numpy as np
+import itertools
+from send2trash import send2trash
 
 def BROODMINDER_GET(hive_name):
     #Login to Broodminder, Get Beehive data, and format
@@ -230,22 +241,6 @@ def PROCESS_BEE_WEATHER(interp=0):
 
 def AMBIENT_GET():
     # Get Ambient data via URL and format
-    from datetime import date
-    from datetime import datetime
-    from datetime import timedelta
-    import urllib.request
-    import ssl
-    import re
-    import array
-    import time as t
-    import csv
-    from csv import writer
-    import numpy as np
-    import itertools
-    import pandas as pd
-    from glob import glob
-    from send2trash import send2trash
-
     # csv file name
     filename = "Ambient/Ambient_Data.csv"
 
@@ -440,7 +435,13 @@ def GET_FORECAST():
     
     if response.status_code == 200:
         data = response.json()
-        return data
+        json_object = json.dumps(data, indent=4)
+ 
+        # Writing to sample.json
+        with open("Forecast/forecast.json", "w") as outfile:
+            outfile.write(json_object)
+            
+        #return data
     else:
         # Handle errors
         print(f'Error: {response.status_code} - {response.text}')
@@ -474,29 +475,48 @@ def GET_MOON_IMAGE(size, save=0):
     img = Image.open(BytesIO(response.content))
     #size = img.shape()
     if save:
+        for file in os.listdir("moon/"):
+            os.remove("moon/" + file)
         img.save(f"moon/moon.{moon_image_number:04d}.tiff")
-    
-    return img
+    else:
+        return img
 
 def PROCESS_FORECAST(interp=0):
-    data = GET_FORECAST()
     response = pd.DataFrame()
-    for key in data:
-        if key == "list":
-            cur_dict = {}
-            for key2 in data[key]:
-                for key3, value in key2.items():
-                    if key3 == "main":
-                        for key4, value2 in key2[key3].items():
-                            cur_dict.update({key4: value2})
-                    if key3 == "weather":
-                        for key4, value2 in key2[key3][0].items():
-                            cur_dict.update({key4: value2})
-                    else:
-                        cur_dict.update({key3: value})
-                response = pd.concat([response, pd.DataFrame(cur_dict, index=[key2["dt"]])], axis=0, join='outer')
+    GET_FORECAST()
+    with open('Forecast/forecast.json', 'r') as openfile:
+        # Reading from json file
+        data = json.load(openfile)
+        response = pd.DataFrame()
+        for key in data:
+            if key == "list":
+                cur_dict = {}
+                for key2 in data[key]:
+                    for key3, value in key2.items():
+                        if key3 == "main":
+                            for key4, value2 in key2[key3].items():
+                                cur_dict.update({key4: value2})
+                        if key3 == "weather":
+                            for key4, value2 in key2[key3][0].items():
+                                cur_dict.update({key4: value2})
+                        else:
+                            cur_dict.update({key3: value})
+                    response = pd.concat([response, pd.DataFrame(cur_dict, index=[key2["dt"]])], axis=0, join='outer')
     response = response.drop(columns=["dt"])
     return response
+
+def PROCESS_FORECAST_MIN_MAX(response):
+    prior_midnight = int(datetime.timestamp(datetime.strptime(date.today().strftime('%Y-%m-%d')    + " 00:00:00", '%Y-%m-%d %H:%M:%S')))
+    future_midnight = int(datetime.timestamp(datetime.strptime((date.today() + timedelta(days=1)).strftime('%Y-%m-%d') + " 00:00:00", '%Y-%m-%d %H:%M:%S')))
+    todays_forecast = pd.DataFrame([response.loc[i] for i in response.index.values.tolist() if i <= future_midnight and i >= prior_midnight])
+    max_temp = max(todays_forecast["temp_max"])
+    min_temp = min(todays_forecast["temp_max"])
+    max_humid = max(todays_forecast["humidity"])
+    min_humid = min(todays_forecast["humidity"])
+    # max_wind = max(todays_forecast["wind"])
+    # min_wind = min(todays_forecast["wind"])
+    return min_temp, max_temp, min_humid, max_humid#, min_wind, max_wind
+
     
 # if __name__ == '__main__':
 #     BROODMINDER_GET()
