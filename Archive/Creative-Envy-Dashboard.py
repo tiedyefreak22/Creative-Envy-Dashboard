@@ -27,7 +27,7 @@ import time
 import random
 from pathlib import Path
 sys.path.append("BEE_WEATHER_DATA")
-from BEE_WEATHER_DATA import BROODMINDER_GET, AMBIENT_GET, READ_HIVE, PROCESS_HIVE, READ_BEE_WEATHER, PROCESS_BEE_WEATHER, PROCESS_AMBIENT, GRAPH_DATA, GET_MOON_IMAGE, GET_FORECAST, PROCESS_FORECAST
+from BEE_WEATHER_DATA import BROODMINDER_GET, AMBIENT_GET, READ_HIVE, PROCESS_HIVE, READ_BEE_WEATHER, PROCESS_BEE_WEATHER
 sys.path.append("PYICLOUD_GET")
 import PYICLOUD_GET
 import pandas as pd
@@ -37,51 +37,12 @@ from IPython.display import display
 class Windows(Tk):
     def __init__(self, *args, **kwargs):
         Tk.__init__(self, *args, **kwargs)
-        hive_names = "New Left Hive"
-        Hive_Processed = PROCESS_HIVE(hive_names)
-        #display(list(Hive_Processed[list(Hive_Processed.keys())[1]]["Humidity"].items()))
         self.shared_data = {
             "window_geometry":    [IntVar(self, 1280),  IntVar(self, 800)],
-            "padding":      IntVar(self, 5),
-            "num_rows":     IntVar(self, 3),
-            "num_cols":     IntVar(self, 5),
-            "hive_name":    StringVar(self, hive_names),
-            "sunrise":      StringVar(self, 1),
-            "honey1":       [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 1)],
-            "honey2":       [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 1)],
-            "honey3":       [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 1)],
-            "honey4":       [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 1)],
-            "honey5":       [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 1)],
-            "bees1":        [IntVar(self, 1), IntVar(self, 1), IntVar(self, 1)],
-            "bees2":        [IntVar(self, 1), IntVar(self, 1), IntVar(self, 1)],
-            "bees3":        [IntVar(self, 1), IntVar(self, 1), IntVar(self, 1)],
-            "bees4":        [IntVar(self, 1), IntVar(self, 1), IntVar(self, 1)],
-            "bees5":        [IntVar(self, 1), IntVar(self, 1), IntVar(self, 1)],
-            "ambient_temp": [IntVar(self, 1), IntVar(self, 1), IntVar(self, 1)],
-            "solar":        [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 1)],
-            "wind_spd":     [IntVar(self, 1), IntVar(self, 1), IntVar(self, 1)],
-            "wind_dir":     [IntVar(self, 1), IntVar(self, 1), IntVar(self, 1)],
-            "ambient_humid":[IntVar(self, 1), IntVar(self, 1), IntVar(self, 1)],
-            "UV":           [IntVar(self, 1), IntVar(self, 1), IntVar(self, 1)],
-            "Precip":       [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 1)],
-            "lightning":    StringVar(self, 1),
-            "air_qual":     [IntVar(self, 1), IntVar(self, 1), IntVar(self, 1)],
-            "chooks":       [IntVar(self, 1), IntVar(self, 1), IntVar(self, 1)],
-            "hive1_wt":     [DoubleVar(self, list(Hive_Processed[list(Hive_Processed.keys())[0]]["Weight"].items())[-1][1]), DoubleVar(self, min([i[1] for i in list(Hive_Processed[list(Hive_Processed.keys())[0]]["Weight"].items())])), DoubleVar(self, max([i[1] for i in list(Hive_Processed[list(Hive_Processed.keys())[0]]["Weight"].items())]))],
-            "hive2_wt":     [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 2)],
-            "hive3_wt":     [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 2)],
-            "hive4_wt":     [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 2)],
-            "hive5_wt":     [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 2)],
-            "hive1_temp":   [DoubleVar(self, list(Hive_Processed[list(Hive_Processed.keys())[2]]["Temperature"].items())[-1][1]), DoubleVar(self, min([i[1] for i in list(Hive_Processed[list(Hive_Processed.keys())[2]]["Temperature"].items())])), DoubleVar(self, max([i[1] for i in list(Hive_Processed[list(Hive_Processed.keys())[2]]["Temperature"].items())]))],
-            "hive2_temp":   [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 2)],
-            "hive3_temp":   [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 2)],
-            "hive4_temp":   [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 2)],
-            "hive5_temp":   [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 2)],
-            "hive1_humid":  [DoubleVar(self, list(Hive_Processed[list(Hive_Processed.keys())[1]]["Humidity"].items())[-1][1]), DoubleVar(self, min([i[1] for i in list(Hive_Processed[list(Hive_Processed.keys())[1]]["Humidity"].items())])), DoubleVar(self, max([i[1] for i in list(Hive_Processed[list(Hive_Processed.keys())[1]]["Humidity"].items())]))],
-            "hive2_humid":  [IntVar(self, 1), IntVar(self, 1), IntVar(self, 2)],
-            "hive3_humid":  [IntVar(self, 1), IntVar(self, 1), IntVar(self, 2)],
-            "hive4_humid":  [IntVar(self, 1), IntVar(self, 1), IntVar(self, 2)],
-            "hive5_humid":  [IntVar(self, 1), IntVar(self, 1), IntVar(self, 2)],
+            "padding":     IntVar(self, 5),
+            "num_rows":    IntVar(self, 3),
+            "num_cols":    IntVar(self, 5),
+            "hive_name":    StringVar(self, "New Left Hive")
         }
         self.shared_data.update({"notebook_geometry": [IntVar(self, int(self.shared_data["window_geometry"][0].get()) - (int(self.shared_data["padding"].get()) * 5)), # width
                                                        IntVar(self, int(self.shared_data["window_geometry"][1].get()) - (int(self.shared_data["padding"].get()) * 11)), # height
@@ -101,18 +62,8 @@ class Windows(Tk):
             height = str(self.shared_data["notebook_geometry"][1].get()),
             width = str(self.shared_data["notebook_geometry"][0].get()),
         ) # "self" as passed argument means Windows is parent
-        tab_names = [
-                    "Weather",
-                    "Bees",
-                    "Photos",
-                    #"Alarm",
-                    ]
-        for i, F in enumerate([
-                              Pane1,
-                              Pane2,
-                              Pane3,
-                              #Pane4,
-                              ]):
+        tab_names = ["Weather", "Bees", "Photos",  "Alarm"]
+        for i, F in enumerate([Pane1, Pane2, Pane3, Pane4]):
             frame = F(main_notebook, self)
             main_notebook.add(frame, text=tab_names[i]) # "self." adds to this instance, ...(self) adds to parent instance
         main_notebook.grid(
@@ -134,9 +85,9 @@ class Pane1(Frame): # Weather Dashboard; child to Notebook
         self.controller = controller
         
         # Get data
-        # moon_img = GET_MOON_IMAGE(216, save=1)
-        # forecast_data = PROCESS_FORECAST(data)
-        # ambient_data = PROCESS_AMBIENT()
+        moon_img = GET_MOON_IMAGE(216, save=1)
+        forecast_data = PROCESS_FORECAST(data)
+        ambient_data = PROCESS_AMBIENT()
         
         # Pane1 Objects
         # Loop to create LabelFrames
@@ -192,135 +143,20 @@ class Pane1(Frame): # Weather Dashboard; child to Notebook
             ) # for some reason ipad works better on meter than LF
             i = i + 1
 
-        #-------------------------------------------------------------------------------------------------------------------------------------------------
-        
-        def config_pic():
-            # directory = 'moon'
-            # file_paths = []
-            # for file in os.listdir(directory):
-            #     file_paths.append(file)
-            # rand_pic = file_paths[random.randint(0,len(file_paths) - 1)]
-            #PIL_image = Image.open(directory + "/" + rand_pic)
-            PIL_image = GET_MOON_IMAGE(216, save=1)
-            original_w = np.shape(PIL_image)[1]
-            original_h = np.shape(PIL_image)[0]
-            aspect = original_h/original_w
-
-            constraining_dim = min(self.controller.shared_data["LF_geometry"][0].get() - 4 * self.controller.shared_data["padding"].get(),
-                                   self.controller.shared_data["LF_geometry"][1].get() - 4 * self.controller.shared_data["padding"].get())
-            minor_constraint = min(constraining_dim/original_w, constraining_dim/original_h)
-            width = int(original_w * minor_constraint)
-            height = int(original_h * minor_constraint)
-            PIL_image_small = PIL_image.resize((width,height), Image.Resampling.LANCZOS)
-
-            # now create the ImageTk PhotoImage:
-            img = ImageTk.PhotoImage(image=PIL_image_small)
-            return img
-
-        def change_pic():
-            img = config_pic()
-            in_frame.config(image = img)
-            in_frame.image = img
-
-        # create the PIL image object:
-        img = config_pic()
-        in_frame = Label(
-            lfs[1],
-            image = img,
-            width=self.controller.shared_data["LF_geometry"][0].get() - 4 * self.controller.shared_data["padding"].get(),
-            height=self.controller.shared_data["LF_geometry"][1].get() - 4 * self.controller.shared_data["padding"].get(),
-        )
-        change_pic()
-        in_frame.place(relx=0.5, rely=0.5, anchor=CENTER)
-
-        #-------------------------------------------------------------------------------------------------------------------------------------------------
-
-        def periodic_updater():
-            # get current time as text
-            #BROODMINDER_GET(str(self.controller.shared_data["hive_name"].get())
-            #AMBIENT_GET()
-            #Hive_Processed = PROCESS_HIVE(hive_names)
-                            
-            # self.controller.shared_data.update({
-            #     "hive1_wt":     [DoubleVar(self, list(Hive_Processed[list(Hive_Processed.keys())[0]]["Weight"].items())[-1][1]), DoubleVar(self, min([i[1] for i in list(Hive_Processed[list(Hive_Processed.keys())[0]]["Weight"].items())])), DoubleVar(self, max([i[1] for i in list(Hive_Processed[list(Hive_Processed.keys())[0]]["Weight"].items())]))],
-            #     "hive2_wt":     [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 2)],
-            #     "hive3_wt":     [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 2)],
-            #     "hive4_wt":     [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 2)],
-            #     "hive5_wt":     [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 2)],
-            #     "hive1_temp":   [DoubleVar(self, list(Hive_Processed[list(Hive_Processed.keys())[2]]["Temperature"].items())[-1][1]), DoubleVar(self, min([i[1] for i in list(Hive_Processed[list(Hive_Processed.keys())[2]]["Temperature"].items())])), DoubleVar(self, max([i[1] for i in list(Hive_Processed[list(Hive_Processed.keys())[2]]["Temperature"].items())]))],
-            #     "hive2_temp":   [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 2)],
-            #     "hive3_temp":   [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 2)],
-            #     "hive4_temp":   [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 2)],
-            #     "hive5_temp":   [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 2)],
-            #     "hive1_humid":  [DoubleVar(self, list(Hive_Processed[list(Hive_Processed.keys())[1]]["Humidity"].items())[-1][1]), DoubleVar(self, min([i[1] for i in list(Hive_Processed[list(Hive_Processed.keys())[1]]["Humidity"].items())])), DoubleVar(self, max([i[1] for i in list(Hive_Processed[list(Hive_Processed.keys())[1]]["Humidity"].items())]))],
-            #     "hive2_humid":  [IntVar(self, 1), IntVar(self, 1), IntVar(self, 2)],
-            #     "hive3_humid":  [IntVar(self, 1), IntVar(self, 1), IntVar(self, 2)],
-            #     "hive4_humid":  [IntVar(self, 1), IntVar(self, 1), IntVar(self, 2)],
-            #     "hive5_humid":  [IntVar(self, 1), IntVar(self, 1), IntVar(self, 2)],
-            # })
-            # run itself again
-            self.after(600000, periodic_updater)
-        
-        # run first time at once
-        periodic_updater()
-        
-        def change_clock():
-            current_time = datetime.now().strftime('%I:%M:%S %p')
-            clock_frame.config(text = current_time)
-            clock_frame.text = current_time
-        
-        clock_frame = Label(
-            lfs[0],
-            text = datetime.now().strftime('%I:%M:%S %p'),
-            font=("Helvetica’", 28),
-        )
-        change_clock()
-        clock_frame.pack(side="top", ipady=40)
-
-        sunrise_frame = Label(
-            lfs[0],
-            text = datetime.now().strftime("Sunrise: %I:%M:%S %p"),
-            font=("Helvetica’", 16),
-        )
-        sunrise_frame.pack(side="bottom")
-        sunset_frame = Label(
-            lfs[0],
-            text = datetime.now().strftime("Sunset: %I:%M:%S %p"),
-            font=("Helvetica’", 16),
-        )
-        sunset_frame.pack(side="bottom", ipady=20)
-        lfs[0].pack_propagate(0)
-        
-        def clock_updater():
-            # get current time as text
-            change_clock()
-            # run itself again
-            self.after(1000, clock_updater)
-
-        clock_updater()
-        
-        def daily_updater():
-            moon_img = GET_MOON_IMAGE(216, save=1)
-            forecast_data = PROCESS_FORECAST()
-            # PYICLOUD_GET.cycle_files()
-            # PYICLOUD_GET.download()
-            # run itself again
-            self.after(86400000, daily_updater)
-        
-        # run first time at once
-        daily_updater()
-        
 class Pane2(Frame): # Bee Dashboard
      def __init__(self, parent, controller):
         Frame.__init__(self, parent)
         self.controller = controller
-
-        shared_list = list(self.controller.shared_data.keys())
+        
+        directory = "Broodminder/"
+        hive_name = str(self.controller.shared_data["hive_name"].get())
+        Bee_Weather_Processed = PROCESS_BEE_WEATHER()
+        Hive_Processed = PROCESS_HIVE(hive_name)
 
         # Pane1 Objects
         # Loop to create LabelFrames
         lfs = []
-        lf_labels = "Hive 1 Wt.", "Hive 2 Wt.", "Hive 3 Wt.", "Hive 4 Wt.", "Hive 5 Wt.", "Hive 1 Temp.", "Hive 2 Temp.", "Hive 3 Temp.", "Hive 4 Temp.", "Hive 5 Temp.", "Hive 1 Humid.", "Hive 2 Humid.", "Hive 3 Humid.", "Hive 4 Humid.", "Hive 5 Humid.",
+        lf_labels = "Time/Sunrise/Sunset", "Moon Phase", "Wx Forecast", "", "Honey Wt./Bee Count", "Temp", "Solar Rad.", "Wind Spd./Dir.", "Chook Temp", "Bee Wt.", "Humidity", "UV Index", "Precip.", "Bee Temp.", "Bee Humid.",
         i = 0
         while i < 15:
             lfs.append(ttk.LabelFrame(
@@ -332,27 +168,37 @@ class Pane2(Frame): # Bee Dashboard
                 padding=int(self.controller.shared_data["padding"].get()),
                 text=lf_labels[i],
             ))
-            lfs[-1].grid(row = floor(i/5), column = i % 5, sticky="nsew", padx=int(self.controller.shared_data["padding"].get()), pady=int(self.controller.shared_data["padding"].get()))
-            i = i + 1
+            if i == 2:
+                lfs[-1].grid(
+                    row = floor(i/5),
+                    column = i % 5, columnspan = 2,
+                    sticky="nsew",
+                    padx=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
+                    pady=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
+                    ipadx=int(self.controller.shared_data["padding"].get()),
+                    ipady=int(self.controller.shared_data["padding"].get()),
+                )
+                i = i + 2
+            else:
+                lfs[-1].grid(row = floor(i/5), column = i % 5, sticky="nsew", padx=int(self.controller.shared_data["padding"].get()), pady=int(self.controller.shared_data["padding"].get()))
+                i = i + 1
         
         # Loop to create Meters
-        i = 0
+        i = 4
         meters = []
         while i < len(lfs):
             meters.append(ttk.Meter(
                 lfs[i],
-                metersize = min(int(self.controller.shared_data["LF_geometry"][0].get()), int(self.controller.shared_data["LF_geometry"][1].get())),
-                amountused = int(self.controller.shared_data[shared_list[i + 26]][0].get() / (self.controller.shared_data[shared_list[i + 26]][2].get() - self.controller.shared_data[shared_list[i + 26]][1].get()) * 10),
-                metertype = "semi",
-                subtext = lf_labels[i],
-                showtext = True,
-                interactive = False,
-                textleft = str(self.controller.shared_data[shared_list[i + 26]][1].get()),
-                textright = str(self.controller.shared_data[shared_list[i + 26]][2].get()),
+                metersize=min(int(self.controller.shared_data["LF_geometry"][0].get()), int(self.controller.shared_data["LF_geometry"][1].get())),
+                amountused=25,
+                metertype="semi",
+                subtext=lf_labels[i + 1],
+                showtext=True,
+                interactive=False,
             ))
             meters[-1].grid(
-                row = floor(i/5),
-                column = i % 5,
+                row = floor((i-4)/5) + 1,
+                column = (i - 4) % 5,
                 sticky="nsew",
                 padx=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
                 pady=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
@@ -457,23 +303,22 @@ class Pane4(Frame): # Alarm Control
         )
 
 def main():
-    windows = Windows()    
+    windows = Windows()
     windows.mainloop()
     
 if __name__ == '__main__': # runs main if in python script
     t1 = threading.Thread(target=main,args=())
     t2 = threading.Thread(target=PYICLOUD_GET.cycle_files,args=())
     t3 = threading.Thread(target=PYICLOUD_GET.download,args=())
-    #t4 = threading.Thread(target=BROODMINDER_GET,args=str("New Left Hive"))#str(self.controller.shared_data["hive_name"].get()))
-    t5 = threading.Thread(target=AMBIENT_GET,args=())
+    #t4 = threading.Thread(target=BROODMINDER_GET,args=str(self.controller.shared_data["hive_name"].get()))
+    #t5 = threading.Thread(target=AMBIENT_GET,args=())
     t1.start()
     t2.start()
     t3.start()
     #t4.start()
-    t5.start()
+    #t5.start()
     t1.join()
     t2.join()
     t3.join()
     #t4.join()
-    t5.join()
-    # windows.mainloop()
+    #t5.join()
