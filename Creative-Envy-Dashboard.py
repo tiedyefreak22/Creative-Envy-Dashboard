@@ -27,7 +27,7 @@ import time
 import random
 from pathlib import Path
 sys.path.append("BEE_WEATHER_DATA")
-from BEE_WEATHER_DATA import BROODMINDER_GET, AMBIENT_GET, READ_HIVE, PROCESS_HIVE, READ_BEE_WEATHER, PROCESS_BEE_WEATHER, PROCESS_AMBIENT, GRAPH_DATA, GET_MOON_IMAGE, GET_FORECAST, PROCESS_FORECAST, PROCESS_FORECAST_MIN_MAX
+from BEE_WEATHER_DATA import BROODMINDER_GET, AMBIENT_GET, READ_HIVE, PROCESS_HIVE, READ_BEE_WEATHER, PROCESS_BEE_WEATHER, PROCESS_AMBIENT, GRAPH_DATA, GET_MOON_IMAGE, GET_FORECAST, PROCESS_FORECAST, PROCESS_FORECAST_MIN_MAX, check_internet_connection
 sys.path.append("PYICLOUD_GET")
 import PYICLOUD_GET
 import pandas as pd
@@ -72,7 +72,8 @@ class Windows(Tk):
             "lightning":    StringVar(self, 1),
             "air_qual":     [IntVar(self, 1), IntVar(self, 1), IntVar(self, 1)],
             "chooks":       [IntVar(self, 1), IntVar(self, 1), IntVar(self, 1)],
-            "hive1_wt":     [DoubleVar(self, list(Hive_Processed[list(Hive_Processed.keys())[0]]["Weight"].items())[-1][1]), DoubleVar(self, min([i[1] for i in list(Hive_Processed[list(Hive_Processed.keys())[0]]["Weight"].items())])), DoubleVar(self, max([i[1] for i in list(Hive_Processed[list(Hive_Processed.keys())[0]]["Weight"].items())]))],
+            # "hive1_wt":     [DoubleVar(self, list(Hive_Processed[list(Hive_Processed.keys())[0]]["Weight"].items())[-1][1]), DoubleVar(self, min([i[1] for i in list(Hive_Processed[list(Hive_Processed.keys())[0]]["Weight"].items())])), DoubleVar(self, max([i[1] for i in list(Hive_Processed[list(Hive_Processed.keys())[0]]["Weight"].items())]))],
+            "hive1_wt":     [DoubleVar(self, 91.105), DoubleVar(self, min([i[1] for i in list(Hive_Processed[list(Hive_Processed.keys())[0]]["Weight"].items())])), DoubleVar(self, max([i[1] for i in list(Hive_Processed[list(Hive_Processed.keys())[0]]["Weight"].items())]))],
             "hive2_wt":     [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 2)],
             "hive3_wt":     [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 2)],
             "hive4_wt":     [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 2)],
@@ -111,13 +112,13 @@ class Windows(Tk):
         tab_names = [
                     "Weather",
                     "Bees",
-                    "Photos",
+                    #"Photos",
                     #"Alarm",
                     ]
         for i, F in enumerate([
                               Pane1,
                               Pane2,
-                              Pane3,
+                              #Pane3,
                               #Pane4,
                               ]):
             frame = F(main_notebook, self)
@@ -263,7 +264,9 @@ class Pane1(Frame): # Weather Dashboard; child to Notebook
         #-------------------------------------------------------------------------------------------------------------------------------------------------
         
         def config_pic():
-            GET_MOON_IMAGE(216, save=1)
+            if check_internet_connection():
+                GET_MOON_IMAGE(216, save=1)
+
             file = [i for i in os.listdir("moon/")]
             PIL_image = Image.open("moon/" + file[0])
             original_w = np.shape(PIL_image)[1]
@@ -300,14 +303,15 @@ class Pane1(Frame): # Weather Dashboard; child to Notebook
         #-------------------------------------------------------------------------------------------------------------------------------------------------
 
         def periodic_updater():
-            BROODMINDER_GET(str(self.controller.shared_data["hive_name"].get()))
-            AMBIENT_GET()
+            if check_internet_connection():
+                BROODMINDER_GET(str(self.controller.shared_data["hive_name"].get()))
+                AMBIENT_GET()
             
             # run itself again
             self.after(600000, periodic_updater)
         
         # run first time at once
-        #periodic_updater()
+        periodic_updater()
         
         def change_clock():
             current_time = datetime.now().strftime('%I:%M:%S %p')
@@ -347,8 +351,9 @@ class Pane1(Frame): # Weather Dashboard; child to Notebook
         clock_updater()
         
         def daily_updater():
-            change_pic()
-            change_forecast()
+            if check_internet_connection():
+                change_pic()
+                change_forecast()
             # run itself again
             self.after(86400000, daily_updater)
         
@@ -387,7 +392,10 @@ class Pane2(Frame): # Bee Dashboard
             meters.append(ttk.Meter(
                 lfs[i],
                 metersize = min(int(self.controller.shared_data["LF_geometry"][0].get()), int(self.controller.shared_data["LF_geometry"][1].get())),
-                amountused = int(self.controller.shared_data[shared_list[i + 26]][0].get() / (self.controller.shared_data[shared_list[i + 26]][2].get() - self.controller.shared_data[shared_list[i + 26]][1].get()) * 10),
+                # amountused = int(self.controller.shared_data[shared_list[i + 26]][0].get() / (self.controller.shared_data[shared_list[i + 26]][2].get() - self.controller.shared_data[shared_list[i + 26]][1].get()) * 10),
+                amountused = self.controller.shared_data[shared_list[i + 26]][0].get(),
+                amounttotal = self.controller.shared_data[shared_list[i + 26]][1].get() if self.controller.shared_data[shared_list[i + 26]][0].get() == self.controller.shared_data[shared_list[i + 26]][1].get() else self.controller.shared_data[shared_list[i + 26]][0].get() / ((self.controller.shared_data[shared_list[i + 26]][0].get() - self.controller.shared_data[shared_list[i + 26]][1].get()) / (self.controller.shared_data[shared_list[i + 26]][2].get() - self.controller.shared_data[shared_list[i + 26]][1].get())),
+
                 metertype = "semi",
                 subtext = lf_labels[i],
                 showtext = True,
@@ -481,6 +489,16 @@ class Pane3(Frame): # Picture Frame
         )
         change_pic()
         in_frame.place(relx=0.5, rely=0.5, anchor=CENTER)
+
+        def daily_updater():
+            if check_internet_connection():
+                PYICLOUD_GET.cycle_files()
+                PYICLOUD_GET.download()
+            # run itself again
+            self.after(86400000, daily_updater)
+        
+        # run first time at once
+        daily_updater()
         
 class Pane4(Frame): # Alarm Control
     def __init__(self, parent, controller):

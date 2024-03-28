@@ -483,7 +483,6 @@ def GET_MOON_IMAGE(size, save=0):
 
 def PROCESS_FORECAST(interp=0):
     response = pd.DataFrame()
-    GET_FORECAST()
     with open('Forecast/forecast.json', 'r') as openfile:
         # Reading from json file
         data = json.load(openfile)
@@ -509,14 +508,28 @@ def PROCESS_FORECAST_MIN_MAX(response):
     prior_midnight = int(datetime.timestamp(datetime.strptime(date.today().strftime('%Y-%m-%d')    + " 00:00:00", '%Y-%m-%d %H:%M:%S')))
     future_midnight = int(datetime.timestamp(datetime.strptime((date.today() + timedelta(days=1)).strftime('%Y-%m-%d') + " 00:00:00", '%Y-%m-%d %H:%M:%S')))
     todays_forecast = pd.DataFrame([response.loc[i] for i in response.index.values.tolist() if i <= future_midnight and i >= prior_midnight])
-    max_temp = max(todays_forecast["temp_max"])
-    min_temp = min(todays_forecast["temp_max"])
-    max_humid = max(todays_forecast["humidity"])
-    min_humid = min(todays_forecast["humidity"])
-    # max_wind = max(todays_forecast["wind"])
-    # min_wind = min(todays_forecast["wind"])
+    if todays_forecast.empty:
+        max_temp = 0.0
+        min_temp = 0.0
+        max_humid = 0.0
+        min_humid = 0.0
+        # max_wind = 0.0
+        # min_wind = 0.0
+    else:
+        max_temp = max(todays_forecast["temp_max"])
+        min_temp = min(todays_forecast["temp_min"])
+        max_humid = max(todays_forecast["humidity"])
+        min_humid = min(todays_forecast["humidity"])
+        # max_wind = max(todays_forecast["wind"])
+        # min_wind = min(todays_forecast["wind"])
     return min_temp, max_temp, min_humid, max_humid#, min_wind, max_wind
 
+def check_internet_connection():
+    try:
+        urllib.request.urlopen("https://www.twitter.com")
+        return True
+    except urllib.error.URLError:
+        return False
     
 # if __name__ == '__main__':
 #     BROODMINDER_GET()
