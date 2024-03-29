@@ -72,8 +72,8 @@ class Windows(Tk):
             "lightning":    StringVar(self, 1),
             "air_qual":     [IntVar(self, 1), IntVar(self, 1), IntVar(self, 1)],
             "chooks":       [IntVar(self, 1), IntVar(self, 1), IntVar(self, 1)],
-            # "hive1_wt":     [DoubleVar(self, list(Hive_Processed[list(Hive_Processed.keys())[0]]["Weight"].items())[-1][1]), DoubleVar(self, min([i[1] for i in list(Hive_Processed[list(Hive_Processed.keys())[0]]["Weight"].items())])), DoubleVar(self, max([i[1] for i in list(Hive_Processed[list(Hive_Processed.keys())[0]]["Weight"].items())]))],
-            "hive1_wt":     [DoubleVar(self, 91.105), DoubleVar(self, min([i[1] for i in list(Hive_Processed[list(Hive_Processed.keys())[0]]["Weight"].items())])), DoubleVar(self, max([i[1] for i in list(Hive_Processed[list(Hive_Processed.keys())[0]]["Weight"].items())]))],
+            "hive1_wt":     [DoubleVar(self, list(Hive_Processed[list(Hive_Processed.keys())[0]]["Weight"].items())[-1][1]), DoubleVar(self, min([i[1] for i in list(Hive_Processed[list(Hive_Processed.keys())[0]]["Weight"].items())])), DoubleVar(self, max([i[1] for i in list(Hive_Processed[list(Hive_Processed.keys())[0]]["Weight"].items())]))],
+            #"hive1_wt":     [DoubleVar(self, 91.105), DoubleVar(self, min([i[1] for i in list(Hive_Processed[list(Hive_Processed.keys())[0]]["Weight"].items())])), DoubleVar(self, max([i[1] for i in list(Hive_Processed[list(Hive_Processed.keys())[0]]["Weight"].items())]))],
             "hive2_wt":     [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 2)],
             "hive3_wt":     [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 2)],
             "hive4_wt":     [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 2)],
@@ -112,13 +112,13 @@ class Windows(Tk):
         tab_names = [
                     "Weather",
                     "Bees",
-                    #"Photos",
+                    "Photos",
                     #"Alarm",
                     ]
         for i, F in enumerate([
                               Pane1,
                               Pane2,
-                              #Pane3,
+                              Pane3,
                               #Pane4,
                               ]):
             frame = F(main_notebook, self)
@@ -311,7 +311,7 @@ class Pane1(Frame): # Weather Dashboard; child to Notebook
             self.after(600000, periodic_updater)
         
         # run first time at once
-        periodic_updater()
+        #periodic_updater()
         
         def change_clock():
             current_time = datetime.now().strftime('%I:%M:%S %p')
@@ -458,8 +458,13 @@ class Pane3(Frame): # Picture Frame
         )
         
         def config_pic():
-            rand_pic = file_paths[random.randint(0,len(file_paths) - 1)]
-            PIL_image = Image.open(rand_pic)
+            while True:
+                try:
+                    rand_pic = file_paths[random.randint(0,len(file_paths) - 1)]
+                    PIL_image = Image.open(rand_pic)
+                    break
+                except:
+                    pass
             original_w = np.shape(PIL_image)[1]
             original_h = np.shape(PIL_image)[0]
             aspect = original_h/original_w
@@ -498,7 +503,7 @@ class Pane3(Frame): # Picture Frame
             self.after(86400000, daily_updater)
         
         # run first time at once
-        daily_updater()
+        #daily_updater()
         
 class Pane4(Frame): # Alarm Control
     def __init__(self, parent, controller):
@@ -525,18 +530,18 @@ def main():
     
 if __name__ == '__main__': # runs main if in python script
     t1 = threading.Thread(target=main,args=())
-    #t2 = threading.Thread(target=PYICLOUD_GET.cycle_files,args=())
-    #t3 = threading.Thread(target=PYICLOUD_GET.download,args=())
-    #t4 = threading.Thread(target=BROODMINDER_GET,args=str("New Left Hive"))#str(self.controller.shared_data["hive_name"].get()))
-    #t5 = threading.Thread(target=AMBIENT_GET,args=())
+    t2 = threading.Thread(target=PYICLOUD_GET.cycle_files,args=())
+    t3 = threading.Thread(target=PYICLOUD_GET.download,args=())
+    # t4 = threading.Thread(target=BROODMINDER_GET,args=str("New Left Hive"))#str(self.controller.shared_data["hive_name"].get()))
+    t5 = threading.Thread(target=AMBIENT_GET,args=())
     t1.start()
-    #t2.start()
-    #t3.start()
-    #t4.start()
-    #t5.start()
+    t2.start()
+    t3.start()
+    # t4.start()
+    t5.start()
     t1.join()
-    #t2.join()
-    #t3.join()
-    #t4.join()
-    #t5.join()
+    t2.join()
+    t3.join()
+    # t4.join()
+    t5.join()
     # windows.mainloop()

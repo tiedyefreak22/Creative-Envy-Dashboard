@@ -29,6 +29,7 @@ from csv import writer
 import numpy as np
 import itertools
 from send2trash import send2trash
+import dns.resolver
 
 def BROODMINDER_GET(hive_name):
     #Login to Broodminder, Get Beehive data, and format
@@ -290,21 +291,21 @@ def AMBIENT_GET():
 
         compiled = re.compile('("time":)[0-9]*,')
         replaceData = compiled.sub('',replaceData)
-        compiled = re.compile('("batt)[0-9](":)[a-zA-Z0-9_\/]*,')
+        compiled = re.compile('("batt)[0-9](":)[a-zA-Z0-9_/]*,')
         replaceData = compiled.sub('',replaceData)
-        compiled = re.compile('("passkey":")[a-zA-Z0-9_\/"]*,')
+        compiled = re.compile('("passkey":")[a-zA-Z0-9_/"]*,')
         replaceData = compiled.sub('',replaceData)
-        compiled = re.compile('("loc":")[a-zA-Z0-9_\/]*(\.json",)')
+        compiled = re.compile('("loc":")[a-zA-Z0-9_/]*(.json",)')
         replaceData = compiled.sub('',replaceData)
-        compiled = re.compile(',("date":")[a-zA-Z0-9_\/\:\.\-]*(")')
+        compiled = re.compile(',("date":")[a-zA-Z0-9_/:.-]*(")')
         replaceData = compiled.sub('',replaceData)
-        compiled = re.compile('("temp1f":)[a-zA-Z0-9_\/\:\.\-]*(,)')
+        compiled = re.compile('("temp1f":)[a-zA-Z0-9_/:.-]*(,)')
         replaceData = compiled.sub('',replaceData)
-        compiled = re.compile('("battout":)[a-zA-Z0-9_\/]*,')
+        compiled = re.compile('("battout":)[a-zA-Z0-9_/]*,')
         replaceData = compiled.sub('',replaceData)
 
         # Chop data frames between curly braces
-        dataCriteria = re.compile('\{[^\{\}]*\}')
+        dataCriteria = re.compile('{[^{}]*}')
         dataSets = re.findall(dataCriteria,replaceData)
         x = 0
         for x in dataSets:
@@ -524,11 +525,21 @@ def PROCESS_FORECAST_MIN_MAX(response):
         # min_wind = min(todays_forecast["wind"])
     return min_temp, max_temp, min_humid, max_humid#, min_wind, max_wind
 
+def resolve(domain):
+    resolveList = []
+    resolver = dns.resolver.Resolver(); #create a new instance named Resolver
+    answer = resolver.query(domain,"A");
+    return answer    
+
 def check_internet_connection():
+    domainName = "google.com"
+    queryResult = resolve(domainName);
     try:
-        urllib.request.urlopen("https://www.twitter.com")
+        urllib.request.urlopen("http://" + str(queryResult[0]), timeout=3)
+        print("Internet connection verified")
         return True
     except urllib.error.URLError:
+        print("Internet connection failed")
         return False
     
 # if __name__ == '__main__':
