@@ -32,6 +32,8 @@ sys.path.append("PYICLOUD_GET")
 import PYICLOUD_GET
 import pandas as pd
 from IPython.display import display
+        
+internet = check_internet_connection()
 
 # root window (parent to all), controller to Frames
 class Windows(Tk):
@@ -42,8 +44,6 @@ class Windows(Tk):
         forecast_data = PROCESS_FORECAST()
         ambient_data = PROCESS_AMBIENT()
         file = [i for i in os.listdir("moon/")]
-        #moon_img = Image.open("moon/" + file[0])
-        # display(forecast_data)
         self.shared_data = {
             "window_geometry":    [IntVar(self, 1280),  IntVar(self, 800)],
             "padding":      IntVar(self, 5),
@@ -73,7 +73,6 @@ class Windows(Tk):
             "air_qual":     [IntVar(self, 1), IntVar(self, 1), IntVar(self, 1)],
             "chooks":       [IntVar(self, 1), IntVar(self, 1), IntVar(self, 1)],
             "hive1_wt":     [DoubleVar(self, list(Hive_Processed[list(Hive_Processed.keys())[0]]["Weight"].items())[-1][1]), DoubleVar(self, min([i[1] for i in list(Hive_Processed[list(Hive_Processed.keys())[0]]["Weight"].items())])), DoubleVar(self, max([i[1] for i in list(Hive_Processed[list(Hive_Processed.keys())[0]]["Weight"].items())]))],
-            #"hive1_wt":     [DoubleVar(self, 91.105), DoubleVar(self, min([i[1] for i in list(Hive_Processed[list(Hive_Processed.keys())[0]]["Weight"].items())])), DoubleVar(self, max([i[1] for i in list(Hive_Processed[list(Hive_Processed.keys())[0]]["Weight"].items())]))],
             "hive2_wt":     [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 2)],
             "hive3_wt":     [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 2)],
             "hive4_wt":     [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 2)],
@@ -91,12 +90,16 @@ class Windows(Tk):
             "min_max_temp": [DoubleVar(self, PROCESS_FORECAST_MIN_MAX(forecast_data)[0]), DoubleVar(self, PROCESS_FORECAST_MIN_MAX(forecast_data)[1])],
             "min_max_humid":[DoubleVar(self, PROCESS_FORECAST_MIN_MAX(forecast_data)[2]), DoubleVar(self, PROCESS_FORECAST_MIN_MAX(forecast_data)[3])],
         }
-        self.shared_data.update({"notebook_geometry": [IntVar(self, int(self.shared_data["window_geometry"][0].get()) - (int(self.shared_data["padding"].get()) * 5)), # width
-                                                       IntVar(self, int(self.shared_data["window_geometry"][1].get()) - (int(self.shared_data["padding"].get()) * 11)), # height
-                                                      ]})
-        self.shared_data.update({"LF_geometry": [IntVar(self, (int(self.shared_data["notebook_geometry"][0].get()) - (int(self.shared_data["padding"].get()) * int(self.shared_data["num_cols"].get()) * 2)) / int(self.shared_data["num_cols"].get())), # width
-                                                 IntVar(self, ((int(self.shared_data["notebook_geometry"][1].get()) - (int(self.shared_data["padding"].get()) * int(self.shared_data["num_rows"].get()) * 2)) / int(self.shared_data["num_rows"].get())) - 30), # height (notebook tabs appear to be 30 pix)
-                                                ]})
+        # self.shared_data.update({"notebook_geometry": [IntVar(self, int(self.shared_data["window_geometry"][0].get()) - (int(self.shared_data["padding"].get()) * 5)), # width
+        #                                                IntVar(self, int(self.shared_data["window_geometry"][1].get()) - (int(self.shared_data["padding"].get()) * 11)), # height
+        #                                               ]})
+        # self.shared_data.update({"LF_geometry": [IntVar(self, (int(self.shared_data["notebook_geometry"][0].get()) - (int(self.shared_data["padding"].get()) * int(self.shared_data["num_cols"].get()) * 2)) / int(self.shared_data["num_cols"].get())), # width
+        #                                          IntVar(self, ((int(self.shared_data["window_geometry"][1].get()) - (int(self.shared_data["padding"].get()) * int(self.shared_data["num_rows"].get()) * 2)) / int(self.shared_data["num_rows"].get())) - 30), # height (notebook tabs appear to be 30 pix)
+        #                                         ]})
+        self.shared_data.update({"LF_geometry": [IntVar(self, int((int(self.shared_data["window_geometry"][0].get()) - 2 * int(self.shared_data["padding"].get())) / int(self.shared_data["num_cols"].get()))),
+                                                 IntVar(self, int((int(self.shared_data["window_geometry"][1].get()) - 2 * int(self.shared_data["padding"].get())) / int(self.shared_data["num_rows"].get())) - 30), 
+                                                ]}) # height (notebook tabs appear to be 30 pix)
+        
         self.wm_title("Creative Envy Dashboard")
         ttk.Style("darkly")
         self.geometry(str(self.shared_data["window_geometry"][0].get()) + "x" + str(self.shared_data["window_geometry"][1].get()))
@@ -106,35 +109,67 @@ class Windows(Tk):
         self.container.grid_columnconfigure(0, weight=1)
         main_notebook = ttk.Notebook(
             self,
-            height = str(self.shared_data["notebook_geometry"][1].get()),
-            width = str(self.shared_data["notebook_geometry"][0].get()),
+            height = str(int(self.shared_data["window_geometry"][1].get()) - 2 * int(self.shared_data["padding"].get())),
+            width = str(int(self.shared_data["window_geometry"][0].get()) - 2 * int(self.shared_data["padding"].get())),
         ) # "self" as passed argument means Windows is parent
         tab_names = [
                     "Weather",
                     "Bees",
                     "Photos",
-                    #"Alarm",
+                    # "Alarm",
                     ]
         for i, F in enumerate([
                               Pane1,
                               Pane2,
                               Pane3,
-                              #Pane4,
+                              # Pane4,
                               ]):
             frame = F(main_notebook, self)
             main_notebook.add(frame, text=tab_names[i]) # "self." adds to this instance, ...(self) adds to parent instance
         main_notebook.grid(
             row=0,
             column=0,
-            padx=(int(self.shared_data["padding"].get()), int(self.shared_data["padding"].get())),
-            pady=(int(self.shared_data["padding"].get()), int(self.shared_data["padding"].get())),
+            padx=int(self.shared_data["padding"].get()),
+            pady=int(self.shared_data["padding"].get()),
             ipadx=int(self.shared_data["padding"].get()),
             ipady=int(self.shared_data["padding"].get()),
         )
+        main_notebook.grid_rowconfigure(0, weight=1)
+        main_notebook.grid_columnconfigure(0, weight=1)
         
         def on_tab_change(event):
             index = main_notebook.index(main_notebook.select())
         main_notebook.bind("<<NotebookTabChanged>>", on_tab_change)
+
+class CustomMeter(ttk.LabelFrame):
+    def __init__(self, parent, controller, width, height, padding, text, amt_used):
+        ttk.LabelFrame.__init__(
+            self,
+            parent,
+            relief="solid",
+            borderwidth=1,
+            width=str(width),
+            height=str(height),
+            #padding=padding,
+            text=text,
+        )
+        meter = ttk.Meter(
+            self,
+            metersize=min(int(width), int(height)) - 2 * int(padding),
+            amountused=amt_used,
+            metertype="semi",
+            subtext=text,
+            showtext=True,
+            interactive=False,
+        )
+        meter.pack(anchor=CENTER)
+    
+    def get(self):
+        return self.entry.get()
+
+# class CustomSmallImg(): #Moon image, but generalized to a small space img, possibly used for weather icon too
+    
+# class CustomClockWidget(): #Clock, sunrise, sunset
 
 class Pane1(Frame): # Weather Dashboard; child to Notebook
     def __init__(self, parent, controller):
@@ -146,126 +181,54 @@ class Pane1(Frame): # Weather Dashboard; child to Notebook
         lfs = []
         lf_labels = "Time/Sunrise/Sunset", "Moon Phase", "Wx Forecast", "", "Honey Wt./Bee Count", "Temp", "Solar Rad.", "Wind Spd./Dir.", "Chook Temp", "Bee Wt.", "Humidity", "UV Index", "Precip.", "Bee Temp.", "Bee Humid.",
         i = 0
-        while i < 15:
-            lfs.append(ttk.LabelFrame(
-                self,
-                relief="solid",
-                borderwidth=1,
-                width=str(self.controller.shared_data["LF_geometry"][0].get()),
-                height=str(self.controller.shared_data["LF_geometry"][1].get()),
-                padding=int(self.controller.shared_data["padding"].get()),
-                text=lf_labels[i],
-            ))
+        while i < 4:
             if i == 2:
+                lfs.append(ttk.LabelFrame(
+                    self,
+                    relief="solid",
+                    borderwidth=1,
+                    width=str(int(self.controller.shared_data["LF_geometry"][0].get()) - int(self.controller.shared_data["padding"].get())),
+                    height=str(self.controller.shared_data["LF_geometry"][1].get()),
+                    #padding=int(self.controller.shared_data["padding"].get()),
+                    text=lf_labels[i],
+                ))
                 lfs[-1].grid(
                     row = floor(i/5),
                     column = i % 5, columnspan = 2,
                     sticky="nsew",
-                    padx=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
-                    pady=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
-                    ipadx=int(self.controller.shared_data["padding"].get()),
-                    ipady=int(self.controller.shared_data["padding"].get()),
+                    # padx=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
+                    # pady=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
+                    # ipadx=int(self.controller.shared_data["padding"].get()),
+                    # ipady=int(self.controller.shared_data["padding"].get()),
                 )
                 i = i + 2
             else:
-                lfs[-1].grid(row = floor(i/5), column = i % 5, sticky="nsew", padx=int(self.controller.shared_data["padding"].get()), pady=int(self.controller.shared_data["padding"].get()))
+                lfs.append(ttk.LabelFrame(
+                    self,
+                    relief="solid",
+                    borderwidth=1,
+                    width=str(self.controller.shared_data["LF_geometry"][0].get()),
+                    height=str(self.controller.shared_data["LF_geometry"][1].get()),
+                    #padding=int(self.controller.shared_data["padding"].get()),
+                    text=lf_labels[i],
+                ))
+                lfs[-1].grid(row = floor(i/5), column = i % 5, sticky="nsew")#, padx=int(self.controller.shared_data["padding"].get()), pady=int(self.controller.shared_data["padding"].get()))
                 i = i + 1
         
         # Loop to create Meters
         i = 4
-        # meters = []
-        # while i < len(lfs):
-        #     meters.append(ttk.Meter(
-        #         lfs[i],
-        #         metersize=min(int(self.controller.shared_data["LF_geometry"][0].get()), int(self.controller.shared_data["LF_geometry"][1].get())),
-        #         amountused=25,
-        #         metertype="semi",
-        #         subtext=lf_labels[i + 1],
-        #         showtext=True,
-        #         interactive=False,
-        #     ))
-        #     meters[-1].grid(
-        #         row = floor((i-4)/5) + 1,
-        #         column = (i - 4) % 5,
-        #         sticky="nsew",
-        #         padx=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
-        #         pady=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
-        #         ipadx=int(self.controller.shared_data["padding"].get()),
-        #         ipady=int(self.controller.shared_data["padding"].get()),
-        #     ) # for some reason ipad works better on meter than LF
-        #     i = i + 1
+        while i < 15:
+            self.meter = CustomMeter(self, parent, str(self.controller.shared_data["LF_geometry"][0].get()), str(self.controller.shared_data["LF_geometry"][1].get()), int(self.controller.shared_data["padding"].get()), lf_labels[i], 25)
+            self.meter.grid(row = floor((i-5)/5) + 1, column = (i - 5) % 5, sticky="nsew")#, padx=int(self.controller.shared_data["padding"].get()), pady=int(self.controller.shared_data["padding"].get()))
+            i = i + 1
         meters = []
-        while i < len(lfs):
-            if i == 4:
-                meters.append(ttk.Meter(
-                    lfs[i],
-                    metersize=min(int(self.controller.shared_data["LF_geometry"][0].get()), int(self.controller.shared_data["LF_geometry"][1].get())),
-                    amountused=25,
-                    metertype="semi",
-                    subtext=lf_labels[i + 1],
-                    showtext=True,
-                    interactive=False,
-                    textleft = str(self.controller.shared_data["min_max_temp"][0].get()),
-                    textright = str(self.controller.shared_data["min_max_temp"][1].get()),
-                ))
-                meters[-1].grid(
-                    row = floor((i-4)/5) + 1,
-                    column = (i - 4) % 5,
-                    sticky="nsew",
-                    padx=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
-                    pady=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
-                    ipadx=int(self.controller.shared_data["padding"].get()),
-                    ipady=int(self.controller.shared_data["padding"].get()),
-                ) # for some reason ipad works better on meter than LF
-                i = i + 1
-            if i == 9:
-                meters.append(ttk.Meter(
-                    lfs[i],
-                    metersize=min(int(self.controller.shared_data["LF_geometry"][0].get()), int(self.controller.shared_data["LF_geometry"][1].get())),
-                    amountused=25,
-                    metertype="semi",
-                    subtext=lf_labels[i + 1],
-                    showtext=True,
-                    interactive=False,
-                    textleft = str(self.controller.shared_data["min_max_humid"][0].get()),
-                    textright = str(self.controller.shared_data["min_max_humid"][1].get()),
-                ))
-                meters[-1].grid(
-                    row = floor((i-4)/5) + 1,
-                    column = (i - 4) % 5,
-                    sticky="nsew",
-                    padx=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
-                    pady=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
-                    ipadx=int(self.controller.shared_data["padding"].get()),
-                    ipady=int(self.controller.shared_data["padding"].get()),
-                ) # for some reason ipad works better on meter than LF
-                i = i + 1
-            else:
-                meters.append(ttk.Meter(
-                    lfs[i],
-                    metersize=min(int(self.controller.shared_data["LF_geometry"][0].get()), int(self.controller.shared_data["LF_geometry"][1].get())),
-                    amountused=25,
-                    metertype="semi",
-                    subtext=lf_labels[i + 1],
-                    showtext=True,
-                    interactive=False,
-                ))
-                meters[-1].grid(
-                    row = floor((i-4)/5) + 1,
-                    column = (i - 4) % 5,
-                    sticky="nsew",
-                    padx=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
-                    pady=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
-                    ipadx=int(self.controller.shared_data["padding"].get()),
-                    ipady=int(self.controller.shared_data["padding"].get()),
-                ) # for some reason ipad works better on meter than LF
-                i = i + 1
-
-        #-------------------------------------------------------------------------------------------------------------------------------------------------
         
         def config_pic():
-            if check_internet_connection():
-                GET_MOON_IMAGE(216, save=1)
+            if internet:
+                try:
+                    GET_MOON_IMAGE(216, save=1)
+                except:
+                    pass
 
             file = [i for i in os.listdir("moon/")]
             PIL_image = Image.open("moon/" + file[0])
@@ -303,9 +266,12 @@ class Pane1(Frame): # Weather Dashboard; child to Notebook
         #-------------------------------------------------------------------------------------------------------------------------------------------------
 
         def periodic_updater():
-            if check_internet_connection():
-                BROODMINDER_GET(str(self.controller.shared_data["hive_name"].get()))
-                AMBIENT_GET()
+            if internet:
+                try:
+                    BROODMINDER_GET(str(self.controller.shared_data["hive_name"].get()))
+                    AMBIENT_GET()
+                except:
+                    pass
             
             # run itself again
             self.after(600000, periodic_updater)
@@ -327,7 +293,7 @@ class Pane1(Frame): # Weather Dashboard; child to Notebook
             font=("Helvetica’", 28),
         )
         change_clock()
-        clock_frame.pack(side="top", ipady=40)
+        clock_frame.pack(side="top", ipady=30)
 
         sunrise_frame = Label(
             lfs[0],
@@ -351,15 +317,18 @@ class Pane1(Frame): # Weather Dashboard; child to Notebook
         clock_updater()
         
         def daily_updater():
-            if check_internet_connection():
-                change_pic()
-                change_forecast()
+            if internet:
+                try:
+                    change_pic()
+                    change_forecast()
+                except:
+                    pass
             # run itself again
             self.after(86400000, daily_updater)
         
         # run first time at once
         daily_updater()
-        
+
 class Pane2(Frame): # Bee Dashboard
      def __init__(self, parent, controller):
         Frame.__init__(self, parent)
@@ -367,51 +336,11 @@ class Pane2(Frame): # Bee Dashboard
 
         shared_list = list(self.controller.shared_data.keys())
 
-        # Pane1 Objects
-        # Loop to create LabelFrames
-        lfs = []
         lf_labels = "Hive 1 Wt.", "Hive 2 Wt.", "Hive 3 Wt.", "Hive 4 Wt.", "Hive 5 Wt.", "Hive 1 Temp.", "Hive 2 Temp.", "Hive 3 Temp.", "Hive 4 Temp.", "Hive 5 Temp.", "Hive 1 Humid.", "Hive 2 Humid.", "Hive 3 Humid.", "Hive 4 Humid.", "Hive 5 Humid.",
-        i = 0
+        i = 0        
         while i < 15:
-            lfs.append(ttk.LabelFrame(
-                self,
-                relief="solid",
-                borderwidth=1,
-                width=str(self.controller.shared_data["LF_geometry"][0].get()),
-                height=str(self.controller.shared_data["LF_geometry"][1].get()),
-                padding=int(self.controller.shared_data["padding"].get()),
-                text=lf_labels[i],
-            ))
-            lfs[-1].grid(row = floor(i/5), column = i % 5, sticky="nsew", padx=int(self.controller.shared_data["padding"].get()), pady=int(self.controller.shared_data["padding"].get()))
-            i = i + 1
-        
-        # Loop to create Meters
-        i = 0
-        meters = []
-        while i < len(lfs):
-            meters.append(ttk.Meter(
-                lfs[i],
-                metersize = min(int(self.controller.shared_data["LF_geometry"][0].get()), int(self.controller.shared_data["LF_geometry"][1].get())),
-                # amountused = int(self.controller.shared_data[shared_list[i + 26]][0].get() / (self.controller.shared_data[shared_list[i + 26]][2].get() - self.controller.shared_data[shared_list[i + 26]][1].get()) * 10),
-                amountused = self.controller.shared_data[shared_list[i + 26]][0].get(),
-                amounttotal = self.controller.shared_data[shared_list[i + 26]][1].get() if self.controller.shared_data[shared_list[i + 26]][0].get() == self.controller.shared_data[shared_list[i + 26]][1].get() else self.controller.shared_data[shared_list[i + 26]][0].get() / ((self.controller.shared_data[shared_list[i + 26]][0].get() - self.controller.shared_data[shared_list[i + 26]][1].get()) / (self.controller.shared_data[shared_list[i + 26]][2].get() - self.controller.shared_data[shared_list[i + 26]][1].get())),
-
-                metertype = "semi",
-                subtext = lf_labels[i],
-                showtext = True,
-                interactive = False,
-                textleft = str(self.controller.shared_data[shared_list[i + 26]][1].get()),
-                textright = str(self.controller.shared_data[shared_list[i + 26]][2].get()),
-            ))
-            meters[-1].grid(
-                row = floor(i/5),
-                column = i % 5,
-                sticky="nsew",
-                padx=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
-                pady=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
-                ipadx=int(self.controller.shared_data["padding"].get()),
-                ipady=int(self.controller.shared_data["padding"].get()),
-            ) # for some reason ipad works better on meter than LF
+            self.meter = CustomMeter(self, parent, str(self.controller.shared_data["LF_geometry"][0].get()), str(self.controller.shared_data["LF_geometry"][1].get()), int(self.controller.shared_data["padding"].get()), lf_labels[i], 25)
+            self.meter.grid(row = floor(i/5), column = i % 5, sticky="nsew")#, padx=int(self.controller.shared_data["padding"].get()), pady=int(self.controller.shared_data["padding"].get()))
             i = i + 1
 
 class Pane3(Frame): # Picture Frame
@@ -445,8 +374,8 @@ class Pane3(Frame): # Picture Frame
         # Pane3 Objects
         make_frame = LabelFrame(
             self,
-            width=self.controller.shared_data["notebook_geometry"][0].get() - 2 * self.controller.shared_data["padding"].get(),
-            height=self.controller.shared_data["notebook_geometry"][1].get() - 2 * self.controller.shared_data["padding"].get(),
+            width=self.controller.shared_data["window_geometry"][0].get() - 2 * self.controller.shared_data["padding"].get(),
+            height=self.controller.shared_data["window_geometry"][1].get() - 2 * self.controller.shared_data["padding"].get(),
         )
         make_frame.grid(
             row=0,
@@ -469,7 +398,7 @@ class Pane3(Frame): # Picture Frame
             original_h = np.shape(PIL_image)[0]
             aspect = original_h/original_w
 
-            constraining_dim = min(self.controller.shared_data["notebook_geometry"][0].get(), self.controller.shared_data["notebook_geometry"][1].get())
+            constraining_dim = min(self.controller.shared_data["window_geometry"][0].get(), self.controller.shared_data["window_geometry"][1].get())
             minor_constraint = min(constraining_dim/original_w, constraining_dim/original_h)
             width = int(original_w * minor_constraint)
             height = int(original_h * minor_constraint)
@@ -489,16 +418,19 @@ class Pane3(Frame): # Picture Frame
         in_frame = Button(
             make_frame,
             command = change_pic,
-            width=self.controller.shared_data["notebook_geometry"][0].get() - 2 * self.controller.shared_data["padding"].get(),
-            height=self.controller.shared_data["notebook_geometry"][1].get() - 2 * self.controller.shared_data["padding"].get(),
+            width=self.controller.shared_data["window_geometry"][0].get() - 2 * self.controller.shared_data["padding"].get(),
+            height=self.controller.shared_data["window_geometry"][1].get() - 2 * self.controller.shared_data["padding"].get(),
         )
         change_pic()
         in_frame.place(relx=0.5, rely=0.5, anchor=CENTER)
 
         def daily_updater():
-            if check_internet_connection():
-                PYICLOUD_GET.cycle_files()
-                PYICLOUD_GET.download()
+            if internet:
+                try:
+                    PYICLOUD_GET.cycle_files()
+                    PYICLOUD_GET.download()
+                except:
+                    pass
             # run itself again
             self.after(86400000, daily_updater)
         
@@ -513,8 +445,8 @@ class Pane4(Frame): # Alarm Control
         # Pane4 Objects
         canvas1 = Canvas(
             self,
-            width=str(self.controller.shared_data["notebook_geometry"][0].get()),
-            height=str(self.controller.shared_data["notebook_geometry"][1].get()),
+            width=str(self.controller.shared_data["window_geometry"][0].get()),
+            height=str(self.controller.shared_data["window_geometry"][1].get()),
         ).grid(
             row=0,
             column=0,
@@ -530,18 +462,18 @@ def main():
     
 if __name__ == '__main__': # runs main if in python script
     t1 = threading.Thread(target=main,args=())
-    t2 = threading.Thread(target=PYICLOUD_GET.cycle_files,args=())
-    t3 = threading.Thread(target=PYICLOUD_GET.download,args=())
+    # t2 = threading.Thread(target=PYICLOUD_GET.cycle_files,args=())
+    # t3 = threading.Thread(target=PYICLOUD_GET.download,args=())
     # t4 = threading.Thread(target=BROODMINDER_GET,args=str("New Left Hive"))#str(self.controller.shared_data["hive_name"].get()))
-    t5 = threading.Thread(target=AMBIENT_GET,args=())
+    # t5 = threading.Thread(target=AMBIENT_GET,args=())
     t1.start()
-    t2.start()
-    t3.start()
+    # t2.start()
+    # t3.start()
     # t4.start()
-    t5.start()
+    # t5.start()
     t1.join()
-    t2.join()
-    t3.join()
+    # t2.join()
+    # t3.join()
     # t4.join()
-    t5.join()
+    # t5.join()
     # windows.mainloop()
