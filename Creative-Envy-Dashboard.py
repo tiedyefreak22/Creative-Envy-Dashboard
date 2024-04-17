@@ -29,6 +29,7 @@ from pathlib import Path
 sys.path.append("BEE_WEATHER_DATA")
 from BEE_WEATHER_DATA import BROODMINDER_GET, AMBIENT_GET, READ_HIVE, PROCESS_HIVE, READ_BEE_WEATHER, PROCESS_BEE_WEATHER, PROCESS_AMBIENT, GRAPH_DATA, GET_MOON_IMAGE, GET_FORECAST, PROCESS_FORECAST, PROCESS_FORECAST_MIN_MAX, check_internet_connection
 sys.path.append("PYICLOUD_GET")
+from Custom_Widgets import CustomMeter, EmptyLF, CustomClockWidget, CustomSmallImg
 import PYICLOUD_GET
 import pandas as pd
 from IPython.display import display
@@ -115,13 +116,13 @@ class Windows(Tk):
         tab_names = [
                     "Weather",
                     "Bees",
-                    "Photos",
+                    # "Photos",
                     # "Alarm",
                     ]
         for i, F in enumerate([
                               Pane1,
                               Pane2,
-                              Pane3,
+                              # Pane3,
                               # Pane4,
                               ]):
             frame = F(main_notebook, self)
@@ -141,36 +142,6 @@ class Windows(Tk):
             index = main_notebook.index(main_notebook.select())
         main_notebook.bind("<<NotebookTabChanged>>", on_tab_change)
 
-class CustomMeter(ttk.LabelFrame):
-    def __init__(self, parent, controller, width, height, padding, text, amt_used):
-        ttk.LabelFrame.__init__(
-            self,
-            parent,
-            relief="solid",
-            borderwidth=1,
-            width=str(width),
-            height=str(height),
-            #padding=padding,
-            text=text,
-        )
-        meter = ttk.Meter(
-            self,
-            metersize=min(int(width), int(height)) - 2 * int(padding),
-            amountused=amt_used,
-            metertype="semi",
-            subtext=text,
-            showtext=True,
-            interactive=False,
-        )
-        meter.pack(anchor=CENTER)
-    
-    def get(self):
-        return self.entry.get()
-
-# class CustomSmallImg(): #Moon image, but generalized to a small space img, possibly used for weather icon too
-    
-# class CustomClockWidget(): #Clock, sunrise, sunset
-
 class Pane1(Frame): # Weather Dashboard; child to Notebook
     def __init__(self, parent, controller):
         Frame.__init__(self, parent)
@@ -178,90 +149,30 @@ class Pane1(Frame): # Weather Dashboard; child to Notebook
         
         # Pane1 Objects
         # Loop to create LabelFrames
-        lfs = []
         lf_labels = "Time/Sunrise/Sunset", "Moon Phase", "Wx Forecast", "", "Honey Wt./Bee Count", "Temp", "Solar Rad.", "Wind Spd./Dir.", "Chook Temp", "Bee Wt.", "Humidity", "UV Index", "Precip.", "Bee Temp.", "Bee Humid.",
-        i = 0
-        while i < 4:
-            if i == 2:
-                lfs.append(ttk.LabelFrame(
-                    self,
-                    relief="solid",
-                    borderwidth=1,
-                    width=str(int(self.controller.shared_data["LF_geometry"][0].get()) - int(self.controller.shared_data["padding"].get())),
-                    height=str(self.controller.shared_data["LF_geometry"][1].get()),
-                    #padding=int(self.controller.shared_data["padding"].get()),
-                    text=lf_labels[i],
-                ))
-                lfs[-1].grid(
-                    row = floor(i/5),
-                    column = i % 5, columnspan = 2,
-                    sticky="nsew",
-                    # padx=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
-                    # pady=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
-                    # ipadx=int(self.controller.shared_data["padding"].get()),
-                    # ipady=int(self.controller.shared_data["padding"].get()),
-                )
-                i = i + 2
-            else:
-                lfs.append(ttk.LabelFrame(
-                    self,
-                    relief="solid",
-                    borderwidth=1,
-                    width=str(self.controller.shared_data["LF_geometry"][0].get()),
-                    height=str(self.controller.shared_data["LF_geometry"][1].get()),
-                    #padding=int(self.controller.shared_data["padding"].get()),
-                    text=lf_labels[i],
-                ))
-                lfs[-1].grid(row = floor(i/5), column = i % 5, sticky="nsew")#, padx=int(self.controller.shared_data["padding"].get()), pady=int(self.controller.shared_data["padding"].get()))
-                i = i + 1
+        
+        self.LF = CustomClockWidget(
+                                    self, parent, str(self.controller.shared_data["LF_geometry"][0].get() - 2 * self.controller.shared_data["padding"].get()), str(self.controller.shared_data["LF_geometry"][1].get() - 2 * self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get()), lf_labels[0])#, 25)
+        self.LF.grid(row = 0, column = 0, padx=int(self.controller.shared_data["padding"].get()), pady=int(self.controller.shared_data["padding"].get()))
+        
+        self.LF = CustomSmallImg(self, parent, str(self.controller.shared_data["LF_geometry"][0].get() - 2 * self.controller.shared_data["padding"].get()), str(self.controller.shared_data["LF_geometry"][1].get() - 2 * self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get()), lf_labels[1])#, 25)
+        self.LF.grid(row = 0, column = 1, padx=int(self.controller.shared_data["padding"].get()), pady=int(self.controller.shared_data["padding"].get()))
+
+        self.LF = EmptyLF(self, parent, str(self.controller.shared_data["LF_geometry"][0].get() - 2 * self.controller.shared_data["padding"].get()), str(self.controller.shared_data["LF_geometry"][1].get() - 2 * self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get()), lf_labels[2])#, 25)
+        self.LF.grid(row = 0, column = 2, columnspan = 2, sticky="nsew", padx=int(self.controller.shared_data["padding"].get()), pady=int(self.controller.shared_data["padding"].get()))
+
+        self.LF = EmptyLF(self, parent, str(self.controller.shared_data["LF_geometry"][0].get() - 2 * self.controller.shared_data["padding"].get()), str(self.controller.shared_data["LF_geometry"][1].get() - 2 * self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get()), lf_labels[4])#, 25)
+        self.LF.grid(row = 0, column = 4, padx=int(self.controller.shared_data["padding"].get()), pady=int(self.controller.shared_data["padding"].get()))
         
         # Loop to create Meters
-        i = 4
+        i = 5
         while i < 15:
-            self.meter = CustomMeter(self, parent, str(self.controller.shared_data["LF_geometry"][0].get()), str(self.controller.shared_data["LF_geometry"][1].get()), int(self.controller.shared_data["padding"].get()), lf_labels[i], 25)
-            self.meter.grid(row = floor((i-5)/5) + 1, column = (i - 5) % 5, sticky="nsew")#, padx=int(self.controller.shared_data["padding"].get()), pady=int(self.controller.shared_data["padding"].get()))
+            self.meter = CustomMeter(self, parent, str(self.controller.shared_data["LF_geometry"][0].get() - 2 * self.controller.shared_data["padding"].get()), str(self.controller.shared_data["LF_geometry"][1].get() - 2 * self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get()), lf_labels[i], 25)
+            self.meter.grid(row = floor((i-5)/5) + 1, column = (i - 5) % 5, padx=int(self.controller.shared_data["padding"].get()), pady=int(self.controller.shared_data["padding"].get()))
             i = i + 1
         meters = []
         
-        def config_pic():
-            if internet:
-                try:
-                    GET_MOON_IMAGE(216, save=1)
-                except:
-                    pass
-
-            file = [i for i in os.listdir("moon/")]
-            PIL_image = Image.open("moon/" + file[0])
-            original_w = np.shape(PIL_image)[1]
-            original_h = np.shape(PIL_image)[0]
-            aspect = original_h/original_w
-
-            constraining_dim = min(self.controller.shared_data["LF_geometry"][0].get() - 4 * self.controller.shared_data["padding"].get(),
-                                   self.controller.shared_data["LF_geometry"][1].get() - 4 * self.controller.shared_data["padding"].get())
-            minor_constraint = min(constraining_dim/original_w, constraining_dim/original_h)
-            width = int(original_w * minor_constraint)
-            height = int(original_h * minor_constraint)
-            PIL_image_small = PIL_image.resize((width,height), Image.Resampling.LANCZOS)
-
-            # now create the ImageTk PhotoImage:
-            img = ImageTk.PhotoImage(image=PIL_image_small)
-            return img
-
-        def change_pic():
-            img = config_pic()
-            in_frame.config(image = img)
-            in_frame.image = img
-
-        # create the PIL image object:
-        img = config_pic()
-        in_frame = Label(
-            lfs[1],
-            image = img,
-            width=self.controller.shared_data["LF_geometry"][0].get() - 4 * self.controller.shared_data["padding"].get(),
-            height=self.controller.shared_data["LF_geometry"][1].get() - 4 * self.controller.shared_data["padding"].get(),
-        )
-        change_pic()
-        in_frame.place(relx=0.5, rely=0.5, anchor=CENTER)
+        
 
         #-------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -277,44 +188,10 @@ class Pane1(Frame): # Weather Dashboard; child to Notebook
             self.after(600000, periodic_updater)
         
         # run first time at once
-        #periodic_updater()
+        # periodic_updater()
         
-        def change_clock():
-            current_time = datetime.now().strftime('%I:%M:%S %p')
-            clock_frame.config(text = current_time)
-            clock_frame.text = current_time
-            
         def change_forecast():
             GET_FORECAST()
-        
-        clock_frame = Label(
-            lfs[0],
-            text = datetime.now().strftime('%I:%M:%S %p'),
-            font=("Helvetica’", 28),
-        )
-        change_clock()
-        clock_frame.pack(side="top", ipady=30)
-
-        sunrise_frame = Label(
-            lfs[0],
-            text = datetime.now().strftime("Sunrise: %I:%M:%S %p"),
-            font=("Helvetica’", 16),
-        )
-        sunrise_frame.pack(side="bottom")
-        sunset_frame = Label(
-            lfs[0],
-            text = datetime.now().strftime("Sunset: %I:%M:%S %p"),
-            font=("Helvetica’", 16),
-        )
-        sunset_frame.pack(side="bottom", ipady=20)
-        lfs[0].pack_propagate(0)
-        
-        def clock_updater():
-            change_clock()
-            # run itself again
-            self.after(1000, clock_updater)
-
-        clock_updater()
         
         def daily_updater():
             if internet:
@@ -327,7 +204,7 @@ class Pane1(Frame): # Weather Dashboard; child to Notebook
             self.after(86400000, daily_updater)
         
         # run first time at once
-        daily_updater()
+        # daily_updater()
 
 class Pane2(Frame): # Bee Dashboard
      def __init__(self, parent, controller):
@@ -339,8 +216,8 @@ class Pane2(Frame): # Bee Dashboard
         lf_labels = "Hive 1 Wt.", "Hive 2 Wt.", "Hive 3 Wt.", "Hive 4 Wt.", "Hive 5 Wt.", "Hive 1 Temp.", "Hive 2 Temp.", "Hive 3 Temp.", "Hive 4 Temp.", "Hive 5 Temp.", "Hive 1 Humid.", "Hive 2 Humid.", "Hive 3 Humid.", "Hive 4 Humid.", "Hive 5 Humid.",
         i = 0        
         while i < 15:
-            self.meter = CustomMeter(self, parent, str(self.controller.shared_data["LF_geometry"][0].get()), str(self.controller.shared_data["LF_geometry"][1].get()), int(self.controller.shared_data["padding"].get()), lf_labels[i], 25)
-            self.meter.grid(row = floor(i/5), column = i % 5, sticky="nsew")#, padx=int(self.controller.shared_data["padding"].get()), pady=int(self.controller.shared_data["padding"].get()))
+            self.meter = CustomMeter(self, parent, str(self.controller.shared_data["LF_geometry"][0].get() - 2 * self.controller.shared_data["padding"].get()), str(self.controller.shared_data["LF_geometry"][1].get() - 2 * self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get()), lf_labels[i], 25)
+            self.meter.grid(row = floor(i/5), column = i % 5, padx=int(self.controller.shared_data["padding"].get()), pady=int(self.controller.shared_data["padding"].get()))
             i = i + 1
 
 class Pane3(Frame): # Picture Frame
@@ -435,7 +312,7 @@ class Pane3(Frame): # Picture Frame
             self.after(86400000, daily_updater)
         
         # run first time at once
-        #daily_updater()
+        # daily_updater()
         
 class Pane4(Frame): # Alarm Control
     def __init__(self, parent, controller):

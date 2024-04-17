@@ -291,6 +291,8 @@ def AMBIENT_GET():
 
         compiled = re.compile('("time":)[0-9]*,')
         replaceData = compiled.sub('',replaceData)
+        compiled = re.compile('("batt_)[0-9](":)[a-zA-Z0-9_/]*,')
+        replaceData = compiled.sub('',replaceData)
         compiled = re.compile('("batt)[0-9](":)[a-zA-Z0-9_/]*,')
         replaceData = compiled.sub('',replaceData)
         compiled = re.compile('("passkey":")[a-zA-Z0-9_/"]*,')
@@ -327,6 +329,8 @@ def AMBIENT_GET():
             temp = temp.replace('"totalrainin":','')
             temp = temp.replace('"uv":','')
             temp = temp.replace('"solarradiation":','')
+            temp = temp.replace('"pm25":','')
+            temp = temp.replace('"pm25_24h":','')
             temp = temp.replace('"feelsLike":','')
             temp = temp.replace('"dewPoint":','')
             temp = temp.replace('"lastRain":','')
@@ -342,7 +346,7 @@ def AMBIENT_GET():
     sorted_df = df_updated.sort_values('dateutc', axis=0, ascending=True, kind='mergesort')
 
     new_entries = pd.concat([rows,sorted_df]).astype(str).drop_duplicates(subset=['dateutc'], keep='last').reset_index(drop=True)
-    new_entries.to_csv(filename, mode='w', index=False, header=True)
+    new_entries.to_csv(filename, mode='a', index=False, header=False)
 
 def PROCESS_AMBIENT(interp=0):
     filename = "Ambient/Ambient_Data.csv"
