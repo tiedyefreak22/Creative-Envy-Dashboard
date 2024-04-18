@@ -18,7 +18,7 @@ import requests
 from io import BytesIO
 from PIL import Image
 import json
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 import urllib.request
 import ssl
 import re
@@ -30,6 +30,8 @@ import numpy as np
 import itertools
 from send2trash import send2trash
 import dns.resolver
+import pytz
+import astral, astral.sun
 
 def BROODMINDER_GET(hive_name):
     #Login to Broodminder, Get Beehive data, and format
@@ -545,6 +547,95 @@ def check_internet_connection():
     except urllib.error.URLError:
         print("Internet connection failed")
         return False
+
+def GET_WEATHER_ICON():
+    lat = 40.907220
+    lon = -111.894300
+    tz = pytz.timezone('America/Denver')
+    tz_name = 'America/Denver'
+    for_date = date.today()
+    
+    l = astral.LocationInfo('Custom Name', 'My Region', tz_name, lat, lon)
+    s = astral.sun.sun(l.observer, date=for_date)
+    sunrise = s['sunrise'].astimezone(tz)
+    sunset = s['sunset'].astimezone(tz)
+    
+    response = PROCESS_FORECAST()
+    icon_dict = {200: "11d",
+                201: "11d",
+                202: "11d",
+                210: "11d",
+                211: "11d",
+                212: "11d",
+                221: "11d",
+                230: "11d",
+                231: "11d",
+                232: "11d",
+                300: "09d",
+                301: "09d",
+                302: "09d",
+                310: "09d",
+                311: "09d",
+                312: "09d",
+                313: "09d",
+                314: "09d",
+                321: "09d",
+                500: "10d",
+                501: "10d",
+                502: "10d",
+                503: "10d",
+                504: "10d",
+                511: "13d",
+                520: "09d",
+                521: "09d",
+                522: "09d",
+                531: "09d",
+                600: "13d",
+                601: "13d",
+                602: "13d",
+                611: "13d",
+                612: "13d",
+                613: "13d",
+                615: "13d",
+                616: "13d",
+                620: "13d",
+                621: "13d",
+                622: "13d",
+                701: "50d",
+                711: "50d",
+                721: "50d",
+                731: "50d",
+                741: "50d",
+                751: "50d",
+                761: "50d",
+                762: "50d",
+                771: "50d",
+                781: "50d",
+                "800d": "01d",
+                "800n": "01n",
+                "801d": "02d",
+                "801n": "02n",
+                "802d": "03d",
+                "802n": "03n",
+                "803d": "04d",
+                "803n": "04n",
+                "804d": "04d",
+                "804n": "04n",
+                }
+
+    temp = response.loc[response.index > int(t.time())]
+    subresponse = temp if len(temp) >= 3 else response.iloc[-3:]
+    
+    icon_url = []
+    for idx, id in subresponse["id"].items():
+        if (floor(id/100) == 8) & (idx >= int(datetime.timestamp(sunrise))) & (idx <= int(datetime.timestamp(sunset))):
+            icon_url.append("https://openweathermap.org/img/wn/%s@2x.png" % (icon_dict[str(id) + "d"]))
+        elif (floor(id/100) == 8) & ((idx < int(datetime.timestamp(sunrise))) | (idx > int(datetime.timestamp(sunset)))):
+            icon_url.append("https://openweathermap.org/img/wn/%s@2x.png" % (icon_dict[str(id) + "n"]))
+        else:
+            icon_url.append("https://openweathermap.org/img/wn/%s@2x.png" % (icon_dict[id]))
+    
+    return list(zip([datetime.fromtimestamp(i).strftime('%I:%M %p') for i in subresponse.index], icon_url))
     
 # if __name__ == '__main__':
 #     BROODMINDER_GET()
