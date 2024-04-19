@@ -35,6 +35,7 @@ import astral, astral.sun
 
 def BROODMINDER_GET(hive_name):
     #Login to Broodminder, Get Beehive data, and format
+    print("Getting Broodminder data.")
     directory = "Broodminder/"        
     options = Options()
     options.add_experimental_option("prefs", {
@@ -92,6 +93,7 @@ def BROODMINDER_GET(hive_name):
     READ_BEE_WEATHER()
 
 def READ_HIVE(hive_name: str):
+    print("Reading Broodminder data.")
     directory = "Broodminder/"
     
     # Check for new download data
@@ -128,6 +130,7 @@ def READ_HIVE(hive_name: str):
     return Hive_master
 
 def READ_BEE_WEATHER():
+    print("Reading Broodminder weather data.")
     directory = "Broodminder/"
     
     # Check for new download data
@@ -160,6 +163,7 @@ def READ_BEE_WEATHER():
     return Bee_Weather_master
 
 def PROCESS_HIVE(hive_name: str, interp=0):
+    print("Processing Broodminder data.")
     directory = "Broodminder/"
     metrics = ["Weight", "Humidity", "Temperature"]
     Hive = READ_HIVE(hive_name)
@@ -204,6 +208,7 @@ def PROCESS_HIVE(hive_name: str, interp=0):
         return Week_Devices
 
 def PROCESS_BEE_WEATHER(interp=0):
+    print("Processing Broodminder weather data.")
     directory = "Broodminder/"
     Bee_Weather = READ_BEE_WEATHER()
     metrics = [i for i in list(Bee_Weather.keys()) if not "Unix_Time" in i]
@@ -244,6 +249,7 @@ def PROCESS_BEE_WEATHER(interp=0):
 
 def AMBIENT_GET():
     # Get Ambient data via URL and format
+    print("Getting Ambient data.")
     # csv file name
     filename = "Ambient/Ambient_Data.csv"
 
@@ -284,7 +290,6 @@ def AMBIENT_GET():
                 break
             except:
                 continue
-
         Data = (request.read()).decode('utf-8')
 
         # Get rid of brackets
@@ -306,6 +311,10 @@ def AMBIENT_GET():
         compiled = re.compile('("temp1f":)[a-zA-Z0-9_/:.-]*(,)')
         replaceData = compiled.sub('',replaceData)
         compiled = re.compile('("battout":)[a-zA-Z0-9_/]*,')
+        replaceData = compiled.sub('',replaceData)
+        compiled = re.compile('("pm25":)[a-zA-Z0-9_/:.-]*(,)')
+        replaceData = compiled.sub('',replaceData)
+        compiled = re.compile('("pm25_24h":)[a-zA-Z0-9_/:.-]*(,)')
         replaceData = compiled.sub('',replaceData)
 
         # Chop data frames between curly braces
@@ -348,9 +357,10 @@ def AMBIENT_GET():
     sorted_df = df_updated.sort_values('dateutc', axis=0, ascending=True, kind='mergesort')
 
     new_entries = pd.concat([rows,sorted_df]).astype(str).drop_duplicates(subset=['dateutc'], keep='last').reset_index(drop=True)
-    new_entries.to_csv(filename, mode='a', index=False, header=False)
+    new_entries.to_csv(filename, mode='w', index=False, header=True)
 
 def PROCESS_AMBIENT(interp=0):
+    print("Processing Ambient data.")
     filename = "Ambient/Ambient_Data.csv"
     Ambient = pd.read_csv(filename)
 
@@ -429,6 +439,7 @@ def GRAPH_DATA(Data): #Pandas DF
     plt.show()
 
 def GET_FORECAST():
+    print("Getting Forecast data.")
     api_key = '6076127529eb62ab78ea542909f0a2ef'
     lat = 40.907220
     lon = -111.894300
@@ -461,6 +472,7 @@ def get_moon_image_number():
     return moon_image_number
 
 def GET_MOON_IMAGE(size, save=0):
+    print("Getting moon phase image.")
     total_images = 8760
     moon_domain = "https://svs.gsfc.nasa.gov"
     # https://svs.gsfc.nasa.gov/vis/a000000/a005100/a005187/frames/216x216_1x1_30p/moon.8597.jpg
@@ -489,6 +501,7 @@ def GET_MOON_IMAGE(size, save=0):
         return img
 
 def PROCESS_FORECAST(interp=0):
+    print("Processing Forecast data.")
     response = pd.DataFrame()
     with open('Forecast/forecast.json', 'r') as openfile:
         # Reading from json file
@@ -542,13 +555,14 @@ def check_internet_connection():
     queryResult = resolve(domainName);
     try:
         urllib.request.urlopen("http://" + str(queryResult[0]), timeout=3)
-        print("Internet connection verified")
+        print("Internet connection verified.")
         return True
     except urllib.error.URLError:
-        print("Internet connection failed")
+        print("Internet connection failed.")
         return False
 
 def GET_WEATHER_ICON():
+    print("Getting weather icon.")
     lat = 40.907220
     lon = -111.894300
     tz = pytz.timezone('America/Denver')
