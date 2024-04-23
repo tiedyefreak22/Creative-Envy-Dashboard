@@ -29,7 +29,7 @@ import urllib.request
 import io
 from pathlib import Path
 sys.path.append("BEE_WEATHER_DATA")
-from BEE_WEATHER_DATA import BROODMINDER_GET, AMBIENT_GET, READ_HIVE, PROCESS_HIVE, READ_BEE_WEATHER, PROCESS_BEE_WEATHER, PROCESS_AMBIENT, GRAPH_DATA, GET_MOON_IMAGE, GET_FORECAST, PROCESS_FORECAST, PROCESS_FORECAST_MIN_MAX, check_internet_connection, GET_WEATHER_ICON
+from BEE_WEATHER_DATA import BROODMINDER_GET, AMBIENT_GET, READ_HIVE, PROCESS_HIVE, READ_BEE_WEATHER, PROCESS_BEE_WEATHER, PROCESS_AMBIENT, GRAPH_DATA, GET_MOON_IMAGE, GET_FORECAST, PROCESS_FORECAST, PROCESS_FORECAST_MIN_MAX, check_internet_connection, GET_WEATHER_ICON, change_pic, periodic_updater, daily_updater
 sys.path.append("PYICLOUD_GET")
 from Custom_Widgets import CustomMeter, EmptyLF, CustomClockWidget, CustomSmallImg, WeatherWidget
 from Pane1 import Pane1
@@ -40,35 +40,13 @@ import PYICLOUD_GET
 import pandas as pd
 from IPython.display import display
         
-internet = check_internet_connection()
+#internet = check_internet_connection()
 
 # root window (parent to all), controller to Frames
 class Windows(Tk):
     def __init__(self, *args, **kwargs):
         Tk.__init__(self, *args, **kwargs)
-        hive_names = "New Left Hive"
-
-        def periodic_updater():
-            if internet:
-                #BROODMINDER_GET(str(self.controller.shared_data["hive_name"].get()))
-                #BROODMINDER_GET(hive_names)
-                AMBIENT_GET()            
-            # run itself again
-            self.after(600000, periodic_updater)
-        
-        def daily_updater():
-            if internet:
-                # PYICLOUD_GET.cycle_files()
-                # PYICLOUD_GET.download()            
-                change_pic()
-                GET_FORECAST()
-            # run itself again
-            self.after(86400000, daily_updater)
-        
-        # run timer functions first time
-        periodic_updater()
-        daily_updater()
-        
+        hive_names = "New Left Hive"        
         Hive_Processed = PROCESS_HIVE(hive_names)
         forecast_data = PROCESS_FORECAST()
         ambient_data = PROCESS_AMBIENT()
@@ -126,7 +104,7 @@ class Windows(Tk):
             "min_max_humid":[DoubleVar(self, PROCESS_FORECAST_MIN_MAX(forecast_data)[2]), DoubleVar(self, PROCESS_FORECAST_MIN_MAX(forecast_data)[3])],
         }
         self.shared_data.update({"LF_geometry": [IntVar(self, int((int(self.shared_data["window_geometry"][0].get()) - 2 * int(self.shared_data["padding"].get())) / int(self.shared_data["num_cols"].get()))),
-                                                 IntVar(self, int((int(self.shared_data["window_geometry"][1].get()) - 2 * int(self.shared_data["padding"].get())) / int(self.shared_data["num_rows"].get())) - 30), 
+                                                 IntVar(self, int((int(self.shared_data["window_geometry"][1].get()) - 2 * int(self.shared_data["padding"].get())) / int(self.shared_data["num_rows"].get())) - 30),
                                                 ]}) # height (notebook tabs appear to be 30 pix)
         self.wm_title("Creative Envy Dashboard")
         ttk.Style("darkly")
@@ -143,13 +121,13 @@ class Windows(Tk):
         tab_names = [
                     "Weather",
                     "Bees",
-                    # "Photos",
+                    "Photos",
                     # "Alarm",
                     ]
         for i, F in enumerate([
                               Pane1,
                               Pane2,
-                              # Pane3,
+                              Pane3,
                               # Pane4,
                               ]):
             frame = F(main_notebook, self)
@@ -169,24 +147,30 @@ class Windows(Tk):
             index = main_notebook.index(main_notebook.select())
         main_notebook.bind("<<NotebookTabChanged>>", on_tab_change)
 
+def on_closing(self):
+    self.quit()
+
 def main():
-    windows = Windows()    
+    windows = Windows()
+    #windows.protocol("WM_DELETE_WINDOW", windows.on_closing(self))
     windows.mainloop()
     
 if __name__ == '__main__': # runs main if in python script
     t1 = threading.Thread(target=main,args=())
+    t2 = threading.Thread(target=periodic_updater,args=())
+    t3 = threading.Thread(target=daily_updater,args=())
     # t2 = threading.Thread(target=PYICLOUD_GET.cycle_files,args=())
     # t3 = threading.Thread(target=PYICLOUD_GET.download,args=())
     # t4 = threading.Thread(target=BROODMINDER_GET,args=str("New Left Hive"))#str(self.controller.shared_data["hive_name"].get()))
     # t5 = threading.Thread(target=AMBIENT_GET,args=())
     t1.start()
-    # t2.start()
-    # t3.start()
+    t2.start()
+    t3.start()
     # t4.start()
     # t5.start()
     t1.join()
-    # t2.join()
-    # t3.join()
+    t2.join()
+    t3.join()
     # t4.join()
     # t5.join()
     # windows.mainloop()

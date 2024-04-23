@@ -32,6 +32,7 @@ from send2trash import send2trash
 import dns.resolver
 import pytz
 import astral, astral.sun
+import PYICLOUD_GET
 
 def BROODMINDER_GET(hive_name):
     #Login to Broodminder, Get Beehive data, and format
@@ -252,112 +253,60 @@ def AMBIENT_GET():
     print("Getting Ambient data.")
     # csv file name
     filename = "Ambient/Ambient_Data.csv"
-
-    ssl._create_default_https_context = ssl._create_unverified_context
-
+    
     # Define weather station data
-    AMBIENT_ENDPOINT = "https://api.ambientweather.net/v1"
     AMBIENT_API_KEY = "a6ed012c794e4d8283cb2475e187daaffb847bc9d13d4e13a90d5b4c2e11c98a"
     AMBIENT_APPLICATION_KEY = "d34a5337cdbe460a8624135e6661bdb4bd810a078dc84f47b07c0170bc867eec"
     AMBIENT_MAC = "00:0E:C6:30:1F:CC"
-
-    # Initialize titles and rows list
-    fields = []
-    rows = []
-
+    
     # Read in current csv values
-    rows = pd.read_csv(filename)
-    fields = rows.columns
-
+    rows = pd.read_csv(filename, sep=',', on_bad_lines='skip')
+    
     AMBIENT_START_DATE = datetime.fromtimestamp(int(rows['dateutc'][len(rows['dateutc'])-1]))
-
+    
+    print(AMBIENT_START_DATE)
     # Determine number of days since beginning of record
     dateDelta = datetime.today() - AMBIENT_START_DATE
-
-    newrows = []
-    i = 0
+    
     # Iterate through each day of data
     for i in range(dateDelta.days + 1):
         # Fetch data from Ambient
         AMBIENT_DATE = AMBIENT_START_DATE + timedelta(days=i)
         AMBIENT_DATE = str(AMBIENT_DATE)
         AMBIENT_DATE = AMBIENT_DATE[:AMBIENT_DATE.rindex(" ")]
+        print(AMBIENT_DATE)
+        query_params = {'applicationKey': AMBIENT_APPLICATION_KEY, 'macAddress': AMBIENT_MAC, 'apiKey': AMBIENT_API_KEY, 'endDate': AMBIENT_DATE}
+        AMBIENT_ENDPOINT = f'https://rt.ambientweather.net/v1/devices/{AMBIENT_MAC}?apiKey={AMBIENT_API_KEY}&applicationKey={AMBIENT_APPLICATION_KEY}&endDate={AMBIENT_DATE}'
+        data = pd.DataFrame()
+    
+        response = requests.get(AMBIENT_ENDPOINT)#, params=query_params)
         while True:
-            try:
-                request = urllib.request.urlopen('https://rt.ambientweather.net/v1/devices/{}?apiKey={}&applicationKey={}&endDate={}'.format(AMBIENT_MAC,AMBIENT_API_KEY,AMBIENT_APPLICATION_KEY,AMBIENT_DATE))
-        # Wait for 1 second to comply with Ambient server limits
-                t.sleep(1)
+            if response.status_code == 200:
+                data = pd.DataFrame(response.json())
                 break
-            except:
-                continue
-        Data = (request.read()).decode('utf-8')
-
-        # Get rid of brackets
-        replaceData = Data.replace('[','')
-        replaceData = replaceData.replace(']','')
-
-        compiled = re.compile('("time":)[0-9]*,')
-        replaceData = compiled.sub('',replaceData)
-        compiled = re.compile('("batt_)[0-9](":)[a-zA-Z0-9_/]*,')
-        replaceData = compiled.sub('',replaceData)
-        compiled = re.compile('("batt)[0-9](":)[a-zA-Z0-9_/]*,')
-        replaceData = compiled.sub('',replaceData)
-        compiled = re.compile('("passkey":")[a-zA-Z0-9_/"]*,')
-        replaceData = compiled.sub('',replaceData)
-        compiled = re.compile('("loc":")[a-zA-Z0-9_/]*(.json",)')
-        replaceData = compiled.sub('',replaceData)
-        compiled = re.compile(',("date":")[a-zA-Z0-9_/:.-]*(")')
-        replaceData = compiled.sub('',replaceData)
-        compiled = re.compile('("temp1f":)[a-zA-Z0-9_/:.-]*(,)')
-        replaceData = compiled.sub('',replaceData)
-        compiled = re.compile('("battout":)[a-zA-Z0-9_/]*,')
-        replaceData = compiled.sub('',replaceData)
-        compiled = re.compile('("pm25":)[a-zA-Z0-9_/:.-]*(,)')
-        replaceData = compiled.sub('',replaceData)
-        compiled = re.compile('("pm25_24h":)[a-zA-Z0-9_/:.-]*(,)')
-        replaceData = compiled.sub('',replaceData)
-
-        # Chop data frames between curly braces
-        dataCriteria = re.compile('{[^{}]*}')
-        dataSets = re.findall(dataCriteria,replaceData)
-        x = 0
-        for x in dataSets:
-            temp = x.replace('{','')
-            temp = temp.replace('}','')
-            temp = temp.replace('"dateutc":','')
-            temp = temp.replace('"winddir":','')
-            temp = temp.replace('"windspeedmph":','')
-            temp = temp.replace('"windgustmph":','')
-            temp = temp.replace('"maxdailygust":','')
-            temp = temp.replace('"tempf":','')
-            temp = temp.replace('"humidity":','')
-            temp = temp.replace('"hourlyrainin":','')
-            temp = temp.replace('"eventrainin":','')
-            temp = temp.replace('"dailyrainin":','')
-            temp = temp.replace('"weeklyrainin":','')
-            temp = temp.replace('"monthlyrainin":','')
-            temp = temp.replace('"yearlyrainin":','')
-            temp = temp.replace('"totalrainin":','')
-            temp = temp.replace('"uv":','')
-            temp = temp.replace('"solarradiation":','')
-            temp = temp.replace('"pm25":','')
-            temp = temp.replace('"pm25_24h":','')
-            temp = temp.replace('"feelsLike":','')
-            temp = temp.replace('"dewPoint":','')
-            temp = temp.replace('"lastRain":','')
-            temp = temp.replace('"','')
-            temp = temp.split(',')
-            newrows.append(temp)
-
-        i = i + 1
-
-    # Sort and append new data
-    df_updated = pd.DataFrame(columns=fields, data=newrows)
-    df_updated['dateutc'] = (df_updated['dateutc'].astype(np.int64) / 1000.0)
-    sorted_df = df_updated.sort_values('dateutc', axis=0, ascending=True, kind='mergesort')
-
-    new_entries = pd.concat([rows,sorted_df]).astype(str).drop_duplicates(subset=['dateutc'], keep='last').reset_index(drop=True)
-    new_entries.to_csv(filename, mode='w', index=False, header=True)
+            else:
+                # Handle errors
+                print(f'Error: {response.status_code} - {response.text}')
+            
+        # Wait for 1 second to comply with Ambient server limits
+        t.sleep(1)
+        
+        # Sort and append new data
+        if data.empty:
+            pass
+        else:
+            data = data[['dateutc', 'winddir', 'windspeedmph', 'windgustmph', 'maxdailygust',
+                         'tempf', 'humidity', 'hourlyrainin', 'eventrainin', 'dailyrainin',
+                         'weeklyrainin', 'monthlyrainin', 'yearlyrainin', 'totalrainin', 'uv',
+                         'solarradiation', 'feelsLike', 'dewPoint', 'lastRain']]
+            data['dateutc'] = (data['dateutc'].astype(np.int64) / 1000.0)
+            sorted_df = data.sort_values('dateutc', axis=0, ascending=True, kind='mergesort')
+            sorted_df.to_csv(filename, mode='a', index=False, header=False)
+    
+    # Re-read file and drop any duplicates
+    rows = pd.read_csv(filename, sep=',', on_bad_lines='skip')
+    rows = rows.drop_duplicates(subset=['dateutc'], keep='last').reset_index(drop=True)
+    rows.to_csv(filename, mode='w', index=False, header=True)
 
 def PROCESS_AMBIENT(interp=0):
     print("Processing Ambient data.")
@@ -650,7 +599,76 @@ def GET_WEATHER_ICON():
             icon_url.append("https://openweathermap.org/img/wn/%s@2x.png" % (icon_dict[id]))
     
     return list(zip([datetime.fromtimestamp(i).strftime('%I:%M %p') for i in subresponse.index], icon_url))
-    
-# if __name__ == '__main__':
-#     BROODMINDER_GET()
-#     AMBIENT_GET()
+
+def config_pic():
+    directory = "PhotosB/"
+    file_paths = []
+    ext = ('.png', '.jpg', '.jpeg', '.heic', '.tiff', '.tif')
+    raw_ext = ('.raw', '.arw', '.dng')
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            if file.lower().endswith(tuple(ext)):
+                file_paths.append(os.path.join(root, file))
+            elif file.lower().endswith(tuple(ext)):
+                try:
+                    with rawpy.imread(np.fromfile("Test/DSC1160-medium.RAW", allow_pickle=True)) as raw:
+                        print(f'raw type:                     {raw.raw_type}')                      # raw type (flat or stack, e.g., Foveon sensor)
+                        print(f'number of colors:             {raw.num_colors}')                    # number of different color components, e.g., 3 for common RGB Bayer sensors with two green identical green sensors 
+                        print(f'color description:            {raw.color_desc}')                    # describes the various color components
+                        print(f'raw pattern:                  {raw.raw_pattern.tolist()}')          # decribes the pattern of the Bayer sensor
+                        print(f'black levellos:                 {raw.black_level_per_channel}')       # black level correction
+                        print(f'white level:                  {raw.white_level}')                   # camera white level
+                        print(f'color matrix:                 {raw.color_matrix.tolist()}')         # camera specific color matrix, usually obtained from a list in rawpy (not from the raw file)
+                        print(f'XYZ to RGB conversion matrix: {raw.rgb_xyz_matrix.tolist()}')       # camera specific XYZ to camara RGB conversion matrix
+                        print(f'camera white balance:         {raw.camera_whitebalance}')           # the picture's white balance as determined by the camera
+                        print(f'daylight white balance:       {raw.daylight_whitebalance}')         # the camera's daylight white balance
+                    file_paths.append(os.path.join(root, file))
+                except:
+                    pass
+    while True:
+        try:
+            rand_pic = file_paths[random.randint(0,len(file_paths) - 1)]
+            PIL_image = Image.open(rand_pic)
+            break
+        except:
+            pass
+    original_w = np.shape(PIL_image)[1]
+    original_h = np.shape(PIL_image)[0]
+    aspect = original_h/original_w
+
+    constraining_dim = min(self.controller.shared_data["window_geometry"][0].get(), self.controller.shared_data["window_geometry"][1].get())
+    minor_constraint = min(constraining_dim/original_w, constraining_dim/original_h)
+    width = int(original_w * minor_constraint)
+    height = int(original_h * minor_constraint)
+    PIL_image_small = PIL_image.resize((width,height), Image.Resampling.LANCZOS)
+
+    # now create the ImageTk PhotoImage:
+    img = ImageTk.PhotoImage(image=PIL_image_small)
+    return img
+
+def change_pic():
+    img = config_pic()
+    in_frame.configure(image = img)
+    in_frame.image = img
+
+def periodic_updater():
+    while True:
+        internet = check_internet_connection()
+        if internet:
+            pass
+            #BROODMINDER_GET(str(self.controller.shared_data["hive_name"].get()))
+            #BROODMINDER_GET(hive_names)
+            AMBIENT_GET()
+        # run itself again
+        t.sleep(600)
+
+def daily_updater():
+    while True:
+        internet = check_internet_connection()
+        if internet:
+            PYICLOUD_GET.cycle_files()
+            PYICLOUD_GET.download()
+            change_pic()
+            GET_FORECAST()
+        # run itself again
+        t.sleep(86400)
