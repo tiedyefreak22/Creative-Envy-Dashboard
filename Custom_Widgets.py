@@ -181,7 +181,7 @@ class CustomSmallImg(ttk.LabelFrame): #Moon image, but generalized to a small sp
             img = config_pic()
             in_frame.config(image = img)
             in_frame.image = img
-
+        # This is where GET_MOON_IMAGE is run twice.  Need to fix
         # create the PIL image object:
         img = config_pic()
         in_frame = Label(

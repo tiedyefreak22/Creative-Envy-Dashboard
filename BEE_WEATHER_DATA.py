@@ -92,6 +92,7 @@ def BROODMINDER_GET(hive_name):
     
     READ_HIVE(hive_name)
     READ_BEE_WEATHER()
+    print("Finished getting Broodminder data.")
 
 def READ_HIVE(hive_name: str):
     print("Reading Broodminder data.")
@@ -129,6 +130,7 @@ def READ_HIVE(hive_name: str):
         Hive_master = pd.read_csv(str(directory + str(hive_name) + " Master.csv"))
         
     return Hive_master
+    print("Finished reading Broodminder data.")
 
 def READ_BEE_WEATHER():
     print("Reading Broodminder weather data.")
@@ -162,6 +164,7 @@ def READ_BEE_WEATHER():
     elif os.path.exists(directory + "KevBec Apiary_weather Master.csv"):
          Bee_Weather_master = pd.read_csv(directory + "KevBec Apiary_weather Master.csv")
     return Bee_Weather_master
+    print("Finished reading Broodminder weather data.")
 
 def PROCESS_HIVE(hive_name: str, interp=0):
     print("Processing Broodminder data.")
@@ -207,6 +210,7 @@ def PROCESS_HIVE(hive_name: str, interp=0):
         return Interps
     else:
         return Week_Devices
+    print("Finished processing Broodminder data.")
 
 def PROCESS_BEE_WEATHER(interp=0):
     print("Processing Broodminder weather data.")
@@ -247,6 +251,7 @@ def PROCESS_BEE_WEATHER(interp=0):
         return Interps
     else:
         return Week_Devices
+    print("Finished processing Broodminder weather data.")
 
 def AMBIENT_GET():
     # Get Ambient data via URL and format
@@ -280,13 +285,12 @@ def AMBIENT_GET():
         data = pd.DataFrame()
     
         response = requests.get(AMBIENT_ENDPOINT)#, params=query_params)
-        while True:
-            if response.status_code == 200:
-                data = pd.DataFrame(response.json())
-                break
-            else:
-                # Handle errors
-                print(f'Error: {response.status_code} - {response.text}')
+        if response.status_code == 200:
+            data = pd.DataFrame(response.json())
+            break
+        else:
+            # Handle errors
+            print(f'Error: {response.status_code} - {response.text}')
             
         # Wait for 1 second to comply with Ambient server limits
         t.sleep(1)
@@ -307,6 +311,8 @@ def AMBIENT_GET():
     rows = pd.read_csv(filename, sep=',', on_bad_lines='skip')
     rows = rows.drop_duplicates(subset=['dateutc'], keep='last').reset_index(drop=True)
     rows.to_csv(filename, mode='w', index=False, header=True)
+    print("Finished getting Ambient data.")
+
 
 def PROCESS_AMBIENT(interp=0):
     print("Processing Ambient data.")
@@ -368,6 +374,7 @@ def PROCESS_AMBIENT(interp=0):
         return Interps
     else:
         return Week_Devices
+    print("Finished processing Ambient data.")
 
 def GRAPH_DATA(Data): #Pandas DF
     metrics = [key for key in Data.keys() if key not in ["dateutc", "Device", "Hive_Position", "lastRain", "Unix_Time", "Sample", "w1", "w2", "w3", "w4", "Weight_Scale_Factor"]]
@@ -412,6 +419,7 @@ def GET_FORECAST():
     else:
         # Handle errors
         print(f'Error: {response.status_code} - {response.text}')
+    print("Finished getting Forecast data.")
 
 def get_moon_image_number():
     now = datetime.utcnow()
@@ -448,6 +456,7 @@ def GET_MOON_IMAGE(size, save=0):
         img.save(f"moon/moon.{moon_image_number:04d}.tiff")
     else:
         return img
+    print("Finished getting moon phase image.")
 
 def PROCESS_FORECAST(interp=0):
     print("Processing Forecast data.")
@@ -472,8 +481,10 @@ def PROCESS_FORECAST(interp=0):
                     response = pd.concat([response, pd.DataFrame(cur_dict, index=[key2["dt"]])], axis=0, join='outer')
     response = response.drop(columns=["dt"])
     return response
+    print("Finished processing Forecast data.")
 
 def PROCESS_FORECAST_MIN_MAX(response):
+    print("Processing Forecast min/max data.")
     prior_midnight = int(datetime.timestamp(datetime.strptime(date.today().strftime('%Y-%m-%d')    + " 00:00:00", '%Y-%m-%d %H:%M:%S')))
     future_midnight = int(datetime.timestamp(datetime.strptime((date.today() + timedelta(days=1)).strftime('%Y-%m-%d') + " 00:00:00", '%Y-%m-%d %H:%M:%S')))
     todays_forecast = pd.DataFrame([response.loc[i] for i in response.index.values.tolist() if i <= future_midnight and i >= prior_midnight])
@@ -492,6 +503,7 @@ def PROCESS_FORECAST_MIN_MAX(response):
         # max_wind = max(todays_forecast["wind"])
         # min_wind = min(todays_forecast["wind"])
     return min_temp, max_temp, min_humid, max_humid#, min_wind, max_wind
+    print("Finished processing Forecast min/max data.")
 
 def resolve(domain):
     resolveList = []
@@ -599,7 +611,8 @@ def GET_WEATHER_ICON():
             icon_url.append("https://openweathermap.org/img/wn/%s@2x.png" % (icon_dict[id]))
     
     return list(zip([datetime.fromtimestamp(i).strftime('%I:%M %p') for i in subresponse.index], icon_url))
-
+    print("Finished getting weather icon.")
+    
 def config_pic():
     directory = "PhotosB/"
     file_paths = []
@@ -655,7 +668,6 @@ def periodic_updater():
     while True:
         internet = check_internet_connection()
         if internet:
-            pass
             #BROODMINDER_GET(str(self.controller.shared_data["hive_name"].get()))
             #BROODMINDER_GET(hive_names)
             AMBIENT_GET()
@@ -666,9 +678,9 @@ def daily_updater():
     while True:
         internet = check_internet_connection()
         if internet:
+            GET_FORECAST()
             PYICLOUD_GET.cycle_files()
             PYICLOUD_GET.download()
-            change_pic()
-            GET_FORECAST()
+            # change_pic()
         # run itself again
         t.sleep(86400)

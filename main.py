@@ -121,13 +121,13 @@ class Windows(Tk):
         tab_names = [
                     "Weather",
                     "Bees",
-                    "Photos",
+                    # "Photos",
                     # "Alarm",
                     ]
         for i, F in enumerate([
                               Pane1,
                               Pane2,
-                              Pane3,
+                              # Pane3,
                               # Pane4,
                               ]):
             frame = F(main_notebook, self)

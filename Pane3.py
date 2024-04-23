@@ -29,7 +29,7 @@ import urllib.request
 import io
 from pathlib import Path
 sys.path.append("BEE_WEATHER_DATA")
-from BEE_WEATHER_DATA import BROODMINDER_GET, AMBIENT_GET, READ_HIVE, PROCESS_HIVE, READ_BEE_WEATHER, PROCESS_BEE_WEATHER, PROCESS_AMBIENT, GRAPH_DATA, GET_MOON_IMAGE, GET_FORECAST, PROCESS_FORECAST, PROCESS_FORECAST_MIN_MAX, check_internet_connection, GET_WEATHER_ICON, config_pic
+from BEE_WEATHER_DATA import BROODMINDER_GET, AMBIENT_GET, READ_HIVE, PROCESS_HIVE, READ_BEE_WEATHER, PROCESS_BEE_WEATHER, PROCESS_AMBIENT, GRAPH_DATA, GET_MOON_IMAGE, GET_FORECAST, PROCESS_FORECAST, PROCESS_FORECAST_MIN_MAX, check_internet_connection, GET_WEATHER_ICON, config_pic, change_pic
 sys.path.append("PYICLOUD_GET")
 from Custom_Widgets import CustomMeter, EmptyLF, CustomClockWidget, CustomSmallImg, WeatherWidget
 import PYICLOUD_GET
@@ -54,7 +54,7 @@ class Pane3(Frame): # Picture Frame
             ipadx=int(self.controller.shared_data["padding"].get()),
             ipady=int(self.controller.shared_data["padding"].get()),
         )
-
+        # I don't think this knows what change_pic is anymore.  Need to fix
         # create the PIL image object:
         img = config_pic()
         in_frame = Button(
