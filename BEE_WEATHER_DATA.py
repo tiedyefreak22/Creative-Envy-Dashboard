@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 #from decouple import config
 import requests
 from io import BytesIO
-from PIL import Image
+from PIL import Image, ImageTk
 import json
 from datetime import date, datetime, timedelta, timezone
 import urllib.request
@@ -421,14 +421,7 @@ def GET_FORECAST():
         print(f'Error: {response.status_code} - {response.text}')
     print("Finished getting Forecast data.")
 
-def get_moon_image_number():
-    now = datetime.utcnow()
-    janone = datetime(now.year, 1, 1, 0, 0, 0)
-    moon_image_number = round((now - janone).total_seconds() / 3600)
-
-    return moon_image_number
-
-def GET_MOON_IMAGE(size, save=0):
+def GET_MOON_IMAGE(size = 216):
     print("Getting moon phase image.")
     total_images = 8760
     moon_domain = "https://svs.gsfc.nasa.gov"
@@ -436,7 +429,9 @@ def GET_MOON_IMAGE(size, save=0):
     moon_path = "/vis/a000000/a005100/a005187"
     image = None
     pixmap = None
-    moon_image_number = get_moon_image_number()
+    now = datetime.utcnow()
+    janone = datetime(now.year, 1, 1, 0, 0, 0)
+    moon_image_number = round((now - janone).total_seconds() / 3600)
 
     if size > 2160:
         url = moon_domain+moon_path+"/frames/5760x3240_16x9_30p/" \
@@ -449,13 +444,11 @@ def GET_MOON_IMAGE(size, save=0):
                                               f"moon.{moon_image_number:04d}.jpg"
     response = requests.get(url)
     img = Image.open(BytesIO(response.content))
-    #size = img.shape()
-    if save:
-        for file in os.listdir("moon/"):
-            os.remove("moon/" + file)
-        img.save(f"moon/moon.{moon_image_number:04d}.tiff")
-    else:
-        return img
+
+    for file in os.listdir("moon/"):
+        os.remove("moon/" + file)
+    img.save(f"moon/moon.{moon_image_number:04d}.tiff")
+
     print("Finished getting moon phase image.")
 
 def PROCESS_FORECAST(interp=0):
@@ -612,8 +605,8 @@ def GET_WEATHER_ICON():
     
     return list(zip([datetime.fromtimestamp(i).strftime('%I:%M %p') for i in subresponse.index], icon_url))
     print("Finished getting weather icon.")
-    
-def config_pic():
+
+def RAND_PIC():
     directory = "PhotosB/"
     file_paths = []
     ext = ('.png', '.jpg', '.jpeg', '.heic', '.tiff', '.tif')
@@ -645,42 +638,20 @@ def config_pic():
             break
         except:
             pass
+    # config_pic
+
+def config_pic(file, widget_width, widget_height, padding):
+    PIL_image = Image.open(file)
     original_w = np.shape(PIL_image)[1]
     original_h = np.shape(PIL_image)[0]
     aspect = original_h/original_w
-
-    constraining_dim = min(self.controller.shared_data["window_geometry"][0].get(), self.controller.shared_data["window_geometry"][1].get())
+    constraining_dim = min(widget_width - 5 * padding,
+                           widget_height - 5 * padding)
     minor_constraint = min(constraining_dim/original_w, constraining_dim/original_h)
-    width = int(original_w * minor_constraint)
-    height = int(original_h * minor_constraint)
-    PIL_image_small = PIL_image.resize((width,height), Image.Resampling.LANCZOS)
+    img_width = int(original_w * minor_constraint)
+    img_height = int(original_h * minor_constraint)
+    PIL_image_small = PIL_image.resize((img_width, img_height), Image.Resampling.LANCZOS)
 
     # now create the ImageTk PhotoImage:
     img = ImageTk.PhotoImage(image=PIL_image_small)
     return img
-
-def change_pic():
-    img = config_pic()
-    in_frame.configure(image = img)
-    in_frame.image = img
-
-def periodic_updater():
-    while True:
-        internet = check_internet_connection()
-        if internet:
-            #BROODMINDER_GET(str(self.controller.shared_data["hive_name"].get()))
-            #BROODMINDER_GET(hive_names)
-            AMBIENT_GET()
-        # run itself again
-        t.sleep(600)
-
-def daily_updater():
-    while True:
-        internet = check_internet_connection()
-        if internet:
-            GET_FORECAST()
-            PYICLOUD_GET.cycle_files()
-            PYICLOUD_GET.download()
-            # change_pic()
-        # run itself again
-        t.sleep(86400)

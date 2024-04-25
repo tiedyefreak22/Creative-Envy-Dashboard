@@ -29,7 +29,7 @@ import urllib.request
 import io
 from pathlib import Path
 sys.path.append("BEE_WEATHER_DATA")
-from BEE_WEATHER_DATA import BROODMINDER_GET, AMBIENT_GET, READ_HIVE, PROCESS_HIVE, READ_BEE_WEATHER, PROCESS_BEE_WEATHER, PROCESS_AMBIENT, GRAPH_DATA, GET_MOON_IMAGE, GET_FORECAST, PROCESS_FORECAST, PROCESS_FORECAST_MIN_MAX, check_internet_connection, GET_WEATHER_ICON
+from BEE_WEATHER_DATA import BROODMINDER_GET, AMBIENT_GET, READ_HIVE, PROCESS_HIVE, READ_BEE_WEATHER, PROCESS_BEE_WEATHER, PROCESS_AMBIENT, GRAPH_DATA, GET_MOON_IMAGE, GET_FORECAST, PROCESS_FORECAST, PROCESS_FORECAST_MIN_MAX, check_internet_connection, GET_WEATHER_ICON, config_pic
 sys.path.append("PYICLOUD_GET")
 import PYICLOUD_GET
 import pandas as pd
@@ -49,7 +49,6 @@ class CustomMeter(ttk.LabelFrame):
             borderwidth=1,
             width=self.width,
             height=self.height,
-            #padding=self.padding,
             text=text,
         )
         meter = ttk.Meter(
@@ -78,7 +77,6 @@ class EmptyLF(ttk.LabelFrame):
             borderwidth=1,
             width=self.width,
             height=self.height,
-            #padding=self.padding,
             text=text,
         )
     def get(self):
@@ -97,42 +95,32 @@ class WeatherWidget(ttk.LabelFrame):
             borderwidth=1,
             width=self.width,
             height=self.height,
-            #padding=self.padding,
             text=text,
         )
-        response = GET_WEATHER_ICON()
-        for idx, (text, url) in enumerate(response):
-            with urllib.request.urlopen(url) as u:
-                raw_data = u.read()            
-            PIL_image = Image.open(io.BytesIO(raw_data))
-            original_w = np.shape(PIL_image)[1]
-            original_h = np.shape(PIL_image)[0]
-            aspect = original_h/original_w
 
-            constraining_dim = min((self.width / 3) - (5 * self.padding),
-                                   self.height - (5 * self.padding))
-            minor_constraint = min(constraining_dim/original_w, constraining_dim/original_h)
-            img_width = int(original_w * minor_constraint)
-            img_height = int(original_h * minor_constraint)
-            PIL_image_small = PIL_image.resize((img_width, img_height), Image.Resampling.LANCZOS)
-
-            # now create the ImageTk PhotoImage:
-            self.img[idx] = ImageTk.PhotoImage(image=PIL_image_small)
-            
-            # self.image = ImageTk.PhotoImage(image)
-            # img = WebImage(link).get()
-            imagelab1 = Label(
-                self,
-                image=self.img[idx],
-            )
-            imagelab1.place(relx=(0.167 + 0.33 * idx), rely=0.4, anchor=CENTER)
-
-            imagelab2 = Label(
-                self,
-                text=text,
-                font=("Helvetica’", 16),
-            )
-            imagelab2.place(relx=(0.167 + 0.33 * idx), rely=0.85, anchor=CENTER)
+        def forecast_updater():
+            GET_FORECAST()
+            response = GET_WEATHER_ICON()
+            for idx, (text, url) in enumerate(response):
+                with urllib.request.urlopen(url) as u:
+                    raw_data = u.read()            
+                
+                # now create the ImageTk PhotoImage:
+                self.img[idx] = config_pic(io.BytesIO(raw_data), (self.width / 3) - (5 * self.padding), self.height - (5 * self.padding), self.padding)
+                imagelab1 = Label(
+                    self,
+                    image=self.img[idx],
+                )
+                imagelab1.place(relx=(0.167 + 0.33 * idx), rely=0.4, anchor=CENTER)
+    
+                imagelab2 = Label(
+                    self,
+                    text=text,
+                    font=("Helvetica’", 16),
+                )
+                imagelab2.place(relx=(0.167 + 0.33 * idx), rely=0.85, anchor=CENTER)
+            self.after(86400, forecast_updater)
+        forecast_updater()
     
     def get(self):
         return self.entry.get()
@@ -149,48 +137,22 @@ class CustomSmallImg(ttk.LabelFrame): #Moon image, but generalized to a small sp
             borderwidth=1,
             width=self.width,
             height=self.height,
-            #padding=self.padding,
             text=text,
         )
-        
-        def config_pic():
-            if internet:
-                try:
-                    GET_MOON_IMAGE(216, save=1)
-                except:
-                    pass
 
-            file = [i for i in os.listdir("moon/")]
-            PIL_image = Image.open("moon/" + file[0])
-            original_w = np.shape(PIL_image)[1]
-            original_h = np.shape(PIL_image)[0]
-            aspect = original_h/original_w
-
-            constraining_dim = min(self.width - 5 * self.padding,
-                                   self.height - 5 * self.padding)
-            minor_constraint = min(constraining_dim/original_w, constraining_dim/original_h)
-            img_width = int(original_w * minor_constraint)
-            img_height = int(original_h * minor_constraint)
-            PIL_image_small = PIL_image.resize((img_width, img_height), Image.Resampling.LANCZOS)
-
-            # now create the ImageTk PhotoImage:
-            img = ImageTk.PhotoImage(image=PIL_image_small)
-            return img
-
-        def change_pic():
-            img = config_pic()
+        def moon_updater():
+            GET_MOON_IMAGE()
+            img = config_pic("moon/" + [i for i in os.listdir("moon/")][0], self.width, self.height, self.padding)
+            in_frame = Label(
+                self,
+            )
             in_frame.config(image = img)
             in_frame.image = img
-        # This is where GET_MOON_IMAGE is run twice.  Need to fix
-        # create the PIL image object:
-        img = config_pic()
-        in_frame = Label(
-            self,
-            image = img,
-        )
-        change_pic()
-        in_frame.place(relx=0.5, rely=0.5, anchor=CENTER)
-
+            # change_pic(in_frame)
+            in_frame.place(relx=0.5, rely=0.5, anchor=CENTER)
+            self.after(86400, moon_updater)
+        moon_updater()
+    
     def get(self):
         return self.entry.get()
 
@@ -207,7 +169,6 @@ class CustomClockWidget(ttk.LabelFrame):
             borderwidth=1,
             width=self.width,
             height=self.height,
-            #padding=self.padding,
             text=text,
         )
         
@@ -225,7 +186,6 @@ class CustomClockWidget(ttk.LabelFrame):
             self,
             text = datetime.now().strftime('%I:%M:%S %p'),
             font=("Helvetica’", 28),
-            # width = self.width - 2 * self.padding
         )
         clock_frame.place(relx=0.5, rely=0.35, anchor=CENTER)
     
@@ -233,7 +193,6 @@ class CustomClockWidget(ttk.LabelFrame):
             self,
             text = datetime.now().strftime("Sunrise: %I:%M:%S %p"),
             font=("Helvetica’", 16),
-            # width = self.width - 2 * self.padding
         )
         sunrise_frame.place(relx=0.5, rely=0.8, anchor=S)
         
@@ -241,7 +200,6 @@ class CustomClockWidget(ttk.LabelFrame):
             self,
             text = datetime.now().strftime("Sunset: %I:%M:%S %p"),
             font=("Helvetica’", 16),
-            # width = self.width - 2 * self.padding
         )
         sunset_frame.place(relx=0.5, rely=0.8, anchor=N)
         self.pack_propagate(0)

@@ -29,7 +29,7 @@ import urllib.request
 import io
 from pathlib import Path
 sys.path.append("BEE_WEATHER_DATA")
-from BEE_WEATHER_DATA import BROODMINDER_GET, AMBIENT_GET, READ_HIVE, PROCESS_HIVE, READ_BEE_WEATHER, PROCESS_BEE_WEATHER, PROCESS_AMBIENT, GRAPH_DATA, GET_MOON_IMAGE, GET_FORECAST, PROCESS_FORECAST, PROCESS_FORECAST_MIN_MAX, check_internet_connection, GET_WEATHER_ICON, change_pic, periodic_updater, daily_updater
+from BEE_WEATHER_DATA import BROODMINDER_GET, AMBIENT_GET, READ_HIVE, PROCESS_HIVE, READ_BEE_WEATHER, PROCESS_BEE_WEATHER, PROCESS_AMBIENT, GRAPH_DATA, GET_MOON_IMAGE, GET_FORECAST, PROCESS_FORECAST, PROCESS_FORECAST_MIN_MAX, check_internet_connection, GET_WEATHER_ICON
 sys.path.append("PYICLOUD_GET")
 from Custom_Widgets import CustomMeter, EmptyLF, CustomClockWidget, CustomSmallImg, WeatherWidget
 from Pane1 import Pane1
@@ -121,13 +121,13 @@ class Windows(Tk):
         tab_names = [
                     "Weather",
                     "Bees",
-                    # "Photos",
+                    "Photos",
                     # "Alarm",
                     ]
         for i, F in enumerate([
                               Pane1,
                               Pane2,
-                              # Pane3,
+                              Pane3,
                               # Pane4,
                               ]):
             frame = F(main_notebook, self)
@@ -147,8 +147,8 @@ class Windows(Tk):
             index = main_notebook.index(main_notebook.select())
         main_notebook.bind("<<NotebookTabChanged>>", on_tab_change)
 
-def on_closing(self):
-    self.quit()
+# def on_closing(self):
+#     self.quit()
 
 def main():
     windows = Windows()
@@ -157,20 +157,11 @@ def main():
     
 if __name__ == '__main__': # runs main if in python script
     t1 = threading.Thread(target=main,args=())
-    t2 = threading.Thread(target=periodic_updater,args=())
-    t3 = threading.Thread(target=daily_updater,args=())
-    # t2 = threading.Thread(target=PYICLOUD_GET.cycle_files,args=())
-    # t3 = threading.Thread(target=PYICLOUD_GET.download,args=())
-    # t4 = threading.Thread(target=BROODMINDER_GET,args=str("New Left Hive"))#str(self.controller.shared_data["hive_name"].get()))
-    # t5 = threading.Thread(target=AMBIENT_GET,args=())
+    t2 = threading.Thread(target=PYICLOUD_GET.cycle_files,args=())
+    t3 = threading.Thread(target=PYICLOUD_GET.download,args=())
     t1.start()
-    t2.start()
-    t3.start()
-    # t4.start()
-    # t5.start()
+    # t2.start()
+    # t3.start()
     t1.join()
-    t2.join()
-    t3.join()
-    # t4.join()
-    # t5.join()
-    # windows.mainloop()
+    # t2.join()
+    # t3.join()
