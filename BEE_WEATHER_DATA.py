@@ -46,7 +46,7 @@ def BROODMINDER_GET(hive_name):
       "safebrowsing.enabled": True,
       "profile.default_content_setting_values.automatic_downloads": 1,
     })
-    # options.add_argument('--headless=new')
+    options.add_argument('--headless=new')
     
     s = Service(str('./chromedriver.exe'))
     driver = webdriver.Chrome(service=s, options=options)

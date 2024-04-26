@@ -1490,14 +1490,14 @@
         }
     ],
     "city": {
-        "id": 5772654,
-        "name": "Centerville",
+        "id": 5784504,
+        "name": "West Bountiful",
         "coord": {
             "lat": 40.9072,
             "lon": -111.8943
         },
         "country": "US",
-        "population": 15335,
+        "population": 5265,
         "timezone": -21600,
         "sunrise": 1714134690,
         "sunset": 1714184325
