@@ -17,34 +17,6 @@ import shutil
 MAX_RETRIES = 5
 WAIT_SECONDS = 5
 
-# username = "olivine8910@gmail.com"
-# password = "sadnav-diqtyf-boQni"
-# size = "original"
-# force_size = 0
-# download_videos = 0
-# directory = "./Photos"
-
-# CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
-# @click.command(context_settings=CONTEXT_SETTINGS, options_metavar='<options>')
-# @click.argument('directory', type=click.Path(exists=True), metavar='<directory>')
-# @click.option('--username',
-#     help='Your iCloud username or email address',
-#     metavar='<username>',
-#     prompt='iCloud username/email')
-# @click.option('--password',
-#     help='Your iCloud password (leave blank if stored in keyring)',
-#     metavar='<password>')
-# @click.option('--size',
-#     help='Image size to download (default: original)',
-#     type=click.Choice(['original', 'medium', 'thumb']),
-#     default='original')
-# @click.option('--download-videos',
-#     help='Download both videos and photos (default: only download photos)',
-#     is_flag=True)
-# @click.option('--force-size',
-#     help='Only download the requested size (default: download original if requested size is not available)',
-#     is_flag=True)
-
 def cycle_files():
     directoryA = "PhotosA/"
     directoryB = "PhotosB/"
@@ -62,10 +34,8 @@ def cycle_files():
             file_pathA = os.path.join(directoryA, file)
             file_pathB = os.path.join(directoryB, file)
             os.rename(file_pathA, file_pathB)
-        # except OSError:
-        #     print("Error")
 
-def download(directory = "C:/Users/khard/OneDrive/Documents/GitHub/Creative-Envy-Dashboard/PhotosA", username = "olivine8910@gmail.com", password = "sadnav-diqtyf-boQni1", size = "original", download_videos = 0, force_size = 0):
+def download(directory = os.getcwd() + "/PhotosA", username = "olivine8910@gmail.com", password = "sadnav-diqtyf-boQni1", size = "original", download_videos = 0, force_size = 0):
     """Download/Refresh 50 iCloud photos from favorites to a local directory"""
     icloud = authenticate(username, password)
 

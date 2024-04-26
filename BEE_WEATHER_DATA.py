@@ -78,7 +78,7 @@ def BROODMINDER_GET(hive_name):
     t.sleep(3)
     driver.find_element(by=By.XPATH, value="/html/body/app-root/app-core/mat-sidenav-container/mat-sidenav-content/div/div/app-hives-dashboard/div[2]/div[2]/mat-icon").click()
     t.sleep(1)
-    driver.find_element(by=By.XPATH, value="/html/body/div[3]/div[2]/div/div/div/button[4]/span").click()
+    driver.find_element(by=By.XPATH, value="/html/body/div[3]/div[2]/div/div/div/button[4]").click()
     t.sleep(1)
     driver.find_element(by=By.XPATH, value="/html/body/div[3]/div[2]/div/mat-dialog-container/div/div/div/div[2]/div[2]/mat-checkbox/div/div/input").click()
     t.sleep(1)
