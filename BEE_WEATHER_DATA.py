@@ -46,7 +46,7 @@ def BROODMINDER_GET(hive_name):
       "safebrowsing.enabled": True,
       "profile.default_content_setting_values.automatic_downloads": 1,
     })
-    options.add_argument('--headless=new')
+    # options.add_argument('--headless=new')
     
     s = Service(str('./chromedriver.exe'))
     driver = webdriver.Chrome(service=s, options=options)
@@ -77,6 +77,10 @@ def BROODMINDER_GET(hive_name):
     driver.get(URL)
     t.sleep(3)
     driver.find_element(by=By.XPATH, value="/html/body/app-root/app-core/mat-sidenav-container/mat-sidenav-content/div/div/app-hives-dashboard/div[2]/div[2]/mat-icon").click()
+    t.sleep(1)
+    driver.find_element(by=By.XPATH, value="/html/body/app-root/app-core/mat-sidenav-container/mat-sidenav-content/div/div/app-hives-dashboard/div[1]/div/app-date-range-picker-2/div/mat-icon").click()
+    t.sleep(1)
+    driver.find_element(by=By.XPATH, value="/html/body/div[3]/div[2]/div/div/div/a/div/div[1]/button[9]/span[5]").click()
     t.sleep(1)
     driver.find_element(by=By.XPATH, value="/html/body/div[3]/div[2]/div/div/div/button[4]").click()
     t.sleep(1)
@@ -117,17 +121,18 @@ def READ_HIVE(hive_name: str):
         Hive.drop('Local_TimeStamp', axis=1, inplace=True)
         Hive.drop('Metric', axis=1, inplace=True)
         Hive.drop('Audio', axis=1, inplace=True)
-        
+
+        Hive_master = pd.DataFrame()
         if os.path.exists(str(directory + str(hive_name) + " Master.csv")):
             Hive_master = pd.read_csv(str(directory + str(hive_name) + " Master.csv"))
-            Hive_master = pd.concat([Hive, Hive_master]).astype(str).drop_duplicates(subset=['Unix_Time'], keep='last').reset_index(drop=True)
+            Hive_master = pd.concat([Hive, Hive_master]).astype(str).drop_duplicates(subset=['Unix_Time'], keep='last')
         else:
             Hive_master = Hive
 
-        Hive_master.to_csv(directory + hive_name + " Master.csv", mode='w', index=False, header=True)
+        Hive_master.to_csv(directory + hive_name + " Master.csv", mode='w', index=False, header=True).sort_values(by=['Unix_Time']).reset_index(drop=True)
         os.remove(filename)
     elif os.path.exists(str(directory + str(hive_name) + " Master.csv")):
-        Hive_master = pd.read_csv(str(directory + str(hive_name) + " Master.csv"))
+        Hive_master = pd.read_csv(str(directory + str(hive_name) + " Master.csv")).sort_values(by=['Unix_Time'])
         
     return Hive_master
     print("Finished reading Broodminder data.")
