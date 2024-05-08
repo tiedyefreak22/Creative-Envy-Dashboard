@@ -34,7 +34,7 @@ import pytz
 import astral, astral.sun
 import PYICLOUD_GET
 
-def BROODMINDER_GET(hive_name):
+def BROODMINDER_GET(hive_name, hive_ID):
     #Login to Broodminder, Get Beehive data, and format
     print("Getting Broodminder data.")
     directory = "Broodminder/"        
@@ -73,7 +73,7 @@ def BROODMINDER_GET(hive_name):
     t.sleep(3)
 
     # left hive dashboard
-    URL = 'https://mybroodminder.com/app/dashboard/hives?hiveIds=6b5cb8b012cb45038eacc24770a2fff7&weaIds=37a0763f69e04c2c823013928e067d68'
+    URL = f'https://mybroodminder.com/app/dashboard/hives?hiveIds={hive_ID}&weaIds=37a0763f69e04c2c823013928e067d68'
     driver.get(URL)
     t.sleep(3)
     
@@ -374,7 +374,7 @@ def PROCESS_AMBIENT(interp = 0):
         return Week_Devices
     print("Finished processing Ambient data.")
 
-def GRAPH_DATA(Data): #Pandas DF
+def GRAPH_DATA(Data: pd.DataFrame):
     metrics = [key for key in Data.keys() if key not in ["dateutc", "Device", "Hive_Position", "lastRain", "Unix_Time", "Sample", "w1", "w2", "w3", "w4", "Weight_Scale_Factor"]]
     metric_num = len(metrics)
 
@@ -431,14 +431,11 @@ def GET_MOON_IMAGE(size = 216):
     moon_image_number = round((now - janone).total_seconds() / 3600)
 
     if size > 2160:
-        url = moon_domain + moon_path + "/frames/5760x3240_16x9_30p/" \
-              f"plain/moon.{moon_image_number:04d}.tif"
+        url = moon_domain + moon_path + "/frames/5760x3240_16x9_30p/" + f"plain/moon.{moon_image_number:04d}.tif" # can't have space before "04d"
     elif size > 216:
-        url = moon_domain + moon_path + "/frames/3840x2160_16x9_30p/" \
-          f"plain/moon.{moon_image_number:04d}.tif"
+        url = moon_domain + moon_path + "/frames/3840x2160_16x9_30p/" + f"plain/moon.{moon_image_number:04d}.tif"
     else:
-        url = moon_domain + moon_path + "/frames/216x216_1x1_30p/" \
-                                              f"moon.{moon_image_number:04d}.jpg"
+        url = moon_domain + moon_path + "/frames/216x216_1x1_30p/" + f"moon.{moon_image_number:04d}.jpg"
     response = requests.get(url)
     img = Image.open(BytesIO(response.content))
 

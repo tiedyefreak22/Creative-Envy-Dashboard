@@ -40,21 +40,16 @@ from Pane4 import Pane4
 import PYICLOUD_GET
 import pandas as pd
 from IPython.display import display
+from timers import Timers
 
 # root window (parent to all), controller to Frames
 class Windows(Tk):
     def __init__(self, *args, **kwargs):
         Tk.__init__(self, *args, **kwargs)
 
-        def meter_updater():
-            if settings.internet_avail:
-                BROODMINDER_GET("New Left Hive")
-                AMBIENT_GET()
-            self.after(86400, meter_updater)
-        meter_updater()
-        
-        hive_names = "New Left Hive"
-        Hive_Processed = PROCESS_HIVE(hive_names)
+        Hive_Processed = []
+        for hive_name in settings.hive_IDs.keys():
+            Hive_Processed.append(PROCESS_HIVE(hive_name))
         forecast_data = PROCESS_FORECAST()
         ambient_data = PROCESS_AMBIENT()
         file = [i for i in os.listdir("moon/")]
@@ -63,7 +58,7 @@ class Windows(Tk):
             "padding":      IntVar(self, 5),
             "num_rows":     IntVar(self, 3),
             "num_cols":     IntVar(self, 5),
-            "hive_name":    StringVar(self, hive_names),
+            "hive_names":   StringVar(self, settings.hive_IDs.keys()),
             "sun":          [StringVar(self, 1), StringVar(self, 1)],
             "honey1":       [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 1)],
             "honey2":       [DoubleVar(self, 1), DoubleVar(self, 1), DoubleVar(self, 1)],
@@ -99,51 +94,51 @@ class Windows(Tk):
             "lightning":    StringVar(self, 1),
             "air_qual":     [IntVar(self, 1), IntVar(self, 1), IntVar(self, 1)],
             "chooks":       [IntVar(self, 1), IntVar(self, 1), IntVar(self, 1)],
-            "hive1_wt":     [DoubleVar(self, list(Hive_Processed['Scale Under Hive']['Weight'].items())[-1][1]),
-                             DoubleVar(self, min(Hive_Processed['Scale Under Hive']['Weight'])),
-                             DoubleVar(self, max(Hive_Processed['Scale Under Hive']['Weight']))],
-            "hive2_wt":     [DoubleVar(self, list(Hive_Processed['Scale Under Hive']['Weight'].items())[-1][1]),
-                             DoubleVar(self, min(Hive_Processed['Scale Under Hive']['Weight'])),
-                             DoubleVar(self, max(Hive_Processed['Scale Under Hive']['Weight']))],
-            "hive3_wt":     [DoubleVar(self, list(Hive_Processed['Scale Under Hive']['Weight'].items())[-1][1]),
-                             DoubleVar(self, min(Hive_Processed['Scale Under Hive']['Weight'])),
-                             DoubleVar(self, max(Hive_Processed['Scale Under Hive']['Weight']))],
-            "hive4_wt":     [DoubleVar(self, list(Hive_Processed['Scale Under Hive']['Weight'].items())[-1][1]),
-                             DoubleVar(self, min(Hive_Processed['Scale Under Hive']['Weight'])),
-                             DoubleVar(self, max(Hive_Processed['Scale Under Hive']['Weight']))],
-            "hive5_wt":     [DoubleVar(self, list(Hive_Processed['Scale Under Hive']['Weight'].items())[-1][1]),
-                             DoubleVar(self, min(Hive_Processed['Scale Under Hive']['Weight'])),
-                             DoubleVar(self, max(Hive_Processed['Scale Under Hive']['Weight']))],
-            "hive1_temp":   [DoubleVar(self, list(Hive_Processed['Lower Brood']['Temperature'].items())[-1][1]),
-                             DoubleVar(self, min(Hive_Processed['Lower Brood']['Temperature'])),
-                             DoubleVar(self, max(Hive_Processed['Lower Brood']['Temperature']))],
-            "hive2_temp":   [DoubleVar(self, list(Hive_Processed['Lower Brood']['Temperature'].items())[-1][1]),
-                             DoubleVar(self, min(Hive_Processed['Lower Brood']['Temperature'])),
-                             DoubleVar(self, max(Hive_Processed['Lower Brood']['Temperature']))],
-            "hive3_temp":   [DoubleVar(self, list(Hive_Processed['Lower Brood']['Temperature'].items())[-1][1]),
-                             DoubleVar(self, min(Hive_Processed['Lower Brood']['Temperature'])),
-                             DoubleVar(self, max(Hive_Processed['Lower Brood']['Temperature']))],
-            "hive4_temp":   [DoubleVar(self, list(Hive_Processed['Lower Brood']['Temperature'].items())[-1][1]),
-                             DoubleVar(self, min(Hive_Processed['Lower Brood']['Temperature'])),
-                             DoubleVar(self, max(Hive_Processed['Lower Brood']['Temperature']))],
-            "hive5_temp":   [DoubleVar(self, list(Hive_Processed['Lower Brood']['Temperature'].items())[-1][1]),
-                             DoubleVar(self, min(Hive_Processed['Lower Brood']['Temperature'])),
-                             DoubleVar(self, max(Hive_Processed['Lower Brood']['Temperature']))],
-            "hive1_humid":  [DoubleVar(self, list(Hive_Processed['Upper Brood']['Humidity'].items())[-1][1]),
-                             DoubleVar(self, min(Hive_Processed['Upper Brood']['Humidity'])),
-                             DoubleVar(self, max(Hive_Processed['Upper Brood']['Humidity']))],
-            "hive2_humid":  [DoubleVar(self, list(Hive_Processed['Upper Brood']['Humidity'].items())[-1][1]),
-                             DoubleVar(self, min(Hive_Processed['Upper Brood']['Humidity'])),
-                             DoubleVar(self, max(Hive_Processed['Upper Brood']['Humidity']))],
-            "hive3_humid":  [DoubleVar(self, list(Hive_Processed['Upper Brood']['Humidity'].items())[-1][1]),
-                             DoubleVar(self, min(Hive_Processed['Upper Brood']['Humidity'])),
-                             DoubleVar(self, max(Hive_Processed['Upper Brood']['Humidity']))],
-            "hive4_humid":  [DoubleVar(self, list(Hive_Processed['Upper Brood']['Humidity'].items())[-1][1]),
-                             DoubleVar(self, min(Hive_Processed['Upper Brood']['Humidity'])),
-                             DoubleVar(self, max(Hive_Processed['Upper Brood']['Humidity']))],
-            "hive5_humid":  [DoubleVar(self, list(Hive_Processed['Upper Brood']['Humidity'].items())[-1][1]),
-                             DoubleVar(self, min(Hive_Processed['Upper Brood']['Humidity'])),
-                             DoubleVar(self, max(Hive_Processed['Upper Brood']['Humidity']))],
+            "hive1_wt":     [DoubleVar(self, list(Hive_Processed[0]['Scale Under Hive']['Weight'].items())[-1][1]),
+                             DoubleVar(self, min(Hive_Processed[0]['Scale Under Hive']['Weight'])),
+                             DoubleVar(self, max(Hive_Processed[0]['Scale Under Hive']['Weight']))],
+            "hive2_wt":     [DoubleVar(self, list(Hive_Processed[0]['Scale Under Hive']['Weight'].items())[-1][1]),
+                             DoubleVar(self, min(Hive_Processed[0]['Scale Under Hive']['Weight'])),
+                             DoubleVar(self, max(Hive_Processed[0]['Scale Under Hive']['Weight']))],
+            "hive3_wt":     [DoubleVar(self, list(Hive_Processed[0]['Scale Under Hive']['Weight'].items())[-1][1]),
+                             DoubleVar(self, min(Hive_Processed[0]['Scale Under Hive']['Weight'])),
+                             DoubleVar(self, max(Hive_Processed[0]['Scale Under Hive']['Weight']))],
+            "hive4_wt":     [DoubleVar(self, list(Hive_Processed[0]['Scale Under Hive']['Weight'].items())[-1][1]),
+                             DoubleVar(self, min(Hive_Processed[0]['Scale Under Hive']['Weight'])),
+                             DoubleVar(self, max(Hive_Processed[0]['Scale Under Hive']['Weight']))],
+            "hive5_wt":     [DoubleVar(self, list(Hive_Processed[0]['Scale Under Hive']['Weight'].items())[-1][1]),
+                             DoubleVar(self, min(Hive_Processed[0]['Scale Under Hive']['Weight'])),
+                             DoubleVar(self, max(Hive_Processed[0]['Scale Under Hive']['Weight']))],
+            "hive1_temp":   [DoubleVar(self, list(Hive_Processed[0]['Lower Brood']['Temperature'].items())[-1][1]),
+                             DoubleVar(self, min(Hive_Processed[0]['Lower Brood']['Temperature'])),
+                             DoubleVar(self, max(Hive_Processed[0]['Lower Brood']['Temperature']))],
+            "hive2_temp":   [DoubleVar(self, list(Hive_Processed[0]['Lower Brood']['Temperature'].items())[-1][1]),
+                             DoubleVar(self, min(Hive_Processed[0]['Lower Brood']['Temperature'])),
+                             DoubleVar(self, max(Hive_Processed[0]['Lower Brood']['Temperature']))],
+            "hive3_temp":   [DoubleVar(self, list(Hive_Processed[0]['Lower Brood']['Temperature'].items())[-1][1]),
+                             DoubleVar(self, min(Hive_Processed[0]['Lower Brood']['Temperature'])),
+                             DoubleVar(self, max(Hive_Processed[0]['Lower Brood']['Temperature']))],
+            "hive4_temp":   [DoubleVar(self, list(Hive_Processed[0]['Lower Brood']['Temperature'].items())[-1][1]),
+                             DoubleVar(self, min(Hive_Processed[0]['Lower Brood']['Temperature'])),
+                             DoubleVar(self, max(Hive_Processed[0]['Lower Brood']['Temperature']))],
+            "hive5_temp":   [DoubleVar(self, list(Hive_Processed[0]['Lower Brood']['Temperature'].items())[-1][1]),
+                             DoubleVar(self, min(Hive_Processed[0]['Lower Brood']['Temperature'])),
+                             DoubleVar(self, max(Hive_Processed[0]['Lower Brood']['Temperature']))],
+            "hive1_humid":  [DoubleVar(self, list(Hive_Processed[0]['Upper Brood']['Humidity'].items())[-1][1]),
+                             DoubleVar(self, min(Hive_Processed[0]['Upper Brood']['Humidity'])),
+                             DoubleVar(self, max(Hive_Processed[0]['Upper Brood']['Humidity']))],
+            "hive2_humid":  [DoubleVar(self, list(Hive_Processed[0]['Upper Brood']['Humidity'].items())[-1][1]),
+                             DoubleVar(self, min(Hive_Processed[0]['Upper Brood']['Humidity'])),
+                             DoubleVar(self, max(Hive_Processed[0]['Upper Brood']['Humidity']))],
+            "hive3_humid":  [DoubleVar(self, list(Hive_Processed[0]['Upper Brood']['Humidity'].items())[-1][1]),
+                             DoubleVar(self, min(Hive_Processed[0]['Upper Brood']['Humidity'])),
+                             DoubleVar(self, max(Hive_Processed[0]['Upper Brood']['Humidity']))],
+            "hive4_humid":  [DoubleVar(self, list(Hive_Processed[0]['Upper Brood']['Humidity'].items())[-1][1]),
+                             DoubleVar(self, min(Hive_Processed[0]['Upper Brood']['Humidity'])),
+                             DoubleVar(self, max(Hive_Processed[0]['Upper Brood']['Humidity']))],
+            "hive5_humid":  [DoubleVar(self, list(Hive_Processed[0]['Upper Brood']['Humidity'].items())[-1][1]),
+                             DoubleVar(self, min(Hive_Processed[0]['Upper Brood']['Humidity'])),
+                             DoubleVar(self, max(Hive_Processed[0]['Upper Brood']['Humidity']))],
             "min_max_temp": [DoubleVar(self, PROCESS_FORECAST_MIN_MAX(forecast_data)[0]), DoubleVar(self, PROCESS_FORECAST_MIN_MAX(forecast_data)[1])],
             "min_max_humid":[DoubleVar(self, PROCESS_FORECAST_MIN_MAX(forecast_data)[2]), DoubleVar(self, PROCESS_FORECAST_MIN_MAX(forecast_data)[3])],
         }
@@ -162,38 +157,20 @@ class Windows(Tk):
             height = str(int(self.shared_data["window_geometry"][1].get()) - 2 * int(self.shared_data["padding"].get())),
             width = str(int(self.shared_data["window_geometry"][0].get()) - 2 * int(self.shared_data["padding"].get())),
             ) # "self" as passed argument means Windows is parent
-        if settings.pyicloud:
-            tab_names = [
-                        "Weather",
-                        "Bees",
-                        "Photos",
-                        # "Alarm",
-                        ]
-        else:
-            tab_names = [
-                        "Weather",
-                        "Bees",
-                        # "Photos",
-                        # "Alarm",
-                        ]
-        if settings.pyicloud:
-            for i, F in enumerate([
-                                  Pane1,
-                                  Pane2,
-                                  Pane3,
-                                  # Pane4,
-                                  ]):
-                frame = F(main_notebook, self)
-                main_notebook.add(frame, text = tab_names[i]) # "self." adds to this instance, ...(self) adds to parent instance
-        else:
-            for i, F in enumerate([
-                                  Pane1,
-                                  Pane2,
-                                  # Pane3,
-                                  # Pane4,
-                                  ]):
-                frame = F(main_notebook, self)
-                main_notebook.add(frame, text = tab_names[i]) # "self." adds to this instance, ...(self) adds to parent instance
+        tab_names = [
+                    "Weather",
+                    "Bees",
+                    "Photos",
+                    # "Alarm",
+                    ]
+        for i, F in enumerate([
+                              Pane1,
+                              Pane2,
+                              Pane3,
+                              # Pane4,
+                              ]):
+            frame = F(main_notebook, self)
+            main_notebook.add(frame, text = tab_names[i]) # "self." adds to this instance, ...(self) adds to parent instance
         main_notebook.grid(
             row = 0,
             column = 0,
@@ -213,16 +190,17 @@ def main():
     windows = Windows()
     windows.mainloop()
     
+def timers():
+    timers = Timers()
+    timers.daily_updater()
+    timers.hourly_updater()
+    timers.five_min_updater()
+    
 if __name__ == '__main__': # runs main if in python script
     settings.init()
     t1 = threading.Thread(target = main,args = ())
-    t2 = threading.Thread(target = PYICLOUD_GET.cycle_files,args = ())
-    t3 = threading.Thread(target = PYICLOUD_GET.download,args = ())
+    t2 = threading.Thread(target = timers,args = ())
     t1.start()
-    if settings.pyicloud:
-        t2.start()
-        t3.start()
+    t2.start()
     t1.join()
-    if settings.pyicloud:
-        t2.join()
-        t3.join()
+    t2.join()

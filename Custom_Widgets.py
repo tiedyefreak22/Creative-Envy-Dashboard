@@ -101,8 +101,6 @@ class WeatherWidget(ttk.LabelFrame):
         )
 
         def forecast_updater():
-            if settings.internet_avail:
-                GET_FORECAST()
             response, _, _ = GET_WEATHER_ICON()
             for idx, (text, url) in enumerate(response):
                 with urllib.request.urlopen(url) as u:
@@ -144,15 +142,12 @@ class CustomSmallImg(ttk.LabelFrame): #Moon image, but generalized to a small sp
         )
 
         def moon_updater():
-            if settings.internet_avail:
-                GET_MOON_IMAGE()
             img = config_pic("moon/" + [i for i in os.listdir("moon/")][0], self.width, self.height, self.padding)
             in_frame = Label(
                 self,
             )
             in_frame.config(image = img)
             in_frame.image = img
-            # change_pic(in_frame)
             in_frame.place(relx = 0.5, rely = 0.5, anchor = CENTER)
             self.after(86400, moon_updater)
         moon_updater()
