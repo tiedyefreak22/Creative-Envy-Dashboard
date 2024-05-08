@@ -28,6 +28,7 @@ import random
 import urllib.request
 import io
 from pathlib import Path
+import settings
 sys.path.append("BEE_WEATHER_DATA")
 from BEE_WEATHER_DATA import BROODMINDER_GET, AMBIENT_GET, READ_HIVE, PROCESS_HIVE, READ_BEE_WEATHER, PROCESS_BEE_WEATHER, PROCESS_AMBIENT, GRAPH_DATA, GET_MOON_IMAGE, GET_FORECAST, PROCESS_FORECAST, PROCESS_FORECAST_MIN_MAX, check_internet_connection, GET_WEATHER_ICON, config_pic
 sys.path.append("PYICLOUD_GET")
@@ -35,32 +36,33 @@ import PYICLOUD_GET
 import pandas as pd
 from IPython.display import display
 
-internet = check_internet_connection()
-
 class CustomMeter(ttk.LabelFrame):
-    def __init__(self, parent, controller, width, height, padding, text, amt_used):
+    def __init__(self, parent, controller, width, height, padding, text, amt_used, amt_min, amt_max):
         self.width = int(width)
         self.height = int(height)
         self.padding = int(padding)
         ttk.LabelFrame.__init__(
             self,
             parent,
-            relief="solid",
-            borderwidth=1,
-            width=self.width,
-            height=self.height,
-            text=text,
+            relief = "solid",
+            borderwidth = 1,
+            width = self.width,
+            height = self.height,
+            text = text,
         )
         meter = ttk.Meter(
             self,
-            metersize=min(int(self.width), int(self.height)) - 4 * int(self.padding),
-            amountused=amt_used,
-            metertype="semi",
-            subtext=text,
-            showtext=True,
-            interactive=False,
+            metersize = min(int(self.width), int(self.height)) - 4 * int(self.padding),
+            amountused = amt_used,
+            amounttotal = int(amt_min if amt_used == amt_min else amt_used / ((amt_used - amt_min) / (amt_max - amt_min))) if int(amt_min if amt_used == amt_min else amt_used / ((amt_used - amt_min) / (amt_max - amt_min))) != 0 else 100,
+            metertype = "semi",
+            subtext = text,
+            textleft = amt_min,
+            textright = amt_max,
+            showtext = True,
+            interactive = False,
         )
-        meter.place(relx=0.5, rely=0.5, anchor=CENTER)
+        meter.place(relx = 0.5, rely = 0.5, anchor = CENTER)
     
     def get(self):
         return self.entry.get()
@@ -73,11 +75,11 @@ class EmptyLF(ttk.LabelFrame):
         ttk.LabelFrame.__init__(
             self,
             parent,
-            relief="solid",
-            borderwidth=1,
-            width=self.width,
-            height=self.height,
-            text=text,
+            relief = "solid",
+            borderwidth = 1,
+            width = self.width,
+            height = self.height,
+            text = text,
         )
     def get(self):
         return self.entry.get()
@@ -91,16 +93,17 @@ class WeatherWidget(ttk.LabelFrame):
         ttk.LabelFrame.__init__(
             self,
             parent,
-            relief="solid",
-            borderwidth=1,
-            width=self.width,
-            height=self.height,
-            text=text,
+            relief = "solid",
+            borderwidth = 1,
+            width = self.width,
+            height = self.height,
+            text = text,
         )
 
         def forecast_updater():
-            GET_FORECAST()
-            response = GET_WEATHER_ICON()
+            if settings.internet_avail:
+                GET_FORECAST()
+            response, _, _ = GET_WEATHER_ICON()
             for idx, (text, url) in enumerate(response):
                 with urllib.request.urlopen(url) as u:
                     raw_data = u.read()            
@@ -109,16 +112,16 @@ class WeatherWidget(ttk.LabelFrame):
                 self.img[idx] = config_pic(io.BytesIO(raw_data), (self.width / 3) - (5 * self.padding), self.height - (5 * self.padding), self.padding)
                 imagelab1 = Label(
                     self,
-                    image=self.img[idx],
+                    image = self.img[idx],
                 )
-                imagelab1.place(relx=(0.167 + 0.33 * idx), rely=0.4, anchor=CENTER)
+                imagelab1.place(relx = (0.167 + 0.33 * idx), rely = 0.4, anchor = CENTER)
     
                 imagelab2 = Label(
                     self,
-                    text=text,
-                    font=("Helvetica’", 16),
+                    text = text,
+                    font = ("Helvetica’", 16),
                 )
-                imagelab2.place(relx=(0.167 + 0.33 * idx), rely=0.85, anchor=CENTER)
+                imagelab2.place(relx = (0.167 + 0.33 * idx), rely = 0.85, anchor = CENTER)
             self.after(86400, forecast_updater)
         forecast_updater()
     
@@ -133,15 +136,16 @@ class CustomSmallImg(ttk.LabelFrame): #Moon image, but generalized to a small sp
         ttk.LabelFrame.__init__(
             self,
             parent,
-            relief="solid",
-            borderwidth=1,
-            width=self.width,
-            height=self.height,
-            text=text,
+            relief = "solid",
+            borderwidth = 1,
+            width = self.width,
+            height = self.height,
+            text = text,
         )
 
         def moon_updater():
-            GET_MOON_IMAGE()
+            if settings.internet_avail:
+                GET_MOON_IMAGE()
             img = config_pic("moon/" + [i for i in os.listdir("moon/")][0], self.width, self.height, self.padding)
             in_frame = Label(
                 self,
@@ -149,7 +153,7 @@ class CustomSmallImg(ttk.LabelFrame): #Moon image, but generalized to a small sp
             in_frame.config(image = img)
             in_frame.image = img
             # change_pic(in_frame)
-            in_frame.place(relx=0.5, rely=0.5, anchor=CENTER)
+            in_frame.place(relx = 0.5, rely = 0.5, anchor = CENTER)
             self.after(86400, moon_updater)
         moon_updater()
     
@@ -158,18 +162,18 @@ class CustomSmallImg(ttk.LabelFrame): #Moon image, but generalized to a small sp
 
 
 class CustomClockWidget(ttk.LabelFrame):
-    def __init__(self, parent, controller, width, height, padding, text):#, amt_used):
+    def __init__(self, parent, controller, width, height, padding, text):
         self.width = int(width)
         self.height = int(height)
         self.padding = int(padding)
         ttk.LabelFrame.__init__(
             self,
             parent,
-            relief="solid",
-            borderwidth=1,
-            width=self.width,
-            height=self.height,
-            text=text,
+            relief = "solid",
+            borderwidth = 1,
+            width = self.width,
+            height = self.height,
+            text = text,
         )
         
         def clock_updater():
@@ -185,23 +189,24 @@ class CustomClockWidget(ttk.LabelFrame):
         clock_frame = Label(
             self,
             text = datetime.now().strftime('%I:%M:%S %p'),
-            font=("Helvetica’", 28),
+            font = ("Helvetica’", 28),
         )
-        clock_frame.place(relx=0.5, rely=0.35, anchor=CENTER)
-    
+        clock_frame.place(relx = 0.5, rely = 0.35, anchor = CENTER)
+
+        _, sunrise, sunset = GET_WEATHER_ICON()
         sunrise_frame = Label(
             self,
-            text = datetime.now().strftime("Sunrise: %I:%M:%S %p"),
-            font=("Helvetica’", 16),
+            text = datetime.fromtimestamp(sunrise).strftime("Sunrise: %I:%M:%S %p"),
+            font = ("Helvetica’", 16),
         )
         sunrise_frame.place(relx=0.5, rely=0.8, anchor=S)
         
         sunset_frame = Label(
             self,
-            text = datetime.now().strftime("Sunset: %I:%M:%S %p"),
-            font=("Helvetica’", 16),
+            text = datetime.fromtimestamp(sunset).strftime("Sunset: %I:%M:%S %p"),
+            font = ("Helvetica’", 16),
         )
-        sunset_frame.place(relx=0.5, rely=0.8, anchor=N)
+        sunset_frame.place(relx = 0.5, rely = 0.8, anchor = N)
         self.pack_propagate(0)
         clock_updater()
         

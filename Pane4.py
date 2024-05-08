@@ -44,8 +44,8 @@ class Pane4(Frame): # Alarm Control
         # Pane4 Objects
         canvas1 = Canvas(
             self,
-            width=str(self.controller.shared_data["window_geometry"][0].get()),
-            height=str(self.controller.shared_data["window_geometry"][1].get()),
+            width = str(self.controller.shared_data["window_geometry"][0].get()),
+            height = str(self.controller.shared_data["window_geometry"][1].get()),
         ).grid(
             row = 0,
             column = 0,

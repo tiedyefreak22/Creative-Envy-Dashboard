@@ -60,13 +60,31 @@ class Pane1(Frame): # Weather Dashboard; child to Notebook
                     "Bee Temp.",
                     "Bee Humid.",
                     ]
+        lf_values = [
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "ambient_temp",
+                    "solar",
+                    "wind_spd",
+                    "chooks", 
+                    "hive1_wt", # Need to figure out what this needs to be (minimum wt, avg wt, or something else entirely like air qual)
+                    "ambient_humid",
+                    "UV",
+                    "Precip",
+                    "hive1_temp", # Need to figure out what this needs to be (minimum temp, avg temp, or something else entirely like air qual)
+                    "hive1_humid", # Need to figure out what this needs to be (minimum temp, avg temp, or something else entirely like air qual)
+                    ]
         
         self.LF = CustomClockWidget(
             self,
             parent,
             str(self.controller.shared_data["LF_geometry"][0].get() - 2 * self.controller.shared_data["padding"].get()),
             str(self.controller.shared_data["LF_geometry"][1].get() - 2 * self.controller.shared_data["padding"].get()),
-            int(self.controller.shared_data["padding"].get()), lf_labels[0],
+            int(self.controller.shared_data["padding"].get()),
+            lf_labels[0],
         ).grid(
             row = 0,
             column = 0,
@@ -79,7 +97,8 @@ class Pane1(Frame): # Weather Dashboard; child to Notebook
             parent,
             str(self.controller.shared_data["LF_geometry"][0].get() - 2 * self.controller.shared_data["padding"].get()),
             str(self.controller.shared_data["LF_geometry"][1].get() - 2 * self.controller.shared_data["padding"].get()),
-            int(self.controller.shared_data["padding"].get()), lf_labels[1],
+            int(self.controller.shared_data["padding"].get()),
+            lf_labels[1],
         ).grid(
             row = 0,
             column = 1,
@@ -92,7 +111,8 @@ class Pane1(Frame): # Weather Dashboard; child to Notebook
             parent,
             str((self.controller.shared_data["LF_geometry"][0].get() * 2) - 2 * self.controller.shared_data["padding"].get()),
             str(self.controller.shared_data["LF_geometry"][1].get() - 2 * self.controller.shared_data["padding"].get()),
-            int(self.controller.shared_data["padding"].get()), lf_labels[2],
+            int(self.controller.shared_data["padding"].get()),
+            lf_labels[2],
         ).grid(
             row = 0,
             column = 2,
@@ -107,7 +127,8 @@ class Pane1(Frame): # Weather Dashboard; child to Notebook
             parent,
             str(self.controller.shared_data["LF_geometry"][0].get() - 2 * self.controller.shared_data["padding"].get()),
             str(self.controller.shared_data["LF_geometry"][1].get() - 2 * self.controller.shared_data["padding"].get()),
-            int(self.controller.shared_data["padding"].get()), lf_labels[4],
+            int(self.controller.shared_data["padding"].get()),
+            lf_labels[4],
         ).grid(
             row = 0,
             column = 4,
@@ -123,10 +144,13 @@ class Pane1(Frame): # Weather Dashboard; child to Notebook
                 parent,
                 str(self.controller.shared_data["LF_geometry"][0].get() - 2 * self.controller.shared_data["padding"].get()),
                 str(self.controller.shared_data["LF_geometry"][1].get() - 2 * self.controller.shared_data["padding"].get()),
-                int(self.controller.shared_data["padding"].get()), lf_labels[i],
-                25,
+                int(self.controller.shared_data["padding"].get()),
+                lf_labels[i],
+                self.controller.shared_data[lf_values[i]][0].get(),
+                self.controller.shared_data[lf_values[i]][1].get(),
+                self.controller.shared_data[lf_values[i]][2].get(),
             ).grid(
-                row = floor((i-5)/5) + 1,
+                row = floor((i - 5) / 5) + 1,
                 column = (i - 5) % 5,
                 padx = int(self.controller.shared_data["padding"].get()),
                 pady = int(self.controller.shared_data["padding"].get()),

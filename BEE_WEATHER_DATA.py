@@ -49,7 +49,7 @@ def BROODMINDER_GET(hive_name):
     options.add_argument('--headless=new')
     
     s = Service(str('./chromedriver.exe'))
-    driver = webdriver.Chrome(service=s, options=options)
+    driver = webdriver.Chrome(service = s, options = options)
 
     ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -62,13 +62,13 @@ def BROODMINDER_GET(hive_name):
     t.sleep(5)
 
     # find username/email field and send the username itself to the input field
-    driver.find_element(by=By.NAME, value="email").send_keys(username)
+    driver.find_element(by = By.NAME, value = "email").send_keys(username)
 
     # find password input field and insert password as well
-    driver.find_element(by=By.NAME, value="password").send_keys(password)
+    driver.find_element(by = By.NAME, value = "password").send_keys(password)
 
     # click login button
-    driver.find_element(by=By.XPATH, value="/html/body/app-root/app-default/div/app-login/div/mat-tab-group/div/mat-tab-body[1]/div/div/mat-card/form/div/button").click()
+    driver.find_element(by = By.XPATH, value = "/html/body/app-root/app-default/div/app-login/div/mat-tab-group/div/mat-tab-body[1]/div/div/mat-card/form/div/button").click()
 
     t.sleep(3)
 
@@ -76,19 +76,19 @@ def BROODMINDER_GET(hive_name):
     URL = 'https://mybroodminder.com/app/dashboard/hives?hiveIds=6b5cb8b012cb45038eacc24770a2fff7&weaIds=37a0763f69e04c2c823013928e067d68'
     driver.get(URL)
     t.sleep(3)
-    driver.find_element(by=By.XPATH, value="/html/body/app-root/app-core/mat-sidenav-container/mat-sidenav-content/div/div/app-hives-dashboard/div[2]/div[2]/mat-icon").click()
+    driver.find_element(by = By.XPATH, value = "/html/body/app-root/app-core/mat-sidenav-container/mat-sidenav-content/div/div/app-hives-dashboard/div[2]/div[2]/mat-icon").click()
     t.sleep(1)
-    driver.find_element(by=By.XPATH, value="/html/body/app-root/app-core/mat-sidenav-container/mat-sidenav-content/div/div/app-hives-dashboard/div[1]/div/app-date-range-picker-2/div/mat-icon").click()
+    driver.find_element(by = By.XPATH, value = "/html/body/app-root/app-core/mat-sidenav-container/mat-sidenav-content/div/div/app-hives-dashboard/div[1]/div/app-date-range-picker-2/div/mat-icon").click()
     t.sleep(1)
-    driver.find_element(by=By.XPATH, value="/html/body/div[3]/div[2]/div/div/div/a/div/div[1]/button[9]/span[5]").click()
+    driver.find_element(by = By.XPATH, value = "/html/body/div[3]/div[2]/div/div/div/a/div/div[1]/button[9]/span[5]").click()
     t.sleep(1)
-    driver.find_element(by=By.XPATH, value="/html/body/div[3]/div[2]/div/div/div/button[4]").click()
+    driver.find_element(by = By.XPATH, value = "/html/body/div[3]/div[2]/div/div/div/button[4]").click()
     t.sleep(1)
-    driver.find_element(by=By.XPATH, value="/html/body/div[3]/div[2]/div/mat-dialog-container/div/div/div/div[2]/div[2]/mat-checkbox/div/div/input").click()
+    driver.find_element(by = By.XPATH, value = "/html/body/div[3]/div[2]/div/mat-dialog-container/div/div/div/div[2]/div[2]/mat-checkbox/div/div/input").click()
     t.sleep(1)
-    driver.find_element(by=By.XPATH, value="/html/body/div[3]/div[2]/div/mat-dialog-container/div/div/div/div[2]/div[3]/mat-checkbox/div/div/input").click()
+    driver.find_element(by = By.XPATH, value = "/html/body/div[3]/div[2]/div/mat-dialog-container/div/div/div/div[2]/div[3]/mat-checkbox/div/div/input").click()
     t.sleep(1)
-    driver.find_element(by=By.XPATH, value="/html/body/div[3]/div[2]/div/mat-dialog-container/div/div/div/div[2]/div[4]/button/span[2]").click()
+    driver.find_element(by = By.XPATH, value = "/html/body/div[3]/div[2]/div/mat-dialog-container/div/div/div/div[2]/div[4]/button/span[2]").click()
     t.sleep(3)
 
     # close the browser window
@@ -108,31 +108,31 @@ def READ_HIVE(hive_name: str):
     for test_str in os.listdir(directory):
         regex = str(hive_name) + r"_combined_readings_20[a-zA-Z0-9\-\_\.]*.csv"
         matches = re.finditer(regex, test_str, re.MULTILINE)
-        for matchNum, match in enumerate(matches, start=1):
+        for matchNum, match in enumerate(matches, start = 1):
             filename = directory + match.group()
 
     # Load master file
     if filename:
         Hive = pd.read_csv(filename)
-        Hive.drop('App', axis=1, inplace=True)
-        Hive.drop('Record_Type', axis=1, inplace=True)
-        Hive.drop('Radar', axis=1, inplace=True)
-        Hive.drop('UTC_TimeStamp', axis=1, inplace=True)
-        Hive.drop('Local_TimeStamp', axis=1, inplace=True)
-        Hive.drop('Metric', axis=1, inplace=True)
-        Hive.drop('Audio', axis=1, inplace=True)
+        Hive.drop('App', axis = 1, inplace = True)
+        Hive.drop('Record_Type', axis = 1, inplace = True)
+        Hive.drop('Radar', axis = 1, inplace = True)
+        Hive.drop('UTC_TimeStamp', axis = 1, inplace = True)
+        Hive.drop('Local_TimeStamp', axis = 1, inplace = True)
+        Hive.drop('Metric', axis = 1, inplace = True)
+        Hive.drop('Audio', axis = 1, inplace = True)
 
         Hive_master = pd.DataFrame()
         if os.path.exists(str(directory + str(hive_name) + " Master.csv")):
             Hive_master = pd.read_csv(str(directory + str(hive_name) + " Master.csv"))
-            Hive_master = pd.concat([Hive, Hive_master]).astype(str).drop_duplicates(subset=['Unix_Time'], keep='last')
+            Hive_master = pd.concat([Hive, Hive_master]).astype(str).drop_duplicates(subset = ['Unix_Time'], keep = 'last')
         else:
             Hive_master = Hive
 
-        Hive_master.to_csv(directory + hive_name + " Master.csv", mode='w', index=False, header=True).sort_values(by=['Unix_Time']).reset_index(drop=True)
+        Hive_master.to_csv(directory + hive_name + " Master.csv", mode = 'w', index = False, header = True).sort_values(by = ['Unix_Time']).reset_index(drop = True)
         os.remove(filename)
     elif os.path.exists(str(directory + str(hive_name) + " Master.csv")):
-        Hive_master = pd.read_csv(str(directory + str(hive_name) + " Master.csv")).sort_values(by=['Unix_Time'])
+        Hive_master = pd.read_csv(str(directory + str(hive_name) + " Master.csv")).sort_values(by = ['Unix_Time'])
         
     return Hive_master
     print("Finished reading Broodminder data.")
@@ -147,31 +147,31 @@ def READ_BEE_WEATHER():
     for test_str in os.listdir(directory):
         regex = r"KevBec Apiary_weather_20[a-zA-Z0-9\-\_\.]*.csv"
         matches = re.finditer(regex, test_str, re.MULTILINE)
-        for matchNum, match in enumerate(matches, start=1):
+        for matchNum, match in enumerate(matches, start = 1):
             filename = directory + match.group()
     
     # Load master file
     if filename:
         Bee_Weather = pd.read_csv(filename)
-        Bee_Weather.drop('DownloadTimeStamp', axis=1, inplace=True)
-        Bee_Weather.drop('UTC_TimeStamp', axis=1, inplace=True)
-        Bee_Weather.drop('Local_TimeStamp', axis=1, inplace=True)
-        Bee_Weather.drop('Metric', axis=1, inplace=True)
+        Bee_Weather.drop('DownloadTimeStamp', axis = 1, inplace = True)
+        Bee_Weather.drop('UTC_TimeStamp', axis = 1, inplace = True)
+        Bee_Weather.drop('Local_TimeStamp', axis = 1, inplace = True)
+        Bee_Weather.drop('Metric', axis = 1, inplace = True)
         
         if os.path.exists(directory + "KevBec Apiary_weather Master.csv"):
             Bee_Weather_master = pd.read_csv(directory + "KevBec Apiary_weather Master.csv")        
-            Bee_Weather_master = pd.concat([Bee_Weather, Bee_Weather_master]).astype(str).drop_duplicates(subset=['Unix_Time'], keep='last').reset_index(drop=True)
+            Bee_Weather_master = pd.concat([Bee_Weather, Bee_Weather_master]).astype(str).drop_duplicates(subset = ['Unix_Time'], keep = 'last').reset_index(drop = True)
         else:
             Bee_Weather_master = Bee_Weather
             
-        Bee_Weather.to_csv(directory + "KevBec Apiary_weather Master.csv", mode='w', index=False, header=True)
+        Bee_Weather.to_csv(directory + "KevBec Apiary_weather Master.csv", mode = 'w', index = False, header = True)
         os.remove(filename)
     elif os.path.exists(directory + "KevBec Apiary_weather Master.csv"):
          Bee_Weather_master = pd.read_csv(directory + "KevBec Apiary_weather Master.csv")
     return Bee_Weather_master
     print("Finished reading Broodminder weather data.")
 
-def PROCESS_HIVE(hive_name: str, interp=0):
+def PROCESS_HIVE(hive_name: str, interp = 0):
     print("Processing Broodminder data.")
     directory = "Broodminder/"
     metrics = ["Weight", "Humidity", "Temperature"]
@@ -192,9 +192,9 @@ def PROCESS_HIVE(hive_name: str, interp=0):
     for i, key in enumerate(list(Week_Devices.keys())):
         for j, cat in enumerate(Week_Devices[str(key)]):
             if Week_Devices[str(key)][str(cat)].isnull().all():
-                Week_Devices[str(key)] = Week_Devices[str(key)].drop(columns=[str(cat)])
+                Week_Devices[str(key)] = Week_Devices[str(key)].drop(columns = [str(cat)])
     for i, key in enumerate(list(Week_Devices.keys())):
-        Week_Devices[str(key)] = Week_Devices[str(key)].sort_values(by=["Unix_Time"])
+        Week_Devices[str(key)] = Week_Devices[str(key)].sort_values(by = ["Unix_Time"])
         int_Unix = [int(i) for i in Week_Devices[str(key)]["Unix_Time"]]
         Week_Devices[str(key)] = Week_Devices[str(key)].loc[Week_Devices[str(key)][Week_Devices[str(key)]["Unix_Time"] >= max(int_Unix) - 604800].index[0]:]
     if interp:
@@ -210,7 +210,7 @@ def PROCESS_HIVE(hive_name: str, interp=0):
                         cs = PchipInterpolator(x, y)
                         xs = np.arange(min(x), max(x), span)
                         Temp_Dict = {"Unix_Time": xs, str('Interp_' + str(cat)): cs(xs)}
-                Temp_DF = pd.concat([Temp_DF, pd.DataFrame(Temp_Dict)], axis=0, join='outer')
+                Temp_DF = pd.concat([Temp_DF, pd.DataFrame(Temp_Dict)], axis = 0, join = 'outer')
             Interps[str(key)] = Temp_DF
         return Interps
     else:
@@ -228,15 +228,15 @@ def PROCESS_BEE_WEATHER(interp=0):
     Interps = pd.DataFrame()
     
     for i, metric in enumerate(metrics):
-        Bee_Weather = Bee_Weather.sort_values(by=["Unix_Time"])
+        Bee_Weather = Bee_Weather.sort_values(by = ["Unix_Time"])
     Week_Devices = pd.DataFrame()
     for i in range(len(Bee_Weather.keys())):
         Week_Devices[list(Bee_Weather.keys())[i]] = Bee_Weather[list(Bee_Weather.keys())[i]]
 
     for j, cat in enumerate(Week_Devices):
         if Week_Devices[str(cat)].isnull().all():
-            Week_Devices = Week_Devices.drop(columns=[str(cat)])
-    Week_Devices = Week_Devices.sort_values(by=["Unix_Time"])
+            Week_Devices = Week_Devices.drop(columns = [str(cat)])
+    Week_Devices = Week_Devices.sort_values(by = ["Unix_Time"])
     int_Unix = [int(i) for i in Week_Devices["Unix_Time"]]
     Week_Devices = Week_Devices.loc[Week_Devices[Week_Devices["Unix_Time"] >= max(int_Unix) - 604800].index[0]:]
     if interp:
@@ -251,7 +251,7 @@ def PROCESS_BEE_WEATHER(interp=0):
                     cs = PchipInterpolator(x, y)
                     xs = np.arange(min(x), max(x), span)
                     Temp_Dict = {"Unix_Time": xs, str('Interp_' + str(cat)): cs(xs)}
-            Temp_DF = pd.concat([Temp_DF, pd.DataFrame(Temp_Dict)], axis=0, join='outer')
+            Temp_DF = pd.concat([Temp_DF, pd.DataFrame(Temp_Dict)], axis = 0, join = 'outer')
         Interps = Temp_DF
         return Interps
     else:
@@ -270,9 +270,9 @@ def AMBIENT_GET():
     AMBIENT_MAC = "00:0E:C6:30:1F:CC"
     
     # Read in current csv values
-    rows = pd.read_csv(filename, sep=',', on_bad_lines='skip')
+    rows = pd.read_csv(filename, sep = ',', on_bad_lines = 'skip')
     
-    AMBIENT_START_DATE = datetime.fromtimestamp(int(rows['dateutc'][len(rows['dateutc'])-1]))
+    AMBIENT_START_DATE = datetime.fromtimestamp(int(rows['dateutc'][len(rows['dateutc']) - 1]))
     
     print(AMBIENT_START_DATE)
     # Determine number of days since beginning of record
@@ -289,7 +289,7 @@ def AMBIENT_GET():
         AMBIENT_ENDPOINT = f'https://rt.ambientweather.net/v1/devices/{AMBIENT_MAC}?apiKey={AMBIENT_API_KEY}&applicationKey={AMBIENT_APPLICATION_KEY}&endDate={AMBIENT_DATE}'
         data = pd.DataFrame()
     
-        response = requests.get(AMBIENT_ENDPOINT)#, params=query_params)
+        response = requests.get(AMBIENT_ENDPOINT)
         if response.status_code == 200:
             data = pd.DataFrame(response.json())
             break
@@ -309,17 +309,17 @@ def AMBIENT_GET():
                          'weeklyrainin', 'monthlyrainin', 'yearlyrainin', 'totalrainin', 'uv',
                          'solarradiation', 'feelsLike', 'dewPoint', 'lastRain']]
             data['dateutc'] = (data['dateutc'].astype(np.int64) / 1000.0)
-            sorted_df = data.sort_values('dateutc', axis=0, ascending=True, kind='mergesort')
-            sorted_df.to_csv(filename, mode='a', index=False, header=False)
+            sorted_df = data.sort_values('dateutc', axis = 0, ascending = True, kind = 'mergesort')
+            sorted_df.to_csv(filename, mode = 'a', index = False, header = False)
     
     # Re-read file and drop any duplicates
-    rows = pd.read_csv(filename, sep=',', on_bad_lines='skip')
-    rows = rows.drop_duplicates(subset=['dateutc'], keep='last').reset_index(drop=True)
-    rows.to_csv(filename, mode='w', index=False, header=True)
+    rows = pd.read_csv(filename, sep = ',', on_bad_lines = 'skip')
+    rows = rows.drop_duplicates(subset = ['dateutc'], keep = 'last').reset_index(drop = True)
+    rows.to_csv(filename, mode = 'w', index = False, header = True)
     print("Finished getting Ambient data.")
 
 
-def PROCESS_AMBIENT(interp=0):
+def PROCESS_AMBIENT(interp = 0):
     print("Processing Ambient data.")
     filename = "Ambient/Ambient_Data.csv"
     Ambient = pd.read_csv(filename)
@@ -327,30 +327,11 @@ def PROCESS_AMBIENT(interp=0):
     metrics = [i for i in list(Ambient.keys()) if not "dateutc" in i]
     metric_num = len(metrics)
 
-    # Ambient["dateutc"] = [int(i) for i in Ambient["dateutc"]]
-    # Ambient["winddir"] = [int(i) for i in Ambient["winddir"]]
-    # Ambient["windspeedmph"] = [float(i) for i in Ambient["windspeedmph"]]
-    # Ambient["windgustmph"] = [float(i) for i in Ambient["windgustmph"]]
-    # Ambient["maxdailygust"] = [float(i) for i in Ambient["maxdailygust"]]
-    # Ambient["tempf"] = [float(i) for i in Ambient["tempf"]]
-    # Ambient["humidity"] = [int(i) for i in Ambient["humidity"]]
-    # Ambient["hourlyrainin"] = [float(i) for i in Ambient["hourlyrainin"]]
-    # Ambient["eventrainin"] = [float(i) for i in Ambient["eventrainin"]]
-    # Ambient["dailyrainin"] = [float(i) for i in Ambient["dailyrainin"]]
-    # Ambient["weeklyrainin"] = [float(i) for i in Ambient["weeklyrainin"]]
-    # Ambient["monthlyrainin"] = [float(i) for i in Ambient["monthlyrainin"]]
-    # Ambient["yearlyrainin"] = [float(i) for i in Ambient["yearlyrainin"]]
-    # Ambient["totalrainin"] = [float(i) for i in Ambient["totalrainin"]]
-    # Ambient["uv"] = [int(i) for i in Ambient["uv"]]
-    # Ambient["solarradiation"] = [float(i) for i in Ambient["solarradiation"]]
-    # Ambient["feelsLike"] = [float(i) for i in Ambient["feelsLike"]]
-    # Ambient["dewPoint"] = [float(i) for i in Ambient["dewPoint"]]
-    # Ambient["lastRain"] = [str(i) for i in Ambient["lastRain"]]
     span = 300
     intervals = int(604800 / span)
     Interps = pd.DataFrame()
     for i, metric in enumerate(metrics):
-        Ambient = Ambient.sort_values(by=["dateutc"])
+        Ambient = Ambient.sort_values(by = ["dateutc"])
         
     Week_Devices = pd.DataFrame()
     for i in range(len(Ambient.keys())):
@@ -358,8 +339,8 @@ def PROCESS_AMBIENT(interp=0):
 
     for j, cat in enumerate(Week_Devices):
         if Week_Devices[str(cat)].isnull().all():
-            Week_Devices = Week_Devices.drop(columns=[str(cat)])
-    Week_Devices = Week_Devices.sort_values(by=["dateutc"])
+            Week_Devices = Week_Devices.drop(columns = [str(cat)])
+    Week_Devices = Week_Devices.sort_values(by = ["dateutc"])
     int_Unix = [int(i) for i in Week_Devices["dateutc"]]
     Week_Devices = Week_Devices.loc[Week_Devices[Week_Devices["dateutc"] >= max(int_Unix) - 604800].index[0]:]
     if interp:
@@ -374,7 +355,7 @@ def PROCESS_AMBIENT(interp=0):
                     cs = PchipInterpolator(x, y)
                     xs = np.arange(min(x), max(x), span)
                     Temp_Dict = {"dateutc": xs, str('Interp_' + str(cat)): cs(xs)}
-            Temp_DF = pd.concat([Temp_DF, pd.DataFrame(Temp_Dict)], axis=0, join='outer')
+            Temp_DF = pd.concat([Temp_DF, pd.DataFrame(Temp_Dict)], axis = 0, join = 'outer')
         Interps = Temp_DF
         return Interps
     else:
@@ -387,13 +368,13 @@ def GRAPH_DATA(Data): #Pandas DF
 
     ncols = 4
     nrows = metric_num // ncols + (metric_num % ncols > 0)
-    plt.figure(figsize=(15, 4*nrows))
-    plt.subplots_adjust(hspace=0.2)
+    plt.figure(figsize = (15, 4 * nrows))
+    plt.subplots_adjust(hspace = 0.2)
 
     for i, match in enumerate(metrics):
         try:
             ax = plt.subplot(nrows, ncols, i + 1)
-            Data[str(match)].plot(ax=ax)
+            Data[str(match)].plot(ax = ax)
             ax.set_title(str(match))
         except:
             pass
@@ -410,17 +391,15 @@ def GET_FORECAST():
     api_endpoint = f'https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={api_key}'
     query_params = {'lat': lat, 'lon': lon, 'appid': api_key, 'units': 'imperial'}
     
-    response = requests.get(api_endpoint, params=query_params)
+    response = requests.get(api_endpoint, params = query_params)
     
     if response.status_code == 200:
         data = response.json()
-        json_object = json.dumps(data, indent=4)
+        json_object = json.dumps(data, indent = 4)
  
         # Writing to sample.json
         with open("Forecast/forecast.json", "w") as outfile:
             outfile.write(json_object)
-            
-        #return data
     else:
         # Handle errors
         print(f'Error: {response.status_code} - {response.text}')
@@ -430,6 +409,7 @@ def GET_MOON_IMAGE(size = 216):
     print("Getting moon phase image.")
     total_images = 8760
     moon_domain = "https://svs.gsfc.nasa.gov"
+    
     # https://svs.gsfc.nasa.gov/vis/a000000/a005100/a005187/frames/216x216_1x1_30p/moon.8597.jpg
     moon_path = "/vis/a000000/a005100/a005187"
     image = None
@@ -439,24 +419,24 @@ def GET_MOON_IMAGE(size = 216):
     moon_image_number = round((now - janone).total_seconds() / 3600)
 
     if size > 2160:
-        url = moon_domain+moon_path+"/frames/5760x3240_16x9_30p/" \
+        url = moon_domain + moon_path + "/frames/5760x3240_16x9_30p/" \
               f"plain/moon.{moon_image_number:04d}.tif"
     elif size > 216:
-        url = moon_domain+moon_path+"/frames/3840x2160_16x9_30p/" \
-          f"plain/moon.{moon_image_number:04d}.tif"
+        url = moon_domain + moon_path + "/frames/3840x2160_16x9_30p/" \
+          f"plain/moon.{moon_image_number: 04d}.tif"
     else:
         url = moon_domain + moon_path + "/frames/216x216_1x1_30p/" \
-                                              f"moon.{moon_image_number:04d}.jpg"
+                                              f"moon.{moon_image_number: 04d}.jpg"
     response = requests.get(url)
     img = Image.open(BytesIO(response.content))
 
     for file in os.listdir("moon/"):
         os.remove("moon/" + file)
-    img.save(f"moon/moon.{moon_image_number:04d}.tiff")
+    img.save(f"moon/moon.{moon_image_number: 04d}.tiff")
 
     print("Finished getting moon phase image.")
 
-def PROCESS_FORECAST(interp=0):
+def PROCESS_FORECAST(interp = 0):
     print("Processing Forecast data.")
     response = pd.DataFrame()
     with open('Forecast/forecast.json', 'r') as openfile:
@@ -476,15 +456,15 @@ def PROCESS_FORECAST(interp=0):
                                 cur_dict.update({key4: value2})
                         else:
                             cur_dict.update({key3: value})
-                    response = pd.concat([response, pd.DataFrame(cur_dict, index=[key2["dt"]])], axis=0, join='outer')
-    response = response.drop(columns=["dt"])
+                    response = pd.concat([response, pd.DataFrame(cur_dict, index = [key2["dt"]])], axis = 0, join = 'outer')
+    response = response.drop(columns = ["dt"])
     return response
     print("Finished processing Forecast data.")
 
 def PROCESS_FORECAST_MIN_MAX(response):
     print("Processing Forecast min/max data.")
-    prior_midnight = int(datetime.timestamp(datetime.strptime(date.today().strftime('%Y-%m-%d')    + " 00:00:00", '%Y-%m-%d %H:%M:%S')))
-    future_midnight = int(datetime.timestamp(datetime.strptime((date.today() + timedelta(days=1)).strftime('%Y-%m-%d') + " 00:00:00", '%Y-%m-%d %H:%M:%S')))
+    prior_midnight = int(datetime.timestamp(datetime.strptime(date.today().strftime('%Y-%m-%d') + " 00:00:00", '%Y-%m-%d %H:%M:%S')))
+    future_midnight = int(datetime.timestamp(datetime.strptime((date.today() + timedelta(days = 1)).strftime('%Y-%m-%d') + " 00:00:00", '%Y-%m-%d %H:%M:%S')))
     todays_forecast = pd.DataFrame([response.loc[i] for i in response.index.values.tolist() if i <= future_midnight and i >= prior_midnight])
     if todays_forecast.empty:
         max_temp = 0.0
@@ -506,14 +486,14 @@ def PROCESS_FORECAST_MIN_MAX(response):
 def resolve(domain):
     resolveList = []
     resolver = dns.resolver.Resolver(); #create a new instance named Resolver
-    answer = resolver.query(domain,"A");
+    answer = resolver.query(domain, "A");
     return answer    
 
 def check_internet_connection():
     domainName = "google.com"
     queryResult = resolve(domainName);
     try:
-        urllib.request.urlopen("http://" + str(queryResult[0]), timeout=3)
+        urllib.request.urlopen("http://" + str(queryResult[0]), timeout = 3)
         print("Internet connection verified.")
         return True
     except urllib.error.URLError:
@@ -529,7 +509,8 @@ def GET_WEATHER_ICON():
     for_date = date.today()
     
     l = astral.LocationInfo('Custom Name', 'My Region', tz_name, lat, lon)
-    s = astral.sun.sun(l.observer, date=for_date)
+    s = astral.sun.sun(l.observer, date = for_date)
+
     sunrise = s['sunrise'].astimezone(tz)
     sunset = s['sunset'].astimezone(tz)
     
@@ -608,7 +589,7 @@ def GET_WEATHER_ICON():
         else:
             icon_url.append("https://openweathermap.org/img/wn/%s@2x.png" % (icon_dict[id]))
     
-    return list(zip([datetime.fromtimestamp(i).strftime('%I:%M %p') for i in subresponse.index], icon_url))
+    return list(zip([datetime.fromtimestamp(i).strftime('%I:%M %p') for i in subresponse.index], icon_url)), datetime.timestamp(sunrise), datetime.timestamp(sunset)
     print("Finished getting weather icon.")
 
 def RAND_PIC():
@@ -620,7 +601,7 @@ def RAND_PIC():
         for file in files:
             if file.lower().endswith(tuple(ext)):
                 file_paths.append(os.path.join(root, file))
-            elif file.lower().endswith(tuple(ext)):
+            elif file.lower().endswith(tuple(raw_ext)):
                 try:
                     with rawpy.imread(np.fromfile("Test/DSC1160-medium.RAW", allow_pickle=True)) as raw:
                         print(f'raw type:                     {raw.raw_type}')                      # raw type (flat or stack, e.g., Foveon sensor)
@@ -638,25 +619,24 @@ def RAND_PIC():
                     pass
     while True:
         try:
-            rand_pic = file_paths[random.randint(0,len(file_paths) - 1)]
+            rand_pic = file_paths[random.randint(0, len(file_paths) - 1)]
             PIL_image = Image.open(rand_pic)
             break
         except:
             pass
-    # config_pic
 
 def config_pic(file, widget_width, widget_height, padding):
     PIL_image = Image.open(file)
     original_w = np.shape(PIL_image)[1]
     original_h = np.shape(PIL_image)[0]
-    aspect = original_h/original_w
+    aspect = original_h / original_w
     constraining_dim = min(widget_width - 5 * padding,
                            widget_height - 5 * padding)
-    minor_constraint = min(constraining_dim/original_w, constraining_dim/original_h)
+    minor_constraint = min(constraining_dim / original_w, constraining_dim / original_h)
     img_width = int(original_w * minor_constraint)
     img_height = int(original_h * minor_constraint)
     PIL_image_small = PIL_image.resize((img_width, img_height), Image.Resampling.LANCZOS)
 
     # now create the ImageTk PhotoImage:
-    img = ImageTk.PhotoImage(image=PIL_image_small)
+    img = ImageTk.PhotoImage(image = PIL_image_small)
     return img

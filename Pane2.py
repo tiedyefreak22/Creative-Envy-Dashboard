@@ -60,6 +60,23 @@ class Pane2(Frame): # Bee Dashboard
                     "Hive 4 Humid.",
                     "Hive 5 Humid.",
                     ]
+        lf_values = [
+                    "hive1_wt",
+                    "hive2_wt",
+                    "hive3_wt",
+                    "hive4_wt",
+                    "hive5_wt",
+                    "hive1_temp",
+                    "hive2_temp",
+                    "hive3_temp",
+                    "hive4_temp",
+                    "hive5_temp",
+                    "hive1_humid",
+                    "hive2_humid",
+                    "hive3_humid",
+                    "hive4_humid",
+                    "hive5_humid",
+                    ]
         i = 0        
         while i < 15:
             self.meter = CustomMeter(
@@ -67,10 +84,13 @@ class Pane2(Frame): # Bee Dashboard
                 parent,
                 str(self.controller.shared_data["LF_geometry"][0].get() - 2 * self.controller.shared_data["padding"].get()),
                 str(self.controller.shared_data["LF_geometry"][1].get() - 2 * self.controller.shared_data["padding"].get()),
-                int(self.controller.shared_data["padding"].get()), lf_labels[i],
-                25
+                int(self.controller.shared_data["padding"].get()),
+                lf_labels[i],
+                self.controller.shared_data[lf_values[i]][0].get(),
+                self.controller.shared_data[lf_values[i]][1].get(),
+                self.controller.shared_data[lf_values[i]][2].get(),
             ).grid(
-                row = floor(i/5),
+                row = floor(i / 5),
                 column = i % 5,
                 padx = int(self.controller.shared_data["padding"].get()),
                 pady = int(self.controller.shared_data["padding"].get()))

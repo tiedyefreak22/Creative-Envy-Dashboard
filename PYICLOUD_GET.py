@@ -175,6 +175,3 @@ def download_photo(photo, size, force_size, download_dir, pbar):
             time.sleep(WAIT_SECONDS)
     else:
         tqdm.write("Could not download %s! Maybe try again later." % photo.filename)
-
-# if __name__ == '__main__':
-#     download()

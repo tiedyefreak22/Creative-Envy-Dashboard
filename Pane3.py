@@ -50,9 +50,9 @@ class Pane3(Frame): # Picture Frame
             for file in files:
                 if file.lower().endswith(tuple(ext)):
                     file_paths.append(os.path.join(root, file))
-                elif file.lower().endswith(tuple(ext)):
+                elif file.lower().endswith(tuple(raw_ext)):
                     try:
-                        with rawpy.imread(np.fromfile("Test/DSC1160-medium.RAW", allow_pickle=True)) as raw:
+                        with rawpy.imread(np.fromfile("Test/DSC1160-medium.RAW", allow_pickle = True)) as raw:
                             print(f'raw type:                     {raw.raw_type}')                      # raw type (flat or stack, e.g., Foveon sensor)
                             print(f'number of colors:             {raw.num_colors}')                    # number of different color components, e.g., 3 for common RGB Bayer sensors with two green identical green sensors 
                             print(f'color description:            {raw.color_desc}')                    # describes the various color components
@@ -69,16 +69,16 @@ class Pane3(Frame): # Picture Frame
         # Pane3 Objects
         make_frame = LabelFrame(
             self,
-            width=self.controller.shared_data["window_geometry"][0].get() - 2 * self.controller.shared_data["padding"].get(),
-            height=self.controller.shared_data["window_geometry"][1].get() - 2 * self.controller.shared_data["padding"].get(),
+            width = self.controller.shared_data["window_geometry"][0].get() - 2 * self.controller.shared_data["padding"].get(),
+            height = self.controller.shared_data["window_geometry"][1].get() - 2 * self.controller.shared_data["padding"].get(),
         )
         make_frame.grid(
-            row=0,
-            column=0,
-            padx=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
-            pady=(int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
-            ipadx=int(self.controller.shared_data["padding"].get()),
-            ipady=int(self.controller.shared_data["padding"].get()),
+            row = 0,
+            column = 0,
+            padx = (int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
+            pady = (int(self.controller.shared_data["padding"].get()), int(self.controller.shared_data["padding"].get())),
+            ipadx = int(self.controller.shared_data["padding"].get()),
+            ipady = int(self.controller.shared_data["padding"].get()),
         )
         
         def config_pic():
@@ -100,7 +100,7 @@ class Pane3(Frame): # Picture Frame
             PIL_image_small = PIL_image.resize((width,height), Image.Resampling.LANCZOS)
     
             # now create the ImageTk PhotoImage:
-            img = ImageTk.PhotoImage(image=PIL_image_small)
+            img = ImageTk.PhotoImage(image = PIL_image_small)
             return img
         
         def change_pic():
@@ -113,11 +113,11 @@ class Pane3(Frame): # Picture Frame
         in_frame = Button(
             make_frame,
             command = change_pic,
-            width=self.controller.shared_data["window_geometry"][0].get() - 2 * self.controller.shared_data["padding"].get(),
-            height=self.controller.shared_data["window_geometry"][1].get() - 2 * self.controller.shared_data["padding"].get(),
+            width = self.controller.shared_data["window_geometry"][0].get() - 2 * self.controller.shared_data["padding"].get(),
+            height = self.controller.shared_data["window_geometry"][1].get() - 2 * self.controller.shared_data["padding"].get(),
         )
         change_pic()
-        in_frame.place(relx=0.5, rely=0.5, anchor=CENTER)
+        in_frame.place(relx = 0.5, rely = 0.5, anchor = CENTER)
     
         def daily_updater():
             if internet:
