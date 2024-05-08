@@ -72,22 +72,34 @@ def BROODMINDER_GET(hive_name):
 
     t.sleep(3)
 
-    # download left hive data
+    # left hive dashboard
     URL = 'https://mybroodminder.com/app/dashboard/hives?hiveIds=6b5cb8b012cb45038eacc24770a2fff7&weaIds=37a0763f69e04c2c823013928e067d68'
     driver.get(URL)
     t.sleep(3)
-    driver.find_element(by = By.XPATH, value = "/html/body/app-root/app-core/mat-sidenav-container/mat-sidenav-content/div/div/app-hives-dashboard/div[2]/div[2]/mat-icon").click()
-    t.sleep(1)
+    
+    # select longest date range
     driver.find_element(by = By.XPATH, value = "/html/body/app-root/app-core/mat-sidenav-container/mat-sidenav-content/div/div/app-hives-dashboard/div[1]/div/app-date-range-picker-2/div/mat-icon").click()
     t.sleep(1)
-    driver.find_element(by = By.XPATH, value = "/html/body/div[3]/div[2]/div/div/div/a/div/div[1]/button[9]/span[5]").click()
+    driver.find_element(by = By.XPATH, value = "/html/body/div[3]/div[2]/div/div/div/a/div/div[1]/button[9]/span[2]").click()
     t.sleep(1)
+
+    # click three dots
+    driver.find_element(by = By.XPATH, value = "/html/body/app-root/app-core/mat-sidenav-container/mat-sidenav-content/div/div/app-hives-dashboard/div[2]/div[2]/mat-icon").click()
+    t.sleep(1)
+    
+    # click "Download Options"
     driver.find_element(by = By.XPATH, value = "/html/body/div[3]/div[2]/div/div/div/button[4]").click()
     t.sleep(1)
+
+    # click "Hourly Readings CSV"
     driver.find_element(by = By.XPATH, value = "/html/body/div[3]/div[2]/div/mat-dialog-container/div/div/div/div[2]/div[2]/mat-checkbox/div/div/input").click()
     t.sleep(1)
+
+    # click "Hourly Weather CSV"
     driver.find_element(by = By.XPATH, value = "/html/body/div[3]/div[2]/div/mat-dialog-container/div/div/div/div[2]/div[3]/mat-checkbox/div/div/input").click()
     t.sleep(1)
+
+    # click "Download"
     driver.find_element(by = By.XPATH, value = "/html/body/div[3]/div[2]/div/mat-dialog-container/div/div/div/div[2]/div[4]/button/span[2]").click()
     t.sleep(3)
 
@@ -125,11 +137,11 @@ def READ_HIVE(hive_name: str):
         Hive_master = pd.DataFrame()
         if os.path.exists(str(directory + str(hive_name) + " Master.csv")):
             Hive_master = pd.read_csv(str(directory + str(hive_name) + " Master.csv"))
-            Hive_master = pd.concat([Hive, Hive_master]).astype(str).drop_duplicates(subset = ['Unix_Time'], keep = 'last')
+            Hive_master = pd.concat([Hive, Hive_master]).astype(str).drop_duplicates(subset = ['Unix_Time'], keep = 'last').sort_values(by = ['Unix_Time']).reset_index(drop = True)
         else:
-            Hive_master = Hive
+            Hive_master = Hive.sort_values(by = ['Unix_Time']).reset_index(drop = True)
 
-        Hive_master.to_csv(directory + hive_name + " Master.csv", mode = 'w', index = False, header = True).sort_values(by = ['Unix_Time']).reset_index(drop = True)
+        Hive_master.to_csv(directory + hive_name + " Master.csv", mode = 'w', index = False, header = True)
         os.remove(filename)
     elif os.path.exists(str(directory + str(hive_name) + " Master.csv")):
         Hive_master = pd.read_csv(str(directory + str(hive_name) + " Master.csv")).sort_values(by = ['Unix_Time'])
@@ -195,8 +207,8 @@ def PROCESS_HIVE(hive_name: str, interp = 0):
                 Week_Devices[str(key)] = Week_Devices[str(key)].drop(columns = [str(cat)])
     for i, key in enumerate(list(Week_Devices.keys())):
         Week_Devices[str(key)] = Week_Devices[str(key)].sort_values(by = ["Unix_Time"])
-        int_Unix = [int(i) for i in Week_Devices[str(key)]["Unix_Time"]]
-        Week_Devices[str(key)] = Week_Devices[str(key)].loc[Week_Devices[str(key)][Week_Devices[str(key)]["Unix_Time"] >= max(int_Unix) - 604800].index[0]:]
+        Week_Devices[str(key)]["Unix_Time"] = [int(i) for i in Week_Devices[str(key)]["Unix_Time"]]
+        Week_Devices[str(key)] = Week_Devices[str(key)].loc[Week_Devices[str(key)][Week_Devices[str(key)]["Unix_Time"] >= max(Week_Devices[str(key)]["Unix_Time"]) - 604800].index[0]:]
     if interp:
         Interps = dict.fromkeys(list(Week_Devices.keys()))
         for i, key in enumerate(list(Week_Devices.keys())):
@@ -423,16 +435,16 @@ def GET_MOON_IMAGE(size = 216):
               f"plain/moon.{moon_image_number:04d}.tif"
     elif size > 216:
         url = moon_domain + moon_path + "/frames/3840x2160_16x9_30p/" \
-          f"plain/moon.{moon_image_number: 04d}.tif"
+          f"plain/moon.{moon_image_number:04d}.tif"
     else:
         url = moon_domain + moon_path + "/frames/216x216_1x1_30p/" \
-                                              f"moon.{moon_image_number: 04d}.jpg"
+                                              f"moon.{moon_image_number:04d}.jpg"
     response = requests.get(url)
     img = Image.open(BytesIO(response.content))
 
     for file in os.listdir("moon/"):
         os.remove("moon/" + file)
-    img.save(f"moon/moon.{moon_image_number: 04d}.tiff")
+    img.save(f"moon/moon.{moon_image_number:04d}.tiff")
 
     print("Finished getting moon phase image.")
 

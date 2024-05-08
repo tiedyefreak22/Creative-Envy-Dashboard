@@ -2,6 +2,8 @@ from BEE_WEATHER_DATA import BROODMINDER_GET, AMBIENT_GET, READ_HIVE, PROCESS_HI
 
 def init():
     global internet_avail
-    internet_avail = 0
+    internet_avail = 1
     global internet
     internet = check_internet_connection()
+    global pyicloud
+    pyicloud = 0
