@@ -286,12 +286,11 @@ def AMBIENT_GET():
     
     AMBIENT_START_DATE = datetime.fromtimestamp(int(rows['dateutc'][len(rows['dateutc']) - 1]))
     
-    print(AMBIENT_START_DATE)
     # Determine number of days since beginning of record
     dateDelta = datetime.today() - AMBIENT_START_DATE
     
     # Iterate through each day of data
-    for i in range(dateDelta.days + 1):
+    for i in range(int(dateDelta.days + 1)):
         # Fetch data from Ambient
         AMBIENT_DATE = AMBIENT_START_DATE + timedelta(days=i)
         AMBIENT_DATE = str(AMBIENT_DATE)
@@ -300,15 +299,14 @@ def AMBIENT_GET():
         query_params = {'applicationKey': AMBIENT_APPLICATION_KEY, 'macAddress': AMBIENT_MAC, 'apiKey': AMBIENT_API_KEY, 'endDate': AMBIENT_DATE}
         AMBIENT_ENDPOINT = f'https://rt.ambientweather.net/v1/devices/{AMBIENT_MAC}?apiKey={AMBIENT_API_KEY}&applicationKey={AMBIENT_APPLICATION_KEY}&endDate={AMBIENT_DATE}'
         data = pd.DataFrame()
-    
+
         response = requests.get(AMBIENT_ENDPOINT)
         if response.status_code == 200:
             data = pd.DataFrame(response.json())
-            break
         else:
             # Handle errors
             print(f'Error: {response.status_code} - {response.text}')
-            
+
         # Wait for 1 second to comply with Ambient server limits
         t.sleep(1)
         

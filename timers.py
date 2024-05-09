@@ -15,26 +15,27 @@ class Timers(Tk):
         Tk.__init__(self, *args, **kwargs)
 
     def daily_updater(self):
-        try:
-            GET_MOON_IMAGE()
+        # try:
+        GET_MOON_IMAGE()
+        if settings.pyicloud:
             PYICLOUD_GET.cycle_files()
             PYICLOUD_GET.download()
-        except:
-            print("***FAIL*** daily_updater")
-        self.after(86400, self.daily_updater)
+        # except:
+        #     print("***FAIL*** daily_updater")
+        self.after(86400000, self.daily_updater)
     
     def hourly_updater(self):
-        try:
-            GET_FORECAST()
-        except:
-            print("***FAIL*** hourly_updater")
-        self.after(3600, self.hourly_updater)
+        # try:
+        GET_FORECAST()
+        # except:
+        #     print("***FAIL*** hourly_updater")
+        self.after(3600000, self.hourly_updater)
     
     def five_min_updater(self):
-        try:
-            for hive_name, hive_ID in settings.hive_IDs.items():
-                BROODMINDER_GET(hive_name, hive_ID)
-            AMBIENT_GET()
-        except:
-            print("***FAIL*** five_min_updater")
-        self.after(300, self.five_min_updater)
+        # try:
+        for hive_name, hive_ID in settings.hive_IDs.items():
+            BROODMINDER_GET(hive_name, hive_ID)
+        AMBIENT_GET()
+        # except:
+        #     print("***FAIL*** five_min_updater")
+        self.after(300000, self.five_min_updater)

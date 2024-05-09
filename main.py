@@ -42,6 +42,8 @@ import pandas as pd
 from IPython.display import display
 from timers import Timers
 
+
+    
 # root window (parent to all), controller to Frames
 class Windows(Tk):
     def __init__(self, *args, **kwargs):
@@ -186,9 +188,15 @@ class Windows(Tk):
             index = main_notebook.index(main_notebook.select())
         main_notebook.bind("<<NotebookTabChanged>>", on_tab_change)
 
+    def refresh(self):
+        self.destroy()
+        self.__init__()
+        self.after(300000, self.refresh)
+
 def main():
     windows = Windows()
     windows.mainloop()
+    windows.refresh()
     
 def timers():
     timers = Timers()
