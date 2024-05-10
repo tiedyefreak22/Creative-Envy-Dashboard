@@ -99,9 +99,12 @@ class Windows(Tk):
             "hive1_wt":     [DoubleVar(self, list(Hive_Processed[0]['Scale Under Hive']['Weight'].items())[-1][1]),
                              DoubleVar(self, min(Hive_Processed[0]['Scale Under Hive']['Weight'])),
                              DoubleVar(self, max(Hive_Processed[0]['Scale Under Hive']['Weight']))],
-            "hive2_wt":     [DoubleVar(self, list(Hive_Processed[0]['Scale Under Hive']['Weight'].items())[-1][1]),
-                             DoubleVar(self, min(Hive_Processed[0]['Scale Under Hive']['Weight'])),
-                             DoubleVar(self, max(Hive_Processed[0]['Scale Under Hive']['Weight']))],
+            "hive2_wt":     [DoubleVar(self, list(Hive_Processed[1]['Scale Under Hive']['Weight'].items())[-1][1]),
+                             DoubleVar(self, min(Hive_Processed[1]['Scale Under Hive']['Weight'])),
+                             DoubleVar(self, max(Hive_Processed[1]['Scale Under Hive']['Weight']))],
+            # "hive3_wt":     [DoubleVar(self, list(Hive_Processed[2]['Scale Under Hive']['Weight'].items())[-1][1]),
+            #                  DoubleVar(self, min(Hive_Processed[2]['Scale Under Hive']['Weight'])),
+            #                  DoubleVar(self, max(Hive_Processed[2]['Scale Under Hive']['Weight']))],
             "hive3_wt":     [DoubleVar(self, list(Hive_Processed[0]['Scale Under Hive']['Weight'].items())[-1][1]),
                              DoubleVar(self, min(Hive_Processed[0]['Scale Under Hive']['Weight'])),
                              DoubleVar(self, max(Hive_Processed[0]['Scale Under Hive']['Weight']))],
@@ -114,6 +117,12 @@ class Windows(Tk):
             "hive1_temp":   [DoubleVar(self, list(Hive_Processed[0]['Lower Brood']['Temperature'].items())[-1][1]),
                              DoubleVar(self, min(Hive_Processed[0]['Lower Brood']['Temperature'])),
                              DoubleVar(self, max(Hive_Processed[0]['Lower Brood']['Temperature']))],
+            # "hive2_temp":   [DoubleVar(self, list(Hive_Processed[1]['Lower Brood']['Temperature'].items())[-1][1]),
+            #                  DoubleVar(self, min(Hive_Processed[1]['Lower Brood']['Temperature'])),
+            #                  DoubleVar(self, max(Hive_Processed[1]['Lower Brood']['Temperature']))],
+            # "hive3_temp":   [DoubleVar(self, list(Hive_Processed[2]['Lower Brood']['Temperature'].items())[-1][1]),
+            #                  DoubleVar(self, min(Hive_Processed[2]['Lower Brood']['Temperature'])),
+            #                  DoubleVar(self, max(Hive_Processed[2]['Lower Brood']['Temperature']))],
             "hive2_temp":   [DoubleVar(self, list(Hive_Processed[0]['Lower Brood']['Temperature'].items())[-1][1]),
                              DoubleVar(self, min(Hive_Processed[0]['Lower Brood']['Temperature'])),
                              DoubleVar(self, max(Hive_Processed[0]['Lower Brood']['Temperature']))],
@@ -129,6 +138,12 @@ class Windows(Tk):
             "hive1_humid":  [DoubleVar(self, list(Hive_Processed[0]['Upper Brood']['Humidity'].items())[-1][1]),
                              DoubleVar(self, min(Hive_Processed[0]['Upper Brood']['Humidity'])),
                              DoubleVar(self, max(Hive_Processed[0]['Upper Brood']['Humidity']))],
+            # "hive2_humid":  [DoubleVar(self, list(Hive_Processed[1]['Upper Brood']['Humidity'].items())[-1][1]),
+            #                  DoubleVar(self, min(Hive_Processed[1]['Upper Brood']['Humidity'])),
+            #                  DoubleVar(self, max(Hive_Processed[1]['Upper Brood']['Humidity']))],
+            # "hive3_humid":  [DoubleVar(self, list(Hive_Processed[2]['Upper Brood']['Humidity'].items())[-1][1]),
+            #                  DoubleVar(self, min(Hive_Processed[2]['Upper Brood']['Humidity'])),
+            #                  DoubleVar(self, max(Hive_Processed[2]['Upper Brood']['Humidity']))],
             "hive2_humid":  [DoubleVar(self, list(Hive_Processed[0]['Upper Brood']['Humidity'].items())[-1][1]),
                              DoubleVar(self, min(Hive_Processed[0]['Upper Brood']['Humidity'])),
                              DoubleVar(self, max(Hive_Processed[0]['Upper Brood']['Humidity']))],
@@ -188,15 +203,15 @@ class Windows(Tk):
             index = main_notebook.index(main_notebook.select())
         main_notebook.bind("<<NotebookTabChanged>>", on_tab_change)
 
+        self.after(60000, self.refresh)
+
     def refresh(self):
         self.destroy()
         self.__init__()
-        self.after(300000, self.refresh)
-
+    
 def main():
     windows = Windows()
     windows.mainloop()
-    windows.refresh()
     
 def timers():
     timers = Timers()
