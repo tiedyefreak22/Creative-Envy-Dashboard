@@ -33,6 +33,7 @@ import dns.resolver
 import pytz
 import astral, astral.sun
 import PYICLOUD_GET
+from sys import platform
 
 def BROODMINDER_GET(hive_name, hive_ID):
     #Login to Broodminder, Get Beehive data, and format
@@ -47,8 +48,16 @@ def BROODMINDER_GET(hive_name, hive_ID):
       "profile.default_content_setting_values.automatic_downloads": 1,
     })
     options.add_argument('--headless=new')
-    
-    s = Service(str('./chromedriver.exe'))
+
+    s = None
+
+    if platform == "linux" or platform == "linux2":
+        pass 
+    elif platform == "darwin":
+        s = Service(str('./chromedriver'))
+    elif platform == "win32":
+        s = Service(str('./chromedriver.exe'))
+        
     driver = webdriver.Chrome(service = s, options = options)
 
     ssl._create_default_https_context = ssl._create_unverified_context
@@ -183,6 +192,7 @@ def READ_BEE_WEATHER():
     return Bee_Weather_master
     print("Finished reading Broodminder weather data.")
 
+# PROCESS_HIVE gets last 7 days of data
 def PROCESS_HIVE(hive_name: str, interp = 0):
     print("Processing Broodminder data.")
     directory = "Broodminder/"
@@ -208,7 +218,7 @@ def PROCESS_HIVE(hive_name: str, interp = 0):
     for i, key in enumerate(list(Week_Devices.keys())):
         Week_Devices[str(key)] = Week_Devices[str(key)].sort_values(by = ["Unix_Time"])
         Week_Devices[str(key)]["Unix_Time"] = [int(i) for i in Week_Devices[str(key)]["Unix_Time"]]
-        Week_Devices[str(key)] = Week_Devices[str(key)].loc[Week_Devices[str(key)][Week_Devices[str(key)]["Unix_Time"] >= max(Week_Devices[str(key)]["Unix_Time"]) - 604800].index[0]:]
+        Week_Devices[str(key)] = Week_Devices[str(key)].loc[Week_Devices[str(key)][Week_Devices[str(key)]["Unix_Time"] >= max(Week_Devices[str(key)]["Unix_Time"]) - 604800].index[0]:].set_index("Unix_Time")
     if interp:
         Interps = dict.fromkeys(list(Week_Devices.keys()))
         for i, key in enumerate(list(Week_Devices.keys())):

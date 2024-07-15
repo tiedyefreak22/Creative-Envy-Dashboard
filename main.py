@@ -32,17 +32,15 @@ sys.path.append("BEE_WEATHER_DATA")
 import settings
 from BEE_WEATHER_DATA import BROODMINDER_GET, AMBIENT_GET, READ_HIVE, PROCESS_HIVE, READ_BEE_WEATHER, PROCESS_BEE_WEATHER, PROCESS_AMBIENT, GRAPH_DATA, GET_MOON_IMAGE, GET_FORECAST, PROCESS_FORECAST, PROCESS_FORECAST_MIN_MAX, check_internet_connection, GET_WEATHER_ICON
 sys.path.append("PYICLOUD_GET")
-from Custom_Widgets import CustomMeter, EmptyLF, CustomClockWidget, CustomSmallImg, WeatherWidget
-from Pane1 import Pane1
-from Pane2 import Pane2
-from Pane3 import Pane3
-from Pane4 import Pane4
+from Custom_Widgets import *
+from Pane1 import *
+from Pane2 import *
+from Pane3 import *
+from Pane4 import *
 import PYICLOUD_GET
 import pandas as pd
 from IPython.display import display
-from timers import Timers
-
-
+from timers import *
     
 # root window (parent to all), controller to Frames
 class Windows(Tk):
