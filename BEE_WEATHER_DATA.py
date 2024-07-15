@@ -444,7 +444,7 @@ def GET_MOON_IMAGE(size = 216):
         url = moon_domain + moon_path + "/frames/3840x2160_16x9_30p/" + f"plain/moon.{moon_image_number:04d}.tif"
     else:
         url = moon_domain + moon_path + "/frames/216x216_1x1_30p/" + f"moon.{moon_image_number:04d}.jpg"
-    response = requests.get(url)
+    response = requests.get(url, verify = False)
     img = Image.open(BytesIO(response.content))
 
     for file in os.listdir("moon/"):
