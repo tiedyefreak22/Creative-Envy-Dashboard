@@ -29,6 +29,9 @@ def gen_dict_extract(key, var):
 class Timers(Tk):
     def __init__(self, *args, **kwargs):
         Tk.__init__(self, *args, **kwargs)
+        daily_updater()
+        hourly_updater()
+        five_min_updater()
 
     def daily_updater(self):
         # try:
@@ -73,5 +76,20 @@ class Hive(Tk):
         BROODMINDER_GET(self.hive_name, self.hive_ID)
         self.after(300000, self.five_min_updater)
 
+    # def get_honey(self):
+    #     return(list(gen_dict_extract("Weight", PROCESS_HIVE(self.hive_name))))
+
+    # def get_bees(self):
+    #     return(list(gen_dict_extract("Weight", PROCESS_HIVE(self.hive_name))))
+
     def get_weight(self):
         return(list(gen_dict_extract("Weight", PROCESS_HIVE(self.hive_name))))
+
+    # def get_upper_temp(self):
+    #     return(list(gen_dict_extract("Weight", PROCESS_HIVE(self.hive_name))))
+
+    # def get_lower_temp(self):
+    #     return(list(gen_dict_extract("Weight", PROCESS_HIVE(self.hive_name))))
+
+    def get_humidity(self):
+        return(list(gen_dict_extract("Humidity", PROCESS_HIVE(self.hive_name))))

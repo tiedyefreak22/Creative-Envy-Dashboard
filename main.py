@@ -213,14 +213,11 @@ def main():
     
 def timers():
     timers = Timers()
-    timers.daily_updater()
-    timers.hourly_updater()
-    timers.five_min_updater()
     
 if __name__ == '__main__': # runs main if in python script
     settings.init()
     t1 = threading.Thread(target = main,args = ())
-    t2 = threading.Thread(target = timers,args = ())
+    #t2 = threading.Thread(target = timers,args = ())
     t1.start()
     t2.start()
     t1.join()

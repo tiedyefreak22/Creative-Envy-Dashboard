@@ -36,6 +36,8 @@ import PYICLOUD_GET
 from sys import platform
 
 def BROODMINDER_GET(hive_name, hive_ID):
+    debugging = False
+    
     #Login to Broodminder, Get Beehive data, and format
     print("Getting Broodminder data.")
     directory = "Broodminder/"        
@@ -47,7 +49,11 @@ def BROODMINDER_GET(hive_name, hive_ID):
       "safebrowsing.enabled": True,
       "profile.default_content_setting_values.automatic_downloads": 1,
     })
-    options.add_argument('--headless=new')
+
+    if debugging:
+        chrome_options.add_experimental_option("detach", True)
+    else:
+        options.add_argument('--headless=new')
 
     s = None
 
@@ -112,8 +118,9 @@ def BROODMINDER_GET(hive_name, hive_ID):
     driver.find_element(by = By.XPATH, value = "/html/body/div[3]/div[2]/div/mat-dialog-container/div/div/div/div[2]/div[4]/button/span[2]").click()
     t.sleep(3)
 
-    # close the browser window
-    driver.quit()
+    if not debugging:
+        # close the browser window
+        driver.quit()
     
     READ_HIVE(hive_name)
     READ_BEE_WEATHER()
@@ -174,10 +181,7 @@ def READ_BEE_WEATHER():
     # Load master file
     if filename:
         Bee_Weather = pd.read_csv(filename)
-        Bee_Weather.drop('DownloadTimeStamp', axis = 1, inplace = True)
-        Bee_Weather.drop('UTC_TimeStamp', axis = 1, inplace = True)
-        Bee_Weather.drop('Local_TimeStamp', axis = 1, inplace = True)
-        Bee_Weather.drop('Metric', axis = 1, inplace = True)
+        Bee_Weather.drop(['DownloadTimeStamp', 'UTC_TimeStamp', 'Local_TimeStamp', 'Metric'], axis = 1, inplace = True)
         
         if os.path.exists(directory + "KevBec Apiary_weather Master.csv"):
             Bee_Weather_master = pd.read_csv(directory + "KevBec Apiary_weather Master.csv")        
