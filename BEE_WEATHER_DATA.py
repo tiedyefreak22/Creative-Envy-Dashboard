@@ -34,6 +34,9 @@ import pytz
 import astral, astral.sun
 import PYICLOUD_GET
 from sys import platform
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def BROODMINDER_GET(hive_name, hive_ID):
     debugging = False
@@ -68,8 +71,8 @@ def BROODMINDER_GET(hive_name, hive_ID):
 
     ssl._create_default_https_context = ssl._create_unverified_context
 
-    username = 'olivine8910@gmail.com'
-    password = 'nujtab-7bebfo-baTweh'
+    username = os.getenv("USERNAME")
+    password = os.getenv("PASSWORD")
 
     session = requests.session()
     URL = 'https://mybroodminder.com/login'
@@ -291,9 +294,9 @@ def AMBIENT_GET():
     filename = "Ambient/Ambient_Data.csv"
     
     # Define weather station data
-    AMBIENT_API_KEY = "a6ed012c794e4d8283cb2475e187daaffb847bc9d13d4e13a90d5b4c2e11c98a"
-    AMBIENT_APPLICATION_KEY = "d34a5337cdbe460a8624135e6661bdb4bd810a078dc84f47b07c0170bc867eec"
-    AMBIENT_MAC = "00:0E:C6:30:1F:CC"
+    AMBIENT_API_KEY = os.getenv("AMBIENT_API_KEY")
+    AMBIENT_APPLICATION_KEY = os.getenv("AMBIENT_APPLICATION_KEY")
+    AMBIENT_MAC = os.getenv("AMBIENT_MAC")
     
     # Read in current csv values
     rows = pd.read_csv(filename, sep = ',', on_bad_lines = 'skip')
@@ -406,7 +409,7 @@ def GRAPH_DATA(Data: pd.DataFrame):
 
 def GET_FORECAST():
     print("Getting Forecast data.")
-    api_key = '6076127529eb62ab78ea542909f0a2ef'
+    api_key = os.getenv("FORECAST_API_KEY")
     lat = 40.907220
     lon = -111.894300
     query_params = {'lat': lat, 'lon': lon, 'appid': api_key, 'units': 'imperial'}

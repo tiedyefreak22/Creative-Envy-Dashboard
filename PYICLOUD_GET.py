@@ -12,6 +12,9 @@ import numpy as np
 import asyncio
 import aiomultiprocess
 import shutil
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # For retrying connection after timeouts and errors
 MAX_RETRIES = 5
@@ -35,7 +38,7 @@ def cycle_files():
             file_pathB = os.path.join(directoryB, file)
             os.rename(file_pathA, file_pathB)
 
-def download(directory = os.getcwd() + "/PhotosA", username = "olivine8910@gmail.com", password = "sadnav-diqtyf-boQni1", size = "original", download_videos = 0, force_size = 0):
+def download(directory = os.getcwd() + "/PhotosA", username = os.getenv("USERNAME"), password = os.getenv("APPLE_PASSWORD"), size = "original", download_videos = 0, force_size = 0):
     """Download/Refresh 50 iCloud photos from favorites to a local directory"""
     icloud = authenticate(username, password)
 
