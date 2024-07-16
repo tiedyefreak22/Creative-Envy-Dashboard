@@ -71,8 +71,8 @@ def BROODMINDER_GET(hive_name, hive_ID):
 
     ssl._create_default_https_context = ssl._create_unverified_context
 
-    username = os.getenv("USERNAME")
-    password = os.getenv("PASSWORD")
+    username = os.getenv("BROODMINDER_USERNAME")
+    password = os.getenv("BROODMINDER_PASSWORD")
 
     session = requests.session()
     URL = 'https://mybroodminder.com/login'

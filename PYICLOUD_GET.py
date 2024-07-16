@@ -38,7 +38,7 @@ def cycle_files():
             file_pathB = os.path.join(directoryB, file)
             os.rename(file_pathA, file_pathB)
 
-def download(directory = os.getcwd() + "/PhotosA", username = os.getenv("USERNAME"), password = os.getenv("APPLE_PASSWORD"), size = "original", download_videos = 0, force_size = 0):
+def download(directory = os.getcwd() + "/PhotosA", username = os.getenv("APPLE_USERNAME"), password = os.getenv("APPLE_PASSWORD"), size = "original", download_videos = 0, force_size = 0):
     """Download/Refresh 50 iCloud photos from favorites to a local directory"""
     icloud = authenticate(username, password)
 
