@@ -29,8 +29,8 @@ import urllib.request
 import io
 from pathlib import Path
 sys.path.append("BEE_WEATHER_DATA")
-import settings
-from BEE_WEATHER_DATA import BROODMINDER_GET, AMBIENT_GET, READ_HIVE, PROCESS_HIVE, READ_BEE_WEATHER, PROCESS_BEE_WEATHER, PROCESS_AMBIENT, GRAPH_DATA, GET_MOON_IMAGE, GET_FORECAST, PROCESS_FORECAST, PROCESS_FORECAST_MIN_MAX, check_internet_connection, GET_WEATHER_ICON
+from settings import *
+from BEE_WEATHER_DATA import *
 sys.path.append("PYICLOUD_GET")
 from Custom_Widgets import *
 from Pane1 import *
@@ -41,6 +41,8 @@ import PYICLOUD_GET
 import pandas as pd
 from IPython.display import display
 from timers import *
+import warnings
+warnings.filterwarnings("ignore")
     
 # root window (parent to all), controller to Frames
 class Windows(Tk):
@@ -201,7 +203,7 @@ class Windows(Tk):
             index = main_notebook.index(main_notebook.select())
         main_notebook.bind("<<NotebookTabChanged>>", on_tab_change)
 
-        self.after(60000, self.refresh)
+        #self.after(60000, self.refresh)
 
     def refresh(self):
         self.destroy()
@@ -215,9 +217,8 @@ def timers():
     timers = Timers()
     
 if __name__ == '__main__': # runs main if in python script
-    settings.init()
     t1 = threading.Thread(target = main,args = ())
-    #t2 = threading.Thread(target = timers,args = ())
+    t2 = threading.Thread(target = timers,args = ())
     t1.start()
     t2.start()
     t1.join()
