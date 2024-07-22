@@ -5,6 +5,8 @@ from selenium.webdriver.common.by import By
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import os
 import pandas as pd
 from glob import glob
@@ -79,6 +81,8 @@ def BROODMINDER_GET(hive_name, hive_ID):
     driver.get(URL)
     t.sleep(5)
 
+    # element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "/html/body/app-root/app-default/div/app-login/div/mat-tab-group/div/mat-tab-body[1]/div/div/mat-card/form/div/button")))
+        
     # find username/email field and send the username itself to the input field
     driver.find_element(by = By.NAME, value = "email").send_keys(username)
 
@@ -93,7 +97,9 @@ def BROODMINDER_GET(hive_name, hive_ID):
     # left hive dashboard
     URL = f'https://mybroodminder.com/app/dashboard/hives?hiveIds={hive_ID}&weaIds=37a0763f69e04c2c823013928e067d68'
     driver.get(URL)
-    t.sleep(3)
+    t.sleep(5)
+
+    # element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "/html/body/app-root/app-core/mat-sidenav-container/mat-sidenav-content/div/div/app-hives-dashboard/div[1]/div/app-date-range-picker-2/div/mat-icon")))
     
     # select longest date range
     driver.find_element(by = By.XPATH, value = "/html/body/app-root/app-core/mat-sidenav-container/mat-sidenav-content/div/div/app-hives-dashboard/div[1]/div/app-date-range-picker-2/div/mat-icon").click()
@@ -664,3 +670,34 @@ def config_pic(file, widget_width, widget_height, padding):
     # now create the ImageTk PhotoImage:
     img = ImageTk.PhotoImage(image = PIL_image_small)
     return img
+
+def kalman(z):
+    # initial parameters
+    n_iter = len(z)
+    sz = (n_iter,)            # size of array
+    Q = 0.05                  # process variance
+
+    # allocate space for arrays
+    xhat = np.zeros(sz)       # a posteri estimate of x
+    P = np.zeros(sz)          # a posteri error estimate
+    xhatminus = np.zeros(sz)  # a priori estimate of x
+    Pminus = np.zeros(sz)     # a priori error estimate
+    K = np.zeros(sz)          # gain or blending factor
+
+    R = variance(z)           # estimate of measurement variance
+
+    # initial estimates
+    xhat[0] = mean(z[0:3])
+    P[0] = 1.0
+
+    for k in range(1, n_iter):
+        # time update
+        xhatminus[k] = xhat[k - 1]
+        Pminus[k] = P[k - 1] + Q
+
+        # measurement update
+        K[k] = Pminus[k] / (Pminus[k] + R)
+        xhat[k] = xhatminus[k] + K[k] * (z[k] - xhatminus[k])
+        P[k] = (1 - K[k]) * Pminus[k]
+
+    return xhat
