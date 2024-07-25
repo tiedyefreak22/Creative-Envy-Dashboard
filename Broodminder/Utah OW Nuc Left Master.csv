@@ -6340,3 +6340,261 @@ Rssi,Device,Hive_Position,Unix_Time,Sample,Battery,Temperature,Humidity,Scaled_W
 88,49:02:8C,Scale Under Hive,1721605647,134,100.0,95.55,nan,79.7,1.0,79.7,23.77,17.58,13.2,25.15
 99,47:13:E4,Lower Brood,1721606247,1346,100.0,95.99,nan,nan,nan,nan,nan,nan,nan,nan
 84,56:0D:15,Upper Brood,1721606847,1301,nan,96.24,61.0,nan,nan,nan,nan,nan,nan,nan
+82,49:02:8C,Scale Under Hive,1721609247,135,nan,93.2,nan,78.66,1.0,78.66,23.62,17.41,12.92,24.71
+90,47:13:E4,Lower Brood,1721609847,1347,nan,95.79,nan,nan,nan,nan,nan,nan,nan,nan
+80,56:0D:15,Upper Brood,1721610447,1302,97.0,95.93,61.0,nan,nan,nan,nan,nan,nan,nan
+94,49:02:8C,Scale Under Hive,1721612846,136,100.0,90.86,nan,78.39,1.0,78.39,23.69,17.27,12.72,24.71
+99,47:13:E4,Lower Brood,1721613446,1348,100.0,95.05,nan,nan,nan,nan,nan,nan,nan,nan
+74,56:0D:15,Upper Brood,1721614051,1303,nan,95.64,61.0,nan,nan,nan,nan,nan,nan,nan
+92,49:02:8C,Scale Under Hive,1721616447,137,nan,88.82,nan,78.27,1.0,78.27,23.72,17.28,12.59,24.68
+99,47:13:E4,Lower Brood,1721617048,1353,nan,94.85,nan,nan,nan,nan,nan,nan,nan,nan
+82,56:0D:15,Upper Brood,1721617648,1308,97.0,95.34,61.0,nan,nan,nan,nan,nan,nan,nan
+84,49:02:8C,Scale Under Hive,1721620046,138,100.0,86.41,nan,77.89,1.0,77.89,23.74,17.14,12.49,24.52
+99,47:13:E4,Lower Brood,1721620652,1354,100.0,94.92,nan,nan,nan,nan,nan,nan,nan,nan
+74,56:0D:15,Upper Brood,1721621247,1309,nan,95.25,61.0,nan,nan,nan,nan,nan,nan,nan
+98,49:02:8C,Scale Under Hive,1721623646,139,nan,85.91,nan,77.7,1.0,77.7,23.71,17.15,12.36,24.48
+99,47:13:E4,Lower Brood,1721624247,1355,nan,95.0,nan,nan,nan,nan,nan,nan,nan,nan
+84,56:0D:15,Upper Brood,1721624847,1310,97.0,95.3,60.0,nan,nan,nan,nan,nan,nan,nan
+88,49:02:8C,Scale Under Hive,1721627246,140,100.0,85.53,nan,77.52,1.0,77.52,23.73,17.09,12.3,24.4
+99,47:13:E4,Lower Brood,1721627847,1356,100.0,95.05,nan,nan,nan,nan,nan,nan,nan,nan
+84,56:0D:15,Upper Brood,1721628447,1311,nan,95.1,60.0,nan,nan,nan,nan,nan,nan,nan
+98,49:02:8C,Scale Under Hive,1721630846,141,nan,84.57,nan,77.3,1.0,77.3,23.67,17.04,12.25,24.34
+99,47:13:E4,Lower Brood,1721631446,1357,nan,95.3,nan,nan,nan,nan,nan,nan,nan,nan
+82,56:0D:15,Upper Brood,1721632051,1312,97.0,94.96,60.0,nan,nan,nan,nan,nan,nan,nan
+88,49:02:8C,Scale Under Hive,1721634445,142,100.0,82.94,nan,76.78,1.0,76.78,23.49,16.86,12.11,24.32
+99,47:13:E4,Lower Brood,1721635046,1358,100.0,95.19,nan,nan,nan,nan,nan,nan,nan,nan
+82,56:0D:15,Upper Brood,1721635651,1313,nan,94.78,60.0,nan,nan,nan,nan,nan,nan,nan
+88,49:02:8C,Scale Under Hive,1721638044,143,nan,81.33,nan,76.17,1.0,76.17,23.42,16.67,12.04,24.04
+99,47:13:E4,Lower Brood,1721638645,1359,nan,95.39,nan,nan,nan,nan,nan,nan,nan,nan
+76,56:0D:15,Upper Brood,1721639250,1314,97.0,94.83,60.0,nan,nan,nan,nan,nan,nan,nan
+99,49:02:8C,Scale Under Hive,1721641643,144,100.0,79.79,nan,75.6,1.0,75.6,23.3,16.51,11.92,23.87
+99,47:13:E4,Lower Brood,1721642244,1360,100.0,95.46,nan,nan,nan,nan,nan,nan,nan,nan
+80,56:0D:15,Upper Brood,1721642845,1315,nan,94.56,60.0,nan,nan,nan,nan,nan,nan,nan
+88,49:02:8C,Scale Under Hive,1721645244,145,nan,79.84,nan,75.36,1.0,75.36,23.24,16.43,11.84,23.85
+94,47:13:E4,Lower Brood,1721645845,1361,nan,95.5,nan,nan,nan,nan,nan,nan,nan,nan
+82,56:0D:15,Upper Brood,1721646446,1316,97.0,94.44,60.0,nan,nan,nan,nan,nan,nan,nan
+98,49:02:8C,Scale Under Hive,1721648844,146,100.0,76.0,nan,74.21,1.0,74.21,22.94,16.07,11.7,23.5
+99,47:13:E4,Lower Brood,1721649445,1362,100.0,95.18,nan,nan,nan,nan,nan,nan,nan,nan
+80,56:0D:15,Upper Brood,1721650046,1317,nan,94.58,60.0,nan,nan,nan,nan,nan,nan,nan
+99,49:02:8C,Scale Under Hive,1721652444,147,nan,75.84,nan,73.56,1.0,73.56,22.81,15.84,11.55,23.36
+94,47:13:E4,Lower Brood,1721653048,1363,nan,95.05,nan,nan,nan,nan,nan,nan,nan,nan
+74,56:0D:15,Upper Brood,1721653645,1318,97.0,94.19,60.0,nan,nan,nan,nan,nan,nan,nan
+94,49:02:8C,Scale Under Hive,1721656043,148,100.0,75.7,nan,72.48,1.0,72.48,22.53,15.45,11.39,23.11
+99,47:13:E4,Lower Brood,1721656644,1364,100.0,94.85,nan,nan,nan,nan,nan,nan,nan,nan
+74,56:0D:15,Upper Brood,1721657245,1319,nan,94.06,60.0,nan,nan,nan,nan,nan,nan,nan
+92,49:02:8C,Scale Under Hive,1721659643,149,nan,80.67,nan,72.94,1.0,72.94,22.75,15.7,11.39,23.1
+94,47:13:E4,Lower Brood,1721660244,1365,nan,95.0,nan,nan,nan,nan,nan,nan,nan,nan
+76,56:0D:15,Upper Brood,1721660845,1320,97.0,93.84,60.0,nan,nan,nan,nan,nan,nan,nan
+88,49:02:8C,Scale Under Hive,1721663242,150,100.0,95.45,nan,75.44,1.0,75.44,23.5,16.71,11.72,23.51
+94,47:13:E4,Lower Brood,1721663852,1366,100.0,95.28,nan,nan,nan,nan,nan,nan,nan,nan
+70,56:0D:15,Upper Brood,1721664445,1321,nan,93.99,60.0,nan,nan,nan,nan,nan,nan,nan
+92,49:02:8C,Scale Under Hive,1721666842,151,nan,102.18,nan,76.99,1.0,76.99,23.9,17.21,11.84,24.04
+94,47:13:E4,Lower Brood,1721667443,1367,nan,95.7,nan,nan,nan,nan,nan,nan,nan,nan
+86,56:0D:15,Upper Brood,1721668045,1322,97.0,94.15,60.0,nan,nan,nan,nan,nan,nan,nan
+94,49:02:8C,Scale Under Hive,1721670443,152,100.0,102.95,nan,77.73,1.0,77.73,24.03,17.42,11.91,24.37
+94,47:13:E4,Lower Brood,1721671042,1368,100.0,96.15,nan,nan,nan,nan,nan,nan,nan,nan
+82,56:0D:15,Upper Brood,1721671645,1323,nan,94.31,60.0,nan,nan,nan,nan,nan,nan,nan
+88,49:02:8C,Scale Under Hive,1721674043,153,nan,101.39,nan,78.06,1.0,78.06,23.94,17.45,12.23,24.44
+99,47:13:E4,Lower Brood,1721674642,1369,nan,96.13,nan,nan,nan,nan,nan,nan,nan,nan
+84,56:0D:15,Upper Brood,1721675245,1324,97.0,94.53,60.0,nan,nan,nan,nan,nan,nan,nan
+88,49:02:8C,Scale Under Hive,1721677642,154,100.0,100.79,nan,78.84,1.0,78.84,24.12,17.6,12.49,24.63
+99,47:13:E4,Lower Brood,1721678247,1370,100.0,96.16,nan,nan,nan,nan,nan,nan,nan,nan
+74,56:0D:15,Upper Brood,1721678845,1325,nan,94.92,60.0,nan,nan,nan,nan,nan,nan,nan
+90,49:02:8C,Scale Under Hive,1721681241,155,nan,101.1,nan,78.73,1.0,78.73,24.06,17.52,12.51,24.64
+92,47:13:E4,Lower Brood,1721681841,1371,nan,96.2,nan,nan,nan,nan,nan,nan,nan,nan
+72,56:0D:15,Upper Brood,1721682444,1326,97.0,95.37,60.0,nan,nan,nan,nan,nan,nan,nan
+86,49:02:8C,Scale Under Hive,1721684841,156,100.0,100.32,nan,78.45,1.0,78.45,23.93,17.43,12.52,24.57
+99,47:13:E4,Lower Brood,1721685441,1372,100.0,96.18,nan,nan,nan,nan,nan,nan,nan,nan
+70,56:0D:15,Upper Brood,1721686044,1327,nan,95.84,60.0,nan,nan,nan,nan,nan,nan,nan
+86,49:02:8C,Scale Under Hive,1721688441,157,nan,98.15,nan,78.81,1.0,78.81,23.87,17.32,12.68,24.94
+99,47:13:E4,Lower Brood,1721689041,1373,nan,96.16,nan,nan,nan,nan,nan,nan,nan,nan
+80,56:0D:15,Upper Brood,1721689649,1328,97.0,96.02,60.0,nan,nan,nan,nan,nan,nan,nan
+92,49:02:8C,Scale Under Hive,1721692040,158,100.0,95.46,nan,77.88,1.0,77.88,23.69,17.28,12.54,24.37
+99,47:13:E4,Lower Brood,1721692640,1374,100.0,95.9,nan,nan,nan,nan,nan,nan,nan,nan
+82,56:0D:15,Upper Brood,1721693243,1329,nan,96.02,60.0,nan,nan,nan,nan,nan,nan,nan
+94,49:02:8C,Scale Under Hive,1721695640,159,nan,91.25,nan,76.29,1.0,76.29,23.37,16.85,12.24,23.83
+99,47:13:E4,Lower Brood,1721696240,1375,nan,96.08,nan,nan,nan,nan,nan,nan,nan,nan
+88,56:0D:15,Upper Brood,1721696843,1330,97.0,96.04,60.0,nan,nan,nan,nan,nan,nan,nan
+88,49:02:8C,Scale Under Hive,1721699240,160,100.0,88.93,nan,74.82,1.0,74.82,23.08,16.37,11.95,23.42
+92,47:13:E4,Lower Brood,1721699840,1376,100.0,95.57,nan,nan,nan,nan,nan,nan,nan,nan
+86,56:0D:15,Upper Brood,1721700443,1331,nan,95.9,60.0,nan,nan,nan,nan,nan,nan,nan
+90,49:02:8C,Scale Under Hive,1721702840,161,nan,85.51,nan,73.26,1.0,73.26,22.71,15.86,11.67,23.02
+99,47:13:E4,Lower Brood,1721703440,1381,nan,95.5,nan,nan,nan,nan,nan,nan,nan,nan
+86,56:0D:15,Upper Brood,1721704044,1336,97.0,95.61,60.0,nan,nan,nan,nan,nan,nan,nan
+90,49:02:8C,Scale Under Hive,1721706439,162,100.0,82.31,nan,72.61,1.0,72.61,22.61,15.68,11.47,22.85
+99,47:13:E4,Lower Brood,1721707044,1382,100.0,95.45,nan,nan,nan,nan,nan,nan,nan,nan
+86,56:0D:15,Upper Brood,1721707643,1337,nan,95.41,60.0,nan,nan,nan,nan,nan,nan,nan
+82,49:02:8C,Scale Under Hive,1721710039,163,nan,78.62,nan,71.85,1.0,71.85,22.46,15.4,11.32,22.67
+99,47:13:E4,Lower Brood,1721710639,1383,nan,95.45,nan,nan,nan,nan,nan,nan,nan,nan
+86,56:0D:15,Upper Brood,1721711243,1338,97.0,95.19,60.0,nan,nan,nan,nan,nan,nan,nan
+90,49:02:8C,Scale Under Hive,1721713639,164,100.0,76.62,nan,71.42,1.0,71.42,22.37,15.33,11.23,22.49
+99,47:13:E4,Lower Brood,1721714239,1384,100.0,95.19,nan,nan,nan,nan,nan,nan,nan,nan
+76,56:0D:15,Upper Brood,1721714844,1339,nan,95.05,60.0,nan,nan,nan,nan,nan,nan,nan
+98,49:02:8C,Scale Under Hive,1721717240,165,nan,76.45,nan,71.5,1.0,71.5,22.4,15.42,11.2,22.48
+99,47:13:E4,Lower Brood,1721717838,1385,nan,95.03,nan,nan,nan,nan,nan,nan,nan,nan
+86,56:0D:15,Upper Brood,1721718438,1340,97.0,94.85,60.0,nan,nan,nan,nan,nan,nan,nan
+98,49:02:8C,Scale Under Hive,1721720837,166,100.0,79.46,nan,72.69,1.0,72.69,22.68,15.83,11.3,22.88
+96,47:13:E4,Lower Brood,1721721437,1386,100.0,95.3,nan,nan,nan,nan,nan,nan,nan,nan
+78,56:0D:15,Upper Brood,1721722037,1341,nan,94.71,60.0,nan,nan,nan,nan,nan,nan,nan
+92,49:02:8C,Scale Under Hive,1721724439,167,nan,76.92,nan,71.45,1.0,71.45,22.3,15.29,11.3,22.56
+99,47:13:E4,Lower Brood,1721725038,1387,nan,95.5,nan,nan,nan,nan,nan,nan,nan,nan
+76,56:0D:15,Upper Brood,1721725638,1342,97.0,94.67,60.0,nan,nan,nan,nan,nan,nan,nan
+98,49:02:8C,Scale Under Hive,1721728037,168,100.0,71.78,nan,69.6,1.0,69.6,21.73,14.81,11.07,21.99
+99,47:13:E4,Lower Brood,1721728637,1388,100.0,95.27,nan,nan,nan,nan,nan,nan,nan,nan
+76,56:0D:15,Upper Brood,1721729237,1343,nan,94.58,60.0,nan,nan,nan,nan,nan,nan,nan
+99,49:02:8C,Scale Under Hive,1721731638,169,nan,68.63,nan,68.45,1.0,68.45,21.36,14.59,10.85,21.65
+96,47:13:E4,Lower Brood,1721732237,1389,nan,94.8,nan,nan,nan,nan,nan,nan,nan,nan
+78,56:0D:15,Upper Brood,1721732837,1344,97.0,94.33,60.0,nan,nan,nan,nan,nan,nan,nan
+92,49:02:8C,Scale Under Hive,1721735238,170,100.0,66.97,nan,67.84,1.0,67.84,21.18,14.52,10.68,21.46
+96,47:13:E4,Lower Brood,1721735837,1390,100.0,94.22,nan,nan,nan,nan,nan,nan,nan,nan
+90,56:0D:15,Upper Brood,1721736437,1345,nan,94.15,60.0,nan,nan,nan,nan,nan,nan,nan
+88,49:02:8C,Scale Under Hive,1721738838,171,nan,66.95,nan,67.58,1.0,67.58,21.09,14.49,10.58,21.42
+96,47:13:E4,Lower Brood,1721739437,1391,nan,94.24,nan,nan,nan,nan,nan,nan,nan,nan
+90,56:0D:15,Upper Brood,1721740038,1346,97.0,93.79,60.0,nan,nan,nan,nan,nan,nan,nan
+92,49:02:8C,Scale Under Hive,1721742437,172,100.0,71.29,nan,67.97,1.0,67.97,21.19,14.61,10.57,21.6
+99,47:13:E4,Lower Brood,1721743036,1392,100.0,93.81,nan,nan,nan,nan,nan,nan,nan,nan
+90,56:0D:15,Upper Brood,1721743637,1347,nan,93.5,60.0,nan,nan,nan,nan,nan,nan,nan
+92,49:02:8C,Scale Under Hive,1721746037,173,nan,77.86,nan,69.02,1.0,69.02,21.43,15.04,10.6,21.95
+99,47:13:E4,Lower Brood,1721746636,1393,nan,93.91,nan,nan,nan,nan,nan,nan,nan,nan
+88,56:0D:15,Upper Brood,1721747237,1348,97.0,93.41,60.0,nan,nan,nan,nan,nan,nan,nan
+94,49:02:8C,Scale Under Hive,1721749637,174,100.0,83.84,nan,70.43,1.0,70.43,21.82,15.54,10.73,22.34
+99,47:13:E4,Lower Brood,1721750236,1394,100.0,94.15,nan,nan,nan,nan,nan,nan,nan,nan
+88,56:0D:15,Upper Brood,1721750837,1349,nan,93.48,61.0,nan,nan,nan,nan,nan,nan,nan
+92,49:02:8C,Scale Under Hive,1721753237,175,nan,88.19,nan,71.74,1.0,71.74,21.99,16.04,10.99,22.72
+99,47:13:E4,Lower Brood,1721753836,1395,nan,94.71,nan,nan,nan,nan,nan,nan,nan,nan
+76,56:0D:15,Upper Brood,1721754437,1350,97.0,93.75,61.0,nan,nan,nan,nan,nan,nan,nan
+94,49:02:8C,Scale Under Hive,1721756836,176,100.0,99.73,nan,74.52,1.0,74.52,22.9,16.85,11.3,23.47
+99,47:13:E4,Lower Brood,1721757440,1396,100.0,95.09,nan,nan,nan,nan,nan,nan,nan,nan
+88,56:0D:15,Upper Brood,1721758036,1351,nan,94.11,61.0,nan,nan,nan,nan,nan,nan,nan
+94,49:02:8C,Scale Under Hive,1721760436,177,nan,102.12,nan,76.82,1.0,76.82,23.48,17.41,11.91,24.02
+94,47:13:E4,Lower Brood,1721761035,1397,nan,95.91,nan,nan,nan,nan,nan,nan,nan,nan
+88,56:0D:15,Upper Brood,1721761636,1352,97.0,94.33,61.0,nan,nan,nan,nan,nan,nan,nan
+92,49:02:8C,Scale Under Hive,1721764035,178,100.0,102.83,nan,77.76,1.0,77.76,23.62,17.5,12.26,24.38
+99,47:13:E4,Lower Brood,1721764634,1398,100.0,96.71,nan,nan,nan,nan,nan,nan,nan,nan
+84,56:0D:15,Upper Brood,1721765235,1353,nan,94.8,61.0,nan,nan,nan,nan,nan,nan,nan
+92,49:02:8C,Scale Under Hive,1721767636,179,nan,101.84,nan,78.37,1.0,78.37,23.74,17.62,12.48,24.53
+92,47:13:E4,Lower Brood,1721768238,1399,nan,96.67,nan,nan,nan,nan,nan,nan,nan,nan
+86,56:0D:15,Upper Brood,1721768835,1354,97.0,95.36,61.0,nan,nan,nan,nan,nan,nan,nan
+94,49:02:8C,Scale Under Hive,1721771236,180,100.0,100.76,nan,78.66,1.0,78.66,23.79,17.66,12.62,24.59
+92,47:13:E4,Lower Brood,1721771838,1400,100.0,96.45,nan,nan,nan,nan,nan,nan,nan,nan
+86,56:0D:15,Upper Brood,1721772435,1355,nan,95.84,62.0,nan,nan,nan,nan,nan,nan,nan
+88,49:02:8C,Scale Under Hive,1721774834,181,nan,99.46,nan,79.77,1.0,79.77,23.76,17.62,13.04,25.35
+92,47:13:E4,Lower Brood,1721775437,1401,nan,96.69,nan,nan,nan,nan,nan,nan,nan,nan
+88,56:0D:15,Upper Brood,1721776034,1356,97.0,96.11,61.0,nan,nan,nan,nan,nan,nan,nan
+94,49:02:8C,Scale Under Hive,1721778434,182,100.0,94.83,nan,78.68,1.0,78.68,23.58,17.56,12.91,24.63
+99,47:13:E4,Lower Brood,1721779042,1402,100.0,95.91,nan,nan,nan,nan,nan,nan,nan,nan
+78,56:0D:15,Upper Brood,1721779634,1357,nan,95.88,61.0,nan,nan,nan,nan,nan,nan,nan
+86,49:02:8C,Scale Under Hive,1721782035,183,nan,91.07,nan,76.92,1.0,76.92,23.24,17.09,12.56,24.03
+96,47:13:E4,Lower Brood,1721782638,1403,nan,95.86,nan,nan,nan,nan,nan,nan,nan,nan
+86,56:0D:15,Upper Brood,1721783236,1358,97.0,95.82,61.0,nan,nan,nan,nan,nan,nan,nan
+86,49:02:8C,Scale Under Hive,1721785634,184,100.0,87.99,nan,75.52,1.0,75.52,22.98,16.6,12.31,23.63
+99,47:13:E4,Lower Brood,1721786237,1404,100.0,95.73,nan,nan,nan,nan,nan,nan,nan,nan
+88,56:0D:15,Upper Brood,1721786835,1359,nan,95.73,61.0,nan,nan,nan,nan,nan,nan,nan
+98,49:02:8C,Scale Under Hive,1721789235,185,nan,84.21,nan,73.97,1.0,73.97,22.66,16.1,12.03,23.18
+99,47:13:E4,Lower Brood,1721789833,1409,nan,95.36,nan,nan,nan,nan,nan,nan,nan,nan
+78,56:0D:15,Upper Brood,1721790440,1364,97.0,95.52,61.0,nan,nan,nan,nan,nan,nan,nan
+94,49:02:8C,Scale Under Hive,1721792833,186,100.0,79.5,nan,72.72,1.0,72.72,22.44,15.73,11.71,22.84
+99,47:13:E4,Lower Brood,1721793432,1410,100.0,95.25,nan,nan,nan,nan,nan,nan,nan,nan
+88,56:0D:15,Upper Brood,1721794035,1365,nan,95.28,61.0,nan,nan,nan,nan,nan,nan,nan
+94,49:02:8C,Scale Under Hive,1721796433,187,nan,77.5,nan,72.36,1.0,72.36,22.44,15.64,11.55,22.73
+99,47:13:E4,Lower Brood,1721797032,1411,nan,95.23,nan,nan,nan,nan,nan,nan,nan,nan
+88,56:0D:15,Upper Brood,1721797644,1366,97.0,95.1,61.0,nan,nan,nan,nan,nan,nan,nan
+99,49:02:8C,Scale Under Hive,1721800033,188,100.0,75.23,nan,71.88,1.0,71.88,22.32,15.49,11.5,22.57
+94,47:13:E4,Lower Brood,1721800632,1412,100.0,95.05,nan,nan,nan,nan,nan,nan,nan,nan
+76,56:0D:15,Upper Brood,1721801235,1367,nan,94.83,61.0,nan,nan,nan,nan,nan,nan,nan
+94,49:02:8C,Scale Under Hive,1721803632,189,nan,73.22,nan,71.27,1.0,71.27,22.15,15.33,11.43,22.36
+99,47:13:E4,Lower Brood,1721804231,1413,nan,95.1,nan,nan,nan,nan,nan,nan,nan,nan
+76,56:0D:15,Upper Brood,1721804834,1368,97.0,94.76,61.0,nan,nan,nan,nan,nan,nan,nan
+96,49:02:8C,Scale Under Hive,1721807236,190,100.0,75.81,nan,71.4,1.0,71.4,22.19,15.45,11.34,22.42
+99,47:13:E4,Lower Brood,1721807832,1414,100.0,94.36,nan,nan,nan,nan,nan,nan,nan,nan
+86,56:0D:15,Upper Brood,1721808435,1369,nan,94.55,61.0,nan,nan,nan,nan,nan,nan,nan
+94,49:02:8C,Scale Under Hive,1721810832,191,nan,79.37,nan,72.42,1.0,72.42,22.34,15.84,11.48,22.76
+99,47:13:E4,Lower Brood,1721811436,1415,nan,95.0,nan,nan,nan,nan,nan,nan,nan,nan
+74,56:0D:15,Upper Brood,1721812034,1370,97.0,94.55,61.0,nan,nan,nan,nan,nan,nan,nan
+99,49:02:8C,Scale Under Hive,1721814432,192,100.0,74.91,nan,71.13,1.0,71.13,22.07,15.26,11.4,22.4
+94,47:13:E4,Lower Brood,1721815036,1416,100.0,94.98,nan,nan,nan,nan,nan,nan,nan,nan
+88,56:0D:15,Upper Brood,1721815634,1371,nan,94.51,61.0,nan,nan,nan,nan,nan,nan,nan
+92,49:02:8C,Scale Under Hive,1721817431,4,100.0,71.34,nan,70.07,1.0,70.07,21.75,14.98,11.26,22.08
+99,47:13:E4,Lower Brood,1721818634,1417,nan,94.51,nan,nan,nan,nan,nan,nan,nan,nan
+88,56:0D:15,Upper Brood,1721819243,1372,97.0,94.28,61.0,nan,nan,nan,nan,nan,nan,nan
+98,49:02:8C,Scale Under Hive,1721821031,5,100.0,68.3,nan,69.16,1.0,69.16,21.5,14.81,11.04,21.81
+99,47:13:E4,Lower Brood,1721822234,1418,100.0,94.02,nan,nan,nan,nan,nan,nan,nan,nan
+84,56:0D:15,Upper Brood,1721822843,1373,nan,94.06,61.0,nan,nan,nan,nan,nan,nan,nan
+92,49:02:8C,Scale Under Hive,1721824631,6,100.0,66.48,nan,68.63,1.0,68.63,21.39,14.73,10.87,21.64
+99,47:13:E4,Lower Brood,1721825834,1419,nan,93.54,nan,nan,nan,nan,nan,nan,nan,nan
+86,56:0D:15,Upper Brood,1721826434,1374,97.0,93.61,61.0,nan,nan,nan,nan,nan,nan,nan
+88,49:02:8C,Scale Under Hive,1721828230,7,nan,66.92,nan,68.6,1.0,68.6,21.38,14.78,10.81,21.63
+99,47:13:E4,Lower Brood,1721829433,1420,100.0,92.69,nan,nan,nan,nan,nan,nan,nan,nan
+84,56:0D:15,Upper Brood,1721830033,1375,nan,93.54,61.0,nan,nan,nan,nan,nan,nan,nan
+86,49:02:8C,Scale Under Hive,1721831830,8,100.0,72.21,nan,69.27,1.0,69.27,21.52,15.09,10.86,21.8
+99,47:13:E4,Lower Brood,1721833033,1421,nan,92.91,nan,nan,nan,nan,nan,nan,nan,nan
+82,56:0D:15,Upper Brood,1721833633,1376,97.0,93.09,61.0,nan,nan,nan,nan,nan,nan,nan
+94,49:02:8C,Scale Under Hive,1721835430,9,nan,89.88,nan,72.02,1.0,72.02,22.41,16.2,10.95,22.46
+96,47:13:E4,Lower Brood,1721836633,1422,100.0,93.32,nan,nan,nan,nan,nan,nan,nan,nan
+82,56:0D:15,Upper Brood,1721837233,1377,nan,93.18,61.0,nan,nan,nan,nan,nan,nan,nan
+94,49:02:8C,Scale Under Hive,1721839029,10,100.0,101.33,nan,74.91,1.0,74.91,23.12,17.0,11.47,23.32
+99,47:13:E4,Lower Brood,1721840232,1423,nan,94.47,nan,nan,nan,nan,nan,nan,nan,nan
+88,56:0D:15,Upper Brood,1721840832,1378,97.0,93.63,61.0,nan,nan,nan,nan,nan,nan,nan
+90,49:02:8C,Scale Under Hive,1721842629,11,nan,104.93,nan,76.61,1.0,76.61,23.57,17.43,11.73,23.88
+99,47:13:E4,Lower Brood,1721843832,1424,100.0,95.93,nan,nan,nan,nan,nan,nan,nan,nan
+82,56:0D:15,Upper Brood,1721844437,1379,nan,93.99,61.0,nan,nan,nan,nan,nan,nan,nan
+90,49:02:8C,Scale Under Hive,1721846230,12,100.0,104.1,nan,77.68,1.0,77.68,23.66,17.58,12.22,24.22
+99,47:13:E4,Lower Brood,1721847432,1425,nan,96.38,nan,nan,nan,nan,nan,nan,nan,nan
+78,56:0D:15,Upper Brood,1721848032,1380,97.0,94.38,61.0,nan,nan,nan,nan,nan,nan,nan
+88,49:02:8C,Scale Under Hive,1721849829,13,nan,102.54,nan,77.61,1.0,77.61,23.53,17.39,12.42,24.27
+99,47:13:E4,Lower Brood,1721851032,1426,100.0,96.56,nan,nan,nan,nan,nan,nan,nan,nan
+86,56:0D:15,Upper Brood,1721851632,1381,nan,94.91,61.0,nan,nan,nan,nan,nan,nan,nan
+88,49:02:8C,Scale Under Hive,1721853428,14,100.0,103.26,nan,78.28,1.0,78.28,23.67,17.54,12.55,24.52
+92,47:13:E4,Lower Brood,1721854631,1427,nan,96.42,nan,nan,nan,nan,nan,nan,nan,nan
+80,56:0D:15,Upper Brood,1721855231,1382,97.0,95.27,62.0,nan,nan,nan,nan,nan,nan,nan
+88,49:02:8C,Scale Under Hive,1721857028,15,nan,102.68,nan,78.84,1.0,78.84,23.79,17.67,12.69,24.69
+99,47:13:E4,Lower Brood,1721858235,1428,100.0,96.29,nan,nan,nan,nan,nan,nan,nan,nan
+80,56:0D:15,Upper Brood,1721858831,1383,nan,95.75,62.0,nan,nan,nan,nan,nan,nan,nan
+94,49:02:8C,Scale Under Hive,1721860628,16,100.0,101.89,nan,79.56,1.0,79.56,23.83,17.53,12.82,25.38
+99,47:13:E4,Lower Brood,1721861835,1429,nan,96.53,nan,nan,nan,nan,nan,nan,nan,nan
+80,56:0D:15,Upper Brood,1721862431,1384,97.0,96.24,62.0,nan,nan,nan,nan,nan,nan,nan
+92,49:02:8C,Scale Under Hive,1721864228,17,nan,97.23,nan,78.78,1.0,78.78,23.53,17.52,12.95,24.78
+94,47:13:E4,Lower Brood,1721865431,1430,100.0,96.26,nan,nan,nan,nan,nan,nan,nan,nan
+84,56:0D:15,Upper Brood,1721866036,1385,nan,96.26,62.0,nan,nan,nan,nan,nan,nan,nan
+90,49:02:8C,Scale Under Hive,1721867827,18,100.0,92.94,nan,77.1,1.0,77.1,23.22,17.15,12.63,24.1
+99,47:13:E4,Lower Brood,1721869030,1431,nan,95.86,nan,nan,nan,nan,nan,nan,nan,nan
+88,56:0D:15,Upper Brood,1721869631,1386,97.0,96.09,62.0,nan,nan,nan,nan,nan,nan,nan
+90,49:02:8C,Scale Under Hive,1721871427,19,nan,89.72,nan,75.28,1.0,75.28,22.91,16.49,12.24,23.64
+99,47:13:E4,Lower Brood,1721872630,1432,100.0,95.93,nan,nan,nan,nan,nan,nan,nan,nan
+76,56:0D:15,Upper Brood,1721873226,1387,nan,96.06,62.0,nan,nan,nan,nan,nan,nan,nan
+96,49:02:8C,Scale Under Hive,1721875027,20,100.0,85.73,nan,73.87,1.0,73.87,22.62,16.06,11.96,23.23
+99,47:13:E4,Lower Brood,1721876230,1437,nan,95.82,nan,nan,nan,nan,nan,nan,nan,nan
+76,56:0D:15,Upper Brood,1721876827,1392,97.0,95.79,62.0,nan,nan,nan,nan,nan,nan,nan
+96,49:02:8C,Scale Under Hive,1721878626,21,nan,82.36,nan,73.31,1.0,73.31,22.55,15.96,11.78,23.02
+99,47:13:E4,Lower Brood,1721879829,1438,100.0,95.52,nan,nan,nan,nan,nan,nan,nan,nan
+88,56:0D:15,Upper Brood,1721880426,1393,nan,95.54,62.0,nan,nan,nan,nan,nan,nan,nan
+96,49:02:8C,Scale Under Hive,1721882227,22,100.0,80.76,nan,72.9,1.0,72.9,22.53,15.83,11.64,22.9
+99,47:13:E4,Lower Brood,1721883440,1439,nan,95.54,nan,nan,nan,nan,nan,nan,nan,nan
+76,56:0D:15,Upper Brood,1721884036,1394,97.0,95.23,62.0,nan,nan,nan,nan,nan,nan,nan
+90,49:02:8C,Scale Under Hive,1721885826,23,nan,79.25,nan,72.72,1.0,72.72,22.51,15.81,11.59,22.81
+99,47:13:E4,Lower Brood,1721887034,1440,100.0,95.34,nan,nan,nan,nan,nan,nan,nan,nan
+88,56:0D:15,Upper Brood,1721887626,1395,nan,95.0,62.0,nan,nan,nan,nan,nan,nan,nan
+96,49:02:8C,Scale Under Hive,1721889426,24,100.0,78.15,nan,72.42,1.0,72.42,22.47,15.71,11.52,22.72
+94,47:13:E4,Lower Brood,1721890629,1441,nan,95.18,nan,nan,nan,nan,nan,nan,nan,nan
+86,56:0D:15,Upper Brood,1721891226,1396,97.0,94.8,62.0,nan,nan,nan,nan,nan,nan,nan
+98,49:02:8C,Scale Under Hive,1721893025,25,nan,77.34,nan,72.0,1.0,72.0,22.34,15.57,11.45,22.64
+99,47:13:E4,Lower Brood,1721894228,1442,100.0,94.83,nan,nan,nan,nan,nan,nan,nan,nan
+90,56:0D:15,Upper Brood,1721894825,1397,nan,94.67,62.0,nan,nan,nan,nan,nan,nan,nan
+84,49:02:8C,Scale Under Hive,1721896625,26,100.0,77.68,nan,71.84,1.0,71.84,22.3,15.49,11.42,22.63
+96,47:13:E4,Lower Brood,1721897828,1443,nan,94.69,nan,nan,nan,nan,nan,nan,nan,nan
+86,56:0D:15,Upper Brood,1721898426,1398,97.0,94.6,62.0,nan,nan,nan,nan,nan,nan,nan
+96,49:02:8C,Scale Under Hive,1721900225,27,nan,79.32,nan,71.55,1.0,71.55,22.15,15.42,11.39,22.59
+99,47:13:E4,Lower Brood,1721901428,1444,100.0,94.74,nan,nan,nan,nan,nan,nan,nan,nan
+86,56:0D:15,Upper Brood,1721902030,1399,nan,94.47,62.0,nan,nan,nan,nan,nan,nan,nan
+96,49:02:8C,Scale Under Hive,1721903825,28,100.0,78.44,nan,71.09,1.0,71.09,22.02,15.27,11.31,22.49
+99,47:13:E4,Lower Brood,1721905033,1445,nan,94.74,nan,nan,nan,nan,nan,nan,nan,nan
+86,56:0D:15,Upper Brood,1721905630,1400,97.0,94.33,62.0,nan,nan,nan,nan,nan,nan,nan
+98,49:02:8C,Scale Under Hive,1721907425,29,nan,75.95,nan,70.55,1.0,70.55,21.86,15.12,11.2,22.37
+96,47:13:E4,Lower Brood,1721908637,1446,100.0,94.42,nan,nan,nan,nan,nan,nan,nan,nan
+90,56:0D:15,Upper Brood,1721909226,1401,nan,94.33,62.0,nan,nan,nan,nan,nan,nan,nan
+96,49:02:8C,Scale Under Hive,1721911024,30,100.0,74.03,nan,70.26,1.0,70.26,21.78,15.06,11.12,22.3
+99,47:13:E4,Lower Brood,1721912227,1447,nan,94.46,nan,nan,nan,nan,nan,nan,nan,nan
+86,56:0D:15,Upper Brood,1721912830,1402,97.0,94.06,62.0,nan,nan,nan,nan,nan,nan,nan
+96,49:02:8C,Scale Under Hive,1721914623,31,nan,74.48,nan,70.18,1.0,70.18,21.73,15.09,11.07,22.29
+99,47:13:E4,Lower Brood,1721915826,1448,100.0,94.13,nan,nan,nan,nan,nan,nan,nan,nan
+90,56:0D:15,Upper Brood,1721916424,1403,nan,93.95,62.0,nan,nan,nan,nan,nan,nan,nan
