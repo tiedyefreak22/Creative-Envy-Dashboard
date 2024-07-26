@@ -176,6 +176,13 @@ class BeeWeather(metaclass = Singleton):
     # __allow_reinitialization = True
     def __init__(self):
         self._beeweather_df = None
+        self._temp = None
+        self._rain_in = None # inches
+        self._humidity = None # relative
+        self._cloud_cover = None
+        self._windspeed10m_mph = None
+        self._pressure = None # millibars
+        self._winddir = None # degrees
 
     @property
     def beeweather(self):
@@ -184,9 +191,37 @@ class BeeWeather(metaclass = Singleton):
     @beeweather.setter
     def beeweather(self, beeweather_df):
         self._beeweather_df = beeweather_df
+        self._temp = beeweather_df["Temperature"]
+        self._rain_in = beeweather_df["Precipitation_inches"] # inches
+        self._humidity = beeweather_df["Relative_Humidity"] # relative
+        self._cloud_cover = beeweather_df["Cloud_Cover"]
+        self._windspeed10m_mph = beeweather_df["WindSpeed10mAbove_mph"]
+        self._pressure = beeweather_df["SurfacePressure_millibars"] # millibars
+        self._winddir = beeweather_df[" WindDirection_degrees"] # degrees
 
     def set(self):
         self.beeweather = PROCESS_BEE_WEATHER()
+
+    def get_temp(self):
+        return(self._temp)
+
+    def get_rain_in(self):
+        return(self._rain_in)
+
+    def get_humidity(self):
+        return(self._humidity)
+
+    def get_cloud_cover(self):
+        return(self._cloud_cover)
+
+    def get_windspeed10m_mph(self):
+        return(self._windspeed10m_mph)
+
+    def get_pressure(self):
+        return(self._pressure)
+
+    def get_winddir(self):
+        return(self._winddir)
 
 class Hive(Tk):
     def __init__(self, hive_name, hive_ID):
