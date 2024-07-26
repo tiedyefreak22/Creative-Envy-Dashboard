@@ -273,7 +273,7 @@ def PROCESS_BEE_WEATHER(interp=0):
             Week_Devices = Week_Devices.drop(columns = [str(cat)])
     Week_Devices = Week_Devices.sort_values(by = ["Unix_Time"])
     int_Unix = [int(i) for i in Week_Devices["Unix_Time"]]
-    Week_Devices = Week_Devices.loc[Week_Devices[Week_Devices["Unix_Time"] >= max(int_Unix) - 604800].index[0]:]
+    Week_Devices = Week_Devices.loc[Week_Devices[Week_Devices["Unix_Time"] >= max(int_Unix) - 604800].index[0]:].set_index("Unix_Time")
     if interp:
         Interps = dict.fromkeys(list(Week_Devices.keys()))
         Temp_DF = pd.DataFrame()
@@ -375,7 +375,7 @@ def PROCESS_AMBIENT(interp = 0):
             Week_Devices = Week_Devices.drop(columns = [str(cat)])
     Week_Devices = Week_Devices.sort_values(by = ["dateutc"])
     int_Unix = [int(i) for i in Week_Devices["dateutc"]]
-    Week_Devices = Week_Devices.loc[Week_Devices[Week_Devices["dateutc"] >= max(int_Unix) - 604800].index[0]:]
+    Week_Devices = Week_Devices.loc[Week_Devices[Week_Devices["dateutc"] >= max(int_Unix) - 604800].index[0]:].set_index("dateutc")
     if interp:
         Interps = dict.fromkeys(list(Week_Devices.keys()))
         Temp_DF = pd.DataFrame()
