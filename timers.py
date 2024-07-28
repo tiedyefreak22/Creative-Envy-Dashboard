@@ -246,10 +246,11 @@ class Hive(Tk):
         self._hive_df = hive_df
         # self._honey = None
         # self._bees = None
-        self._weight = list(gen_dict_extract("Weight", hive_df))
+        self._weight = pd.DataFrame(list(gen_dict_extract("Weight", hive_df))).T
         self._upper_temp = hive_df["Upper Brood"]["Temperature"]
         self._lower_temp = hive_df["Lower Brood"]["Temperature"]
-        self._humid = list(gen_dict_extract("Humidity", hive_df))
+        self._humid = pd.concat([s.dropna().reset_index(drop=True) for i, s in pd.DataFrame(list(gen_dict_extract("Humidity", hive_df))).T.iterrows()], axis = 1).T.rename(columns = {0: "Humidity"})
+        self._humid.index.names = ['Unix_Time']
 
     def set(self):
         self.hive = PROCESS_HIVE(self.hive_name)
