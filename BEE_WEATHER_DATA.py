@@ -205,8 +205,7 @@ def READ_BEE_WEATHER():
     return Bee_Weather_master
     print("Finished reading Broodminder weather data.")
 
-# PROCESS_HIVE gets last 7 days of data
-def PROCESS_HIVE(hive_name: str, interp = 0):
+def PROCESS_HIVE(hive_name: str):
     print("Processing Broodminder data.")
     directory = "Broodminder/"
     metrics = ["Weight", "Humidity", "Temperature"]
@@ -214,8 +213,6 @@ def PROCESS_HIVE(hive_name: str, interp = 0):
     Unique_Dev_Names = Hive.Hive_Position.unique()
     Unique_Devs = Hive.Device.unique()
     Devices = {}
-    span = 3600
-    intervals = int(604800 / span)
 
     for i, Device in enumerate(Unique_Devs):
         Devices.update({Unique_Dev_Names[i]: Hive[Hive['Device'] == Device]})
@@ -231,36 +228,16 @@ def PROCESS_HIVE(hive_name: str, interp = 0):
     for i, key in enumerate(list(Week_Devices.keys())):
         Week_Devices[str(key)] = Week_Devices[str(key)].sort_values(by = ["Unix_Time"])
         Week_Devices[str(key)]["Unix_Time"] = [int(i) for i in Week_Devices[str(key)]["Unix_Time"]]
-        Week_Devices[str(key)] = Week_Devices[str(key)].loc[Week_Devices[str(key)][Week_Devices[str(key)]["Unix_Time"] >= max(Week_Devices[str(key)]["Unix_Time"]) - 604800].index[0]:].set_index("Unix_Time")
-    if interp:
-        Interps = dict.fromkeys(list(Week_Devices.keys()))
-        for i, key in enumerate(list(Week_Devices.keys())):
-            Temp_DF = pd.DataFrame()
-            for j, cat in enumerate(list(Week_Devices[str(key)].keys())):
-                Temp_Dict = {}
-                if not str(cat) == "Device" and not str(cat) == "Hive_Position" and not str(cat) == "Unix_Time" and not str(cat) == "Sample":
-                    x = [int(i) for i in Week_Devices[str(key)]["Unix_Time"].tolist()]
-                    y = Week_Devices[str(key)][str(cat)]
-                    if not np.shape(x)[0] == 0:
-                        cs = PchipInterpolator(x, y)
-                        xs = np.arange(min(x), max(x), span)
-                        Temp_Dict = {"Unix_Time": xs, str('Interp_' + str(cat)): cs(xs)}
-                Temp_DF = pd.concat([Temp_DF, pd.DataFrame(Temp_Dict)], axis = 0, join = 'outer')
-            Interps[str(key)] = Temp_DF
-        return Interps
-    else:
-        return Week_Devices
+        #Week_Devices[str(key)] = Week_Devices[str(key)].loc[Week_Devices[str(key)][Week_Devices[str(key)]["Unix_Time"] >= max(Week_Devices[str(key)]["Unix_Time"]) - 604800].index[0]:].set_index("Unix_Time")
+    
+    return Week_Devices
     print("Finished processing Broodminder data.")
 
-def PROCESS_BEE_WEATHER(interp=0):
+def PROCESS_BEE_WEATHER():
     print("Processing Broodminder weather data.")
     directory = "Broodminder/"
     Bee_Weather = READ_BEE_WEATHER()
     metrics = [i for i in list(Bee_Weather.keys()) if not "Unix_Time" in i]
-    metric_num = len(metrics)
-    span = 3600
-    intervals = int(604800 / span)
-    Interps = pd.DataFrame()
     
     for i, metric in enumerate(metrics):
         Bee_Weather = Bee_Weather.sort_values(by = ["Unix_Time"])
@@ -273,24 +250,9 @@ def PROCESS_BEE_WEATHER(interp=0):
             Week_Devices = Week_Devices.drop(columns = [str(cat)])
     Week_Devices = Week_Devices.sort_values(by = ["Unix_Time"])
     int_Unix = [int(i) for i in Week_Devices["Unix_Time"]]
-    Week_Devices = Week_Devices.loc[Week_Devices[Week_Devices["Unix_Time"] >= max(int_Unix) - 604800].index[0]:].set_index("Unix_Time")
-    if interp:
-        Interps = dict.fromkeys(list(Week_Devices.keys()))
-        Temp_DF = pd.DataFrame()
-        for j, cat in enumerate(list(Week_Devices.keys())):
-            Temp_Dict = {}
-            if not str(cat) == "Device" and not str(cat) == "Hive_Position" and not str(cat) == "Unix_Time" and not str(cat) == "Sample":
-                x = [int(i) for i in Week_Devices["Unix_Time"].tolist()]
-                y = Week_Devices[str(cat)]
-                if not np.shape(x)[0] == 0:
-                    cs = PchipInterpolator(x, y)
-                    xs = np.arange(min(x), max(x), span)
-                    Temp_Dict = {"Unix_Time": xs, str('Interp_' + str(cat)): cs(xs)}
-            Temp_DF = pd.concat([Temp_DF, pd.DataFrame(Temp_Dict)], axis = 0, join = 'outer')
-        Interps = Temp_DF
-        return Interps
-    else:
-        return Week_Devices
+    #Week_Devices = Week_Devices.loc[Week_Devices[Week_Devices["Unix_Time"] >= max(int_Unix) - 604800].index[0]:].set_index("Unix_Time")
+    
+    return Week_Devices
     print("Finished processing Broodminder weather data.")
 
 def AMBIENT_GET():
@@ -351,18 +313,12 @@ def AMBIENT_GET():
     rows.to_csv(filename, mode = 'w', index = False, header = True)
     print("Finished getting Ambient data.")
 
-
-def PROCESS_AMBIENT(interp = 0):
+def PROCESS_AMBIENT():
     print("Processing Ambient data.")
     filename = "Ambient/Ambient_Data.csv"
     Ambient = pd.read_csv(filename)
-
     metrics = [i for i in list(Ambient.keys()) if not "dateutc" in i]
-    metric_num = len(metrics)
 
-    span = 300
-    intervals = int(604800 / span)
-    Interps = pd.DataFrame()
     for i, metric in enumerate(metrics):
         Ambient = Ambient.sort_values(by = ["dateutc"])
         
@@ -375,24 +331,9 @@ def PROCESS_AMBIENT(interp = 0):
             Week_Devices = Week_Devices.drop(columns = [str(cat)])
     Week_Devices = Week_Devices.sort_values(by = ["dateutc"])
     int_Unix = [int(i) for i in Week_Devices["dateutc"]]
-    Week_Devices = Week_Devices.loc[Week_Devices[Week_Devices["dateutc"] >= max(int_Unix) - 604800].index[0]:].set_index("dateutc")
-    if interp:
-        Interps = dict.fromkeys(list(Week_Devices.keys()))
-        Temp_DF = pd.DataFrame()
-        for j, cat in enumerate(list(Week_Devices.keys())):
-            Temp_Dict = {}
-            if not str(cat) == "Device" and not str(cat) == "Hive_Position" and not str(cat) == "dateutc" and not str(cat) == "Sample":
-                x = [int(i) for i in Week_Devices["dateutc"].tolist()]
-                y = Week_Devices[str(cat)]
-                if not np.shape(x)[0] == 0:
-                    cs = PchipInterpolator(x, y)
-                    xs = np.arange(min(x), max(x), span)
-                    Temp_Dict = {"dateutc": xs, str('Interp_' + str(cat)): cs(xs)}
-            Temp_DF = pd.concat([Temp_DF, pd.DataFrame(Temp_Dict)], axis = 0, join = 'outer')
-        Interps = Temp_DF
-        return Interps
-    else:
-        return Week_Devices
+    #Week_Devices = Week_Devices.loc[Week_Devices[Week_Devices["dateutc"] >= max(int_Unix) - 604800].index[0]:].set_index("dateutc")
+
+    return Week_Devices
     print("Finished processing Ambient data.")
 
 def GRAPH_DATA(Data: pd.DataFrame):
