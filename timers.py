@@ -96,89 +96,295 @@ class Ambient(metaclass = Singleton):
     @ambient.setter
     def ambient(self, ambient_df):
         self._ambient_df = ambient_df
-        self._winddir = list(ambient_df[list(ambient_df.keys())]["winddir"].items())[-1][1]
-        self._windspeedmph = list(ambient_df[list(ambient_df.keys())]["windspeedmph"].items())[-1][1]
-        self._windgustmph = list(ambient_df[list(ambient_df.keys())]["windgustmph"].items())[-1][1]
-        self._maxdailygust = list(ambient_df[list(ambient_df.keys())]["maxdailygust"].items())[-1][1]
-        self._tempf = list(ambient_df[list(ambient_df.keys())]["tempf"].items())[-1][1]
-        self._humidity = list(ambient_df[list(ambient_df.keys())]["humidity"].items())[-1][1]
-        self._hourlyrainin = list(ambient_df[list(ambient_df.keys())]["hourlyrainin"].items())[-1][1]
-        self._eventrainin = list(ambient_df[list(ambient_df.keys())]["eventrainin"].items())[-1][1]
-        self._dailyrainin = list(ambient_df[list(ambient_df.keys())]["dailyrainin"].items())[-1][1]
-        self._weeklyrainin = list(ambient_df[list(ambient_df.keys())]["weeklyrainin"].items())[-1][1]
-        self._monthlyrainin = list(ambient_df[list(ambient_df.keys())]["monthlyrainin"].items())[-1][1]
-        self._yearlyrainin = list(ambient_df[list(ambient_df.keys())]["yearlyrainin"].items())[-1][1]
-        self._totalrainin = list(ambient_df[list(ambient_df.keys())]["totalrainin"].items())[-1][1]
-        self._uv = list(ambient_df[list(ambient_df.keys())]["uv"].items())[-1][1]
-        self._solarradiation = list(ambient_df[list(ambient_df.keys())]["solarradiation"].items())[-1][1]
-        self._feelsLike = list(ambient_df[list(ambient_df.keys())]["feelsLike"].items())[-1][1]
-        self._dewPoint = list(ambient_df[list(ambient_df.keys())]["dewPoint"].items())[-1][1]
-        self._lastRain = list(ambient_df[list(ambient_df.keys())]["lastRain"].items())[-1][1]
+        self._winddir = ambient_df["winddir"]
+        self._windspeedmph = ambient_df["windspeedmph"]
+        self._windgustmph = ambient_df["windgustmph"]
+        self._maxdailygust = ambient_df["maxdailygust"]
+        self._tempf = ambient_df["tempf"]
+        self._humidity = ambient_df["humidity"]
+        self._hourlyrainin = ambient_df["hourlyrainin"]
+        self._eventrainin = ambient_df["eventrainin"]
+        self._dailyrainin = ambient_df["dailyrainin"]
+        self._weeklyrainin = ambient_df["weeklyrainin"]
+        self._monthlyrainin = ambient_df["monthlyrainin"]
+        self._yearlyrainin = ambient_df["yearlyrainin"]
+        self._totalrainin = ambient_df["totalrainin"]
+        self._uv = ambient_df["uv"]
+        self._solarradiation = ambient_df["solarradiation"]
+        self._feelsLike = ambient_df["feelsLike"]
+        self._dewPoint = ambient_df["dewPoint"]
+        self._lastRain = ambient_df["lastRain"]
 
-    def get_ambient(self, interp = 0):
-        if interp:
-            df = self._ambient_df
-            df.index = pd.to_datetime(df.index, unit = 's')
-            return df.resample('5min').interpolate("linear")
+    def get_ambient(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._ambient_df.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+            else:
+                df = self._ambient_df
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
         else:
-            return self._ambient_df
+            if interp:
+                return self._ambient_df.resample('5min').interpolate("linear")
+            else:
+                return self._ambient_df
         
     def set(self):
-        self.ambient = PROCESS_AMBIENT()
+        df = PROCESS_AMBIENT()
+        df.index = pd.to_datetime(df.index, unit = 's')
+        self.ambient = df
 
-    def get_winddir(self, interp = 0):
-        return(self._winddir)
+    def get_winddir(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._winddir.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+            else:
+                df = self._winddir
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+        else:
+            if interp:
+                return self._winddir.resample('5min').interpolate("linear")
+            else:
+                return self._winddir
 
-    def get_windspeedmph(self, interp = 0):
-        return(self._windspeedmph)
+    def get_windspeedmph(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._windspeedmph.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+            else:
+                df = self._windspeedmph
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+        else:
+            if interp:
+                return self._windspeedmph.resample('5min').interpolate("linear")
+            else:
+                return self._windspeedmph
 
-    def get_windgustmph(self, interp = 0):
-        return(self._windgustmph)
+    def get_windgustmph(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._windgustmph.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+            else:
+                df = self._windgustmph
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+        else:
+            if interp:
+                return self._windgustmph.resample('5min').interpolate("linear")
+            else:
+                return self._windgustmph
 
-    def get_maxdailygust(self, interp = 0):
-        return(self._maxdailygust)
+    def get_maxdailygust(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._maxdailygust.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+            else:
+                df = self._maxdailygust
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+        else:
+            if interp:
+                return self._maxdailygust.resample('5min').interpolate("linear")
+            else:
+                return self._maxdailygust
 
-    def get_tempf(self, interp = 0):
-        return(self._tempf)
+    def get_tempf(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._tempf.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+            else:
+                df = self._tempf
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+        else:
+            if interp:
+                return self._tempf.resample('5min').interpolate("linear")
+            else:
+                return self._tempf
 
-    def get_humidity(self, interp = 0):
-        return(self._humidity)
+    def get_humidity(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._humidity.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+            else:
+                df = self._humidity
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+        else:
+            if interp:
+                return self._humidity.resample('5min').interpolate("linear")
+            else:
+                return self._humidity
 
-    def get_hourlyrainin(self, interp = 0):
-        return(self._hourlyrainin)
+    def get_hourlyrainin(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._hourlyrainin.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+            else:
+                df = self._hourlyrainin
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+        else:
+            if interp:
+                return self._hourlyrainin.resample('5min').interpolate("linear")
+            else:
+                return self._hourlyrainin
 
-    def get_eventrainin(self, interp = 0):
-        return(self._eventrainin)
+    def get_eventrainin(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._eventrainin.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+            else:
+                df = self._eventrainin
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+        else:
+            if interp:
+                return self._eventrainin.resample('5min').interpolate("linear")
+            else:
+                return self._eventrainin
 
-    def get_dailyrainin(self, interp = 0):
-        return(self._dailyrainin)
+    def get_dailyrainin(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._dailyrainin.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+            else:
+                df = self._dailyrainin
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+        else:
+            if interp:
+                return self._dailyrainin.resample('5min').interpolate("linear")
+            else:
+                return self._dailyrainin
 
-    def get_weeklyrainin(self, interp = 0):
-        return(self._weeklyrainin)
+    def get_weeklyrainin(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._weeklyrainin.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+            else:
+                df = self._weeklyrainin
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+        else:
+            if interp:
+                return self._weeklyrainin.resample('5min').interpolate("linear")
+            else:
+                return self._weeklyrainin
 
-    def get_monthlyrainin(self, interp = 0):
-        return(self._monthlyrainin)
+    def get_monthlyrainin(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._monthlyrainin.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+            else:
+                df = self._monthlyrainin
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+        else:
+            if interp:
+                return self._monthlyrainin.resample('5min').interpolate("linear")
+            else:
+                return self._monthlyrainin
 
-    def get_yearlyrainin(self, interp = 0):
-        return(self._yearlyrainin)
+    def get_yearlyrainin(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._yearlyrainin.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+            else:
+                df = self._yearlyrainin
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+        else:
+            if interp:
+                return self._yearlyrainin.resample('5min').interpolate("linear")
+            else:
+                return self._yearlyrainin
 
-    def get_totalrainin(self, interp = 0):
-        return(self._totalrainin)
+    def get_totalrainin(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._totalrainin.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+            else:
+                df = self._totalrainin
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+        else:
+            if interp:
+                return self._totalrainin.resample('5min').interpolate("linear")
+            else:
+                return self._totalrainin
 
-    def get_uv(self, interp = 0):
-        return(self._uv)
+    def get_uv(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._uv.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+            else:
+                df = self._uv
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+        else:
+            if interp:
+                return self._uv.resample('5min').interpolate("linear")
+            else:
+                return self._uv
 
-    def get_solarradiation(self, interp = 0):
-        return(self._solarradiation)
+    def get_solarradiation(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._solarradiation.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+            else:
+                df = self._solarradiation
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+        else:
+            if interp:
+                return self._solarradiation.resample('5min').interpolate("linear")
+            else:
+                return self._solarradiation
 
-    def get_feelsLike(self, interp = 0):
-        return(self._feelsLike)
+    def get_feelsLike(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._feelsLike.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+            else:
+                df = self._feelsLike
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+        else:
+            if interp:
+                return self._feelsLike.resample('5min').interpolate("linear")
+            else:
+                return self._feelsLike
 
-    def get_dewPoint(self, interp = 0):
-        return(self._dewPoint)
+    def get_dewPoint(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._dewPoint.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+            else:
+                df = self._dewPoint
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+        else:
+            if interp:
+                return self._dewPoint.resample('5min').interpolate("linear")
+            else:
+                return self._dewPoint
 
-    def get_lastRain(self, interp = 0):
-        return(self._lastRain)
+    def get_lastRain(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._lastRain.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+            else:
+                df = self._lastRain
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+        else:
+            if interp:
+                return self._lastRain.resample('5min').interpolate("linear")
+            else:
+                return self._lastRain
 
 class BeeWeather(metaclass = Singleton):
     _allow_reinitialization = True
@@ -207,42 +413,122 @@ class BeeWeather(metaclass = Singleton):
         self._pressure = beeweather_df["SurfacePressure_millibars"] # millibars
         self._winddir = beeweather_df[" WindDirection_degrees"] # degrees
 
-    def get_beeweather(self, interp = 0):
-        if interp:
-            df = self._beeweather_df
-            df.index = pd.to_datetime(df.index, unit = 's')
-            return df.resample('5min').interpolate("linear")
+    def get_beeweather(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._beeweather_df.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+            else:
+                df = self._beeweather_df
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
         else:
-            return self._beeweather_df
+            if interp:
+                return self._beeweather_df.resample('5min').interpolate("linear")
+            else:
+                return self._beeweather_df
 
     def set(self):
-        self.beeweather = PROCESS_BEE_WEATHER()
-
-    def get_temp(self, interp = 0):
-        return(self._temp)
-
-    def get_rain_in(self, interp = 0):
-        return(self._rain_in)
-
-    def get_humidity(self, interp = 0):
-        return(self._humidity)
-
-    def get_cloud_cover(self, interp = 0):
-        return(self._cloud_cover)
-
-    def get_windspeed10m_mph(self, interp = 0):
-        return(self._windspeed10m_mph)
-
-    def get_pressure(self, interp = 0):
-        return(self._pressure)
-
-    def get_winddir(self, interp = 0):
-        return(self._winddir)
-
-    def get_5min_interp_beeweather(self, interp = 0):
-        df = self._beeweather_df
+        df = PROCESS_BEE_WEATHER()
         df.index = pd.to_datetime(df.index, unit = 's')
-        return df.resample('5min').interpolate("linear")
+        self.beeweather = df
+
+    def get_temp(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._temp.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+            else:
+                df = self._temp
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+        else:
+            if interp:
+                return self._temp.resample('5min').interpolate("linear")
+            else:
+                return self._temp
+
+    def get_rain_in(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._rain_in.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+            else:
+                df = self._rain_in
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+        else:
+            if interp:
+                return self._rain_in.resample('5min').interpolate("linear")
+            else:
+                return self._rain_in
+
+    def get_humidity(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._humidity.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+            else:
+                df = self._humidity
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+        else:
+            if interp:
+                return self._humidity.resample('5min').interpolate("linear")
+            else:
+                return self._humidity
+
+    def get_cloud_cover(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._cloud_cover.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+            else:
+                df = self._cloud_cover
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+        else:
+            if interp:
+                return self._cloud_cover.resample('5min').interpolate("linear")
+            else:
+                return self._cloud_cover
+
+    def get_windspeed10m_mph(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._windspeed10m_mph.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+            else:
+                df = self._windspeed10m_mph
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+        else:
+            if interp:
+                return self._windspeed10m_mph.resample('5min').interpolate("linear")
+            else:
+                return self._windspeed10m_mph
+
+    def get_pressure(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._pressure.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+            else:
+                df = self._pressure
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+        else:
+            if interp:
+                return self._pressure.resample('5min').interpolate("linear")
+            else:
+                return self._pressure
+
+    def get_winddir(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._winddir.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+            else:
+                df = self._winddir
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+        else:
+            if interp:
+                return self._winddir.resample('5min').interpolate("linear")
+            else:
+                return self._winddir
 
 class Hive(Tk):
     def __init__(self, hive_name, hive_ID):
@@ -267,12 +553,23 @@ class Hive(Tk):
         self._hive_df = hive_df
         # self._honey = None
         # self._bees = None
+        
         self._weight = pd.DataFrame(list(gen_dict_extract("Weight", hive_df))).T
+        self._weight.index = pd.to_datetime(self._weight.index, unit = 's')
+        
         self._upper_temp = hive_df["Upper Brood"]["Temperature"]
+        self._upper_temp.index = pd.to_datetime(self._upper_temp.index, unit = 's')
+        
         self._lower_temp = hive_df["Lower Brood"]["Temperature"]
-        self._humid = pd.concat([s.dropna().reset_index(drop=True) for i, s in pd.DataFrame(list(gen_dict_extract("Humidity", hive_df))).T.iterrows()], axis = 1).T.rename(columns = {0: "Humidity"})
+        self._lower_temp.index = pd.to_datetime(self._lower_temp.index, unit = 's')
+        
+        self._humid = pd.concat([s.dropna().reset_index(drop=True) for i, s in pd.DataFrame(list(gen_dict_extract("Humidity", hive_df))).T.iterrows()], axis = 1).T.rename(columns = {0: "Humidity"})        
         self._humid.index.names = ['Unix_Time']
+        self._humid.index = pd.to_datetime(self._humid.index, unit = 's')
 
+    def get_hive(self):
+        return self._hive_df
+    
     def set(self):
         self.hive = PROCESS_HIVE(self.hive_name)
         
@@ -286,14 +583,59 @@ class Hive(Tk):
     # def get_bees(self, interp = 0):
     #     return(list(gen_dict_extract("Weight", PROCESS_HIVE(self._hive_name))))
 
-    def get_weight(self, interp = 0):
-        return(self._weight)
+    def get_weight(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._weight.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]["Weight"]
+            else:
+                df = self._weight
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]["Weight"]
+        else:
+            if interp:
+                return self._weight.resample('5min').interpolate("linear")["Weight"]
+            else:
+                return self._weight["Weight"]
 
-    def get_upper_temp(self, interp = 0):
-        return(self._upper_temp)
+    def get_upper_temp(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._upper_temp.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+            else:
+                df = self._upper_temp
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+        else:
+            if interp:
+                return self._upper_temp.resample('5min').interpolate("linear")
+            else:
+                return self._upper_temp
 
-    def get_lower_temp(self, interp = 0):
-        return(self._lower_temp)
+    def get_lower_temp(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._lower_temp.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+            else:
+                df = self._lower_temp
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]
+        else:
+            if interp:
+                return self._lower_temp.resample('5min').interpolate("linear")
+            else:
+                return self._lower_temp
+    
 
-    def get_humidity(self, interp = 0):
-        return(self._humid)
+    def get_humidity(self, interp = 0, num_days = None):
+        if num_days != None:
+            if interp:
+                df = self._humid.resample('5min').interpolate("linear")
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]["Humidity"]
+            else:
+                df = self._humid
+                return df[df.index >= (max(df.index) - timedelta(days = num_days))]["Humidity"]
+        else:
+            if interp:
+                return self._humid.resample('5min').interpolate("linear")["Humidity"]
+            else:
+                return self._humid["Humidity"]

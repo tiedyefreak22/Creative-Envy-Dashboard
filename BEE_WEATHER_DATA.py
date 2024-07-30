@@ -228,7 +228,7 @@ def PROCESS_HIVE(hive_name: str):
     for i, key in enumerate(list(Week_Devices.keys())):
         Week_Devices[str(key)] = Week_Devices[str(key)].sort_values(by = ["Unix_Time"])
         Week_Devices[str(key)]["Unix_Time"] = [int(i) for i in Week_Devices[str(key)]["Unix_Time"]]
-        #Week_Devices[str(key)] = Week_Devices[str(key)].loc[Week_Devices[str(key)][Week_Devices[str(key)]["Unix_Time"] >= max(Week_Devices[str(key)]["Unix_Time"]) - 604800].index[0]:].set_index("Unix_Time")
+        Week_Devices[str(key)] = Week_Devices[str(key)].loc[Week_Devices[str(key)][Week_Devices[str(key)]["Unix_Time"] >= min(Week_Devices[str(key)]["Unix_Time"])].index[0]:].set_index("Unix_Time")
     
     return Week_Devices
     print("Finished processing Broodminder data.")
@@ -252,7 +252,7 @@ def PROCESS_BEE_WEATHER():
     int_Unix = [int(i) for i in Week_Devices["Unix_Time"]]
     #Week_Devices = Week_Devices.loc[Week_Devices[Week_Devices["Unix_Time"] >= max(int_Unix) - 604800].index[0]:].set_index("Unix_Time")
     
-    return Week_Devices
+    return Week_Devices.set_index("Unix_Time")
     print("Finished processing Broodminder weather data.")
 
 def AMBIENT_GET():
@@ -333,7 +333,7 @@ def PROCESS_AMBIENT():
     int_Unix = [int(i) for i in Week_Devices["dateutc"]]
     #Week_Devices = Week_Devices.loc[Week_Devices[Week_Devices["dateutc"] >= max(int_Unix) - 604800].index[0]:].set_index("dateutc")
 
-    return Week_Devices
+    return Week_Devices.set_index("dateutc")
     print("Finished processing Ambient data.")
 
 def GRAPH_DATA(Data: pd.DataFrame):
