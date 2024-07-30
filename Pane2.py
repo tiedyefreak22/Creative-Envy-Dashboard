@@ -35,11 +35,21 @@ from Custom_Widgets import CustomMeter, EmptyLF, CustomClockWidget, CustomSmallI
 import PYICLOUD_GET
 import pandas as pd
 from IPython.display import display
+from timers import *
 
 class Pane2(Frame): # Bee Dashboard
      def __init__(self, parent, controller):
         Frame.__init__(self, parent)
         self.controller = controller
+
+        Hive_Processed = []
+        for hive_creds in settings.hive_IDs.items():
+            hive = Hive(*list(hive_creds))
+            hive.set()
+            Hive_Processed.append(hive)
+        forecast_data = PROCESS_FORECAST()
+        ambient = Ambient()
+        ambient.set()
 
         shared_list = list(self.controller.shared_data.keys())
 
@@ -61,21 +71,21 @@ class Pane2(Frame): # Bee Dashboard
                     "Hive 5 Humid.",
                     ]
         lf_values = [
-                    "hive1_wt",
-                    "hive2_wt",
-                    "hive3_wt",
-                    "hive4_wt",
-                    "hive5_wt",
-                    "hive1_temp",
-                    "hive2_temp",
-                    "hive3_temp",
-                    "hive4_temp",
-                    "hive5_temp",
-                    "hive1_humid",
-                    "hive2_humid",
-                    "hive3_humid",
-                    "hive4_humid",
-                    "hive5_humid",
+                    Hive_Processed[0].get_weight(num_days = 7),
+                    Hive_Processed[1].get_weight(num_days = 7),
+                    Hive_Processed[0].get_weight(num_days = 7),
+                    Hive_Processed[0].get_weight(num_days = 7),
+                    Hive_Processed[0].get_weight(num_days = 7),
+                    Hive_Processed[0].get_upper_temp(num_days = 7),
+                    Hive_Processed[1].get_upper_temp(num_days = 7),
+                    Hive_Processed[2].get_upper_temp(num_days = 7),
+                    Hive_Processed[0].get_upper_temp(num_days = 7),
+                    Hive_Processed[0].get_upper_temp(num_days = 7),
+                    Hive_Processed[0].get_humidity(num_days = 7),
+                    Hive_Processed[1].get_humidity(num_days = 7),
+                    Hive_Processed[2].get_humidity(num_days = 7),
+                    Hive_Processed[0].get_humidity(num_days = 7),
+                    Hive_Processed[0].get_humidity(num_days = 7),
                     ]
         i = 0        
         while i < 15:
@@ -86,9 +96,9 @@ class Pane2(Frame): # Bee Dashboard
                 str(self.controller.shared_data["LF_geometry"][1].get() - 2 * self.controller.shared_data["padding"].get()),
                 int(self.controller.shared_data["padding"].get()),
                 lf_labels[i],
-                self.controller.shared_data[lf_values[i]][0].get(),
-                self.controller.shared_data[lf_values[i]][1].get(),
-                self.controller.shared_data[lf_values[i]][2].get(),
+                lf_values[i].iloc[-1],
+                min(lf_values[i]),
+                max(lf_values[i]),
             ).grid(
                 row = floor(i / 5),
                 column = i % 5,

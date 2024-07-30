@@ -6954,3 +6954,15 @@ Rssi,Device,Hive_Position,Unix_Time,Sample,Battery,Temperature,Humidity,Scaled_W
 92,49:02:8C,Scale Under Hive,1722341789,71,nan,60.38,nan,72.16,1.0,72.16,22.04,15.94,12.06,22.12
 99,47:13:E4,Lower Brood,1722344190,1590,100.0,84.97,nan,nan,nan,nan,nan,nan,nan,nan
 98,56:0D:15,Upper Brood,1722344792,1545,nan,92.58,56.0,nan,nan,nan,nan,nan,nan,nan
+78,49:02:8C,Scale Under Hive,1722345388,72,100.0,59.59,nan,71.51,1.0,71.51,21.86,15.75,11.96,21.94
+99,47:13:E4,Lower Brood,1722347793,1591,nan,84.36,nan,nan,nan,nan,nan,nan,nan,nan
+86,56:0D:15,Upper Brood,1722348391,1546,97.0,92.46,56.0,nan,nan,nan,nan,nan,nan,nan
+99,49:02:8C,Scale Under Hive,1722348989,73,nan,62.6,nan,71.07,1.0,71.07,21.71,15.6,11.9,21.86
+98,47:13:E4,Lower Brood,1722351390,1592,100.0,84.41,nan,nan,nan,nan,nan,nan,nan,nan
+86,56:0D:15,Upper Brood,1722351992,1547,nan,92.1,55.0,nan,nan,nan,nan,nan,nan,nan
+82,49:02:8C,Scale Under Hive,1722352588,74,100.0,80.56,nan,73.57,1.0,73.57,22.78,16.36,11.91,22.52
+98,47:13:E4,Lower Brood,1722354989,1593,nan,85.65,nan,nan,nan,nan,nan,nan,nan,nan
+84,56:0D:15,Upper Brood,1722355591,1548,97.0,91.86,55.0,nan,nan,nan,nan,nan,nan,nan
+80,49:02:8C,Scale Under Hive,1722356189,75,nan,97.71,nan,77.1,1.0,77.1,23.72,17.61,12.45,23.32
+99,47:13:E4,Lower Brood,1722358588,1594,100.0,88.62,nan,nan,nan,nan,nan,nan,nan,nan
+94,56:0D:15,Upper Brood,1722359191,1549,nan,92.03,55.0,nan,nan,nan,nan,nan,nan,nan

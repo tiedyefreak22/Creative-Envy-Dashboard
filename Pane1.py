@@ -35,11 +35,21 @@ from Custom_Widgets import *
 import PYICLOUD_GET
 import pandas as pd
 from IPython.display import display
+from timers import *
 
 class Pane1(Frame): # Weather Dashboard; child to Notebook
     def __init__(self, parent, controller):
         Frame.__init__(self, parent)
         self.controller = controller
+
+        Hive_Processed = []
+        for hive_creds in settings.hive_IDs.items():
+            hive = Hive(*list(hive_creds))
+            hive.set()
+            Hive_Processed.append(hive)
+        forecast_data = PROCESS_FORECAST()
+        ambient = Ambient()
+        ambient.set()
         
         # Pane1 Objects
         # Loop to create LabelFrames
@@ -60,22 +70,23 @@ class Pane1(Frame): # Weather Dashboard; child to Notebook
                     "Bee Temp.",
                     "Bee Humid.",
                     ]
+        
         lf_values = [
                     "",
                     "",
                     "",
                     "",
                     "",
-                    "ambient_temp",
-                    "solar",
-                    "wind_spd",
-                    "chooks", 
-                    "hive1_wt", # Need to figure out what this needs to be (minimum wt, avg wt, or something else entirely like air qual)
-                    "ambient_humid",
-                    "UV",
-                    "Precip",
-                    "hive1_temp", # Need to figure out what this needs to be (minimum temp, avg temp, or something else entirely like air qual)
-                    "hive1_humid", # Need to figure out what this needs to be (minimum temp, avg temp, or something else entirely like air qual)
+                    ambient.get_tempf(num_days = 7),
+                    ambient.get_solarradiation(num_days = 7),
+                    ambient.get_windspeedmph(num_days = 7),
+                    [1], 
+                    Hive_Processed[0].get_weight(num_days = 7),
+                    ambient.get_humidity(num_days = 7),
+                    ambient.get_uv(num_days = 7),
+                    ambient.get_hourlyrainin(num_days = 7),
+                    Hive_Processed[0].get_upper_temp(num_days = 7),
+                    Hive_Processed[0].get_humidity(num_days = 7),
                     ]
         
         self.LF = CustomClockWidget(
@@ -146,9 +157,9 @@ class Pane1(Frame): # Weather Dashboard; child to Notebook
                 str(self.controller.shared_data["LF_geometry"][1].get() - 2 * self.controller.shared_data["padding"].get()),
                 int(self.controller.shared_data["padding"].get()),
                 lf_labels[i],
-                self.controller.shared_data[lf_values[i]][0].get(),
-                self.controller.shared_data[lf_values[i]][1].get(),
-                self.controller.shared_data[lf_values[i]][2].get(),
+                lf_values[i][-1],
+                min(lf_values[i]),
+                max(lf_values[i]),
             ).grid(
                 row = floor((i - 5) / 5) + 1,
                 column = (i - 5) % 5,

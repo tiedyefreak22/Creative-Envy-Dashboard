@@ -2525,3 +2525,7 @@ Rssi,Device,Hive_Position,Unix_Time,Sample,Battery,Temperature,Humidity,Scaled_W
 76,56:0B:D1,Upper Brood,1722337596,1711,nan,92.4,55.0,nan,nan,nan,nan,nan,nan,nan
 76,56:0B:D1,Upper Brood,1722341191,1712,94.0,92.1,55.0,nan,nan,nan,nan,nan,nan,nan
 74,56:0B:D1,Upper Brood,1722344791,1713,nan,91.77,55.0,nan,nan,nan,nan,nan,nan,nan
+76,56:0B:D1,Upper Brood,1722348390,1714,93.0,91.45,55.0,nan,nan,nan,nan,nan,nan,nan
+74,56:0B:D1,Upper Brood,1722351991,1715,nan,91.27,55.0,nan,nan,nan,nan,nan,nan,nan
+72,56:0B:D1,Upper Brood,1722355590,1716,93.0,91.02,55.0,nan,nan,nan,nan,nan,nan,nan
+72,56:0B:D1,Upper Brood,1722359190,1717,nan,91.32,55.0,nan,nan,nan,nan,nan,nan,nan
