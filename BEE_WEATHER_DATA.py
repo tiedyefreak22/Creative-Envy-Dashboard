@@ -37,6 +37,7 @@ import astral, astral.sun
 import PYICLOUD_GET
 from sys import platform
 from dotenv import load_dotenv
+from statistics import variance, mean
 
 load_dotenv()
 
