@@ -29,9 +29,9 @@ import urllib.request
 import io
 from pathlib import Path
 sys.path.append("BEE_WEATHER_DATA")
-from BEE_WEATHER_DATA import BROODMINDER_GET, AMBIENT_GET, READ_HIVE, PROCESS_HIVE, READ_BEE_WEATHER, PROCESS_BEE_WEATHER, PROCESS_AMBIENT, GRAPH_DATA, GET_MOON_IMAGE, GET_FORECAST, PROCESS_FORECAST, PROCESS_FORECAST_MIN_MAX, check_internet_connection, GET_WEATHER_ICON, config_pic
+from BEE_WEATHER_DATA import *
 sys.path.append("PYICLOUD_GET")
-from Custom_Widgets import CustomMeter, EmptyLF, CustomClockWidget, CustomSmallImg, WeatherWidget
+from Custom_Widgets import *
 import PYICLOUD_GET
 import pandas as pd
 from IPython.display import display

@@ -9,6 +9,8 @@ from BEE_WEATHER_DATA import *
 import PYICLOUD_GET
 import settings
 import time
+from scipy.stats import zscore
+from math import ceil
 
 def gen_dict_extract(key, var):
     if hasattr(var, 'items'):
@@ -66,9 +68,25 @@ class Singleton(type):
             raise Exception("Singleton cannot be instantiated more than once")
         return instance
 
-def ret_prop(df, interp, num_days):
+def nanzscore(df):
+    return [(i - np.nanmean(df))/np.nanstd(df) for i in df]
+
+def ret_prop(df, interp, remove_outliers, num_days):
+    if remove_outliers:
+        threshold_z = 2
+        chunk = 50
+        if isinstance(df, pd.Series):
+            for idx in range(len(df.values)):
+                if (idx >= ceil(chunk / 2)) and (idx <= len(df.values) - ceil(chunk / 2)):
+                    z = nanzscore(df.values[idx - ceil(chunk / 2):idx + ceil(chunk / 2)])
+                    if abs(z[ceil(chunk / 2) - 1]) > threshold_z:
+                        df.iloc[idx - 1] = np.nan
+                else:
+                    pass
+        else:
+            pass
     if interp:
-        df = df.resample('5min').interpolate("linear")
+        df = df.resample('10s').interpolate(method = "time", limit_direction='both')
     if num_days:
         df = df[df.index >= (max(df.index) - timedelta(days = num_days))]
     return df
@@ -122,67 +140,67 @@ class Ambient(metaclass = Singleton):
         self._dewPoint = ambient_df["dewPoint"]
         self._lastRain = ambient_df["lastRain"]
 
-    def get_ambient(self, interp = 0, num_days = None):
-        return ret_prop(self._ambient_df, interp, num_days)
+    def get_ambient(self, interp = 0, remove_outliers = 0, num_days = None):
+        return ret_prop(self._ambient_df, interp, remove_outliers, num_days)
         
     def set(self):
         df = PROCESS_AMBIENT()
         df.index = pd.to_datetime(df.index, unit = 's')
         self.ambient = df
 
-    def get_winddir(self, interp = 0, num_days = None):
-        return ret_prop(self._winddir, interp, num_days)
+    def get_winddir(self, interp = 0, remove_outliers = 0, num_days = None):
+        return ret_prop(self._winddir, interp, remove_outliers, num_days)
 
-    def get_windspeedmph(self, interp = 0, num_days = None):
-        return ret_prop(self._windspeedmph, interp, num_days)
+    def get_windspeedmph(self, interp = 0, remove_outliers = 0, num_days = None):
+        return ret_prop(self._windspeedmph, interp, remove_outliers, num_days)
 
-    def get_windgustmph(self, interp = 0, num_days = None):
-        return ret_prop(self._windgustmph, interp, num_days)
+    def get_windgustmph(self, interp = 0, remove_outliers = 0, num_days = None):
+        return ret_prop(self._windgustmph, interp, remove_outliers, num_days)
 
-    def get_maxdailygust(self, interp = 0, num_days = None):
-        return ret_prop(self._maxdailygust, interp, num_days)
+    def get_maxdailygust(self, interp = 0, remove_outliers = 0, num_days = None):
+        return ret_prop(self._maxdailygust, interp, remove_outliers, num_days)
 
-    def get_tempf(self, interp = 0, num_days = None):
-        return ret_prop(self._tempf, interp, num_days)
+    def get_tempf(self, interp = 0, remove_outliers = 0, num_days = None):
+        return ret_prop(self._tempf, interp, remove_outliers, num_days)
 
-    def get_humidity(self, interp = 0, num_days = None):
-        return ret_prop(self._humidity, interp, num_days)
+    def get_humidity(self, interp = 0, remove_outliers = 0, num_days = None):
+        return ret_prop(self._humidity, interp, remove_outliers, num_days)
 
-    def get_hourlyrainin(self, interp = 0, num_days = None):
-        return ret_prop(self._hourlyrainin, interp, num_days)
+    def get_hourlyrainin(self, interp = 0, remove_outliers = 0, num_days = None):
+        return ret_prop(self._hourlyrainin, interp, remove_outliers, num_days)
 
-    def get_eventrainin(self, interp = 0, num_days = None):
-        return ret_prop(self._eventrainin, interp, num_days)
+    def get_eventrainin(self, interp = 0, remove_outliers = 0, num_days = None):
+        return ret_prop(self._eventrainin, interp, remove_outliers, num_days)
 
-    def get_dailyrainin(self, interp = 0, num_days = None):
-        return ret_prop(self._dailyrainin, interp, num_days)
+    def get_dailyrainin(self, interp = 0, remove_outliers = 0, num_days = None):
+        return ret_prop(self._dailyrainin, interp, remove_outliers, num_days)
 
-    def get_weeklyrainin(self, interp = 0, num_days = None):
-        return ret_prop(self._weeklyrainin, interp, num_days)
+    def get_weeklyrainin(self, interp = 0, remove_outliers = 0, num_days = None):
+        return ret_prop(self._weeklyrainin, interp, remove_outliers, num_days)
 
-    def get_monthlyrainin(self, interp = 0, num_days = None):
-        return ret_prop(self._monthlyrainin, interp, num_days)
+    def get_monthlyrainin(self, interp = 0, remove_outliers = 0, num_days = None):
+        return ret_prop(self._monthlyrainin, interp, remove_outliers, num_days)
 
-    def get_yearlyrainin(self, interp = 0, num_days = None):
-        return ret_prop(self._yearlyrainin, interp, num_days)
+    def get_yearlyrainin(self, interp = 0, remove_outliers = 0, num_days = None):
+        return ret_prop(self._yearlyrainin, interp, remove_outliers, num_days)
 
-    def get_totalrainin(self, interp = 0, num_days = None):
-        return ret_prop(self._totalrainin, interp, num_days)
+    def get_totalrainin(self, interp = 0, remove_outliers = 0, num_days = None):
+        return ret_prop(self._totalrainin, interp, remove_outliers, num_days)
 
-    def get_uv(self, interp = 0, num_days = None):
-        return ret_prop(self._uv, interp, num_days)
+    def get_uv(self, interp = 0, remove_outliers = 0, num_days = None):
+        return ret_prop(self._uv, interp, remove_outliers, num_days)
 
-    def get_solarradiation(self, interp = 0, num_days = None):
-        return ret_prop(self._solarradiation, interp, num_days)
+    def get_solarradiation(self, interp = 0, remove_outliers = 0, num_days = None):
+        return ret_prop(self._solarradiation, interp, remove_outliers, num_days)
 
-    def get_feelsLike(self, interp = 0, num_days = None):
-        return ret_prop(self._feelsLike, interp, num_days)
+    def get_feelsLike(self, interp = 0, remove_outliers = 0, num_days = None):
+        return ret_prop(self._feelsLike, interp, remove_outliers, num_days)
 
-    def get_dewPoint(self, interp = 0, num_days = None):
-        return ret_prop(self._dewPoint, interp, num_days)
+    def get_dewPoint(self, interp = 0, remove_outliers = 0, num_days = None):
+        return ret_prop(self._dewPoint, interp, remove_outliers, num_days)
 
-    def get_lastRain(self, interp = 0, num_days = None):
-        return ret_prop(self._lastRain, interp, num_days)
+    def get_lastRain(self, interp = 0, remove_outliers = 0, num_days = None):
+        return ret_prop(self._lastRain, interp, remove_outliers, num_days)
 
 
 class BeeWeather(metaclass = Singleton):
@@ -212,34 +230,34 @@ class BeeWeather(metaclass = Singleton):
         self._pressure = beeweather_df["SurfacePressure_millibars"] # millibars
         self._winddir = beeweather_df[" WindDirection_degrees"] # degrees
 
-    def get_beeweather(self, interp = 0, num_days = None):
-        return ret_prop(self._beeweather_df, interp, num_days)
+    def get_beeweather(self, interp = 0, remove_outliers = 0, num_days = None):
+        return ret_prop(self._beeweather_df, interp, remove_outliers, num_days)
 
     def set(self):
         df = PROCESS_BEE_WEATHER()
         df.index = pd.to_datetime(df.index, unit = 's')
         self.beeweather = df
     
-    def get_temp(self, interp = 0, num_days = None):
-        return ret_prop(self._temp, interp, num_days)
+    def get_temp(self, interp = 0, remove_outliers = 0, num_days = None):
+        return ret_prop(self._temp, interp, remove_outliers, num_days)
 
-    def get_rain_in(self, interp = 0, num_days = None):
-        return ret_prop(self._rain_in, interp, num_days)
+    def get_rain_in(self, interp = 0, remove_outliers = 0, num_days = None):
+        return ret_prop(self._rain_in, interp, remove_outliers, num_days)
 
-    def get_humidity(self, interp = 0, num_days = None):
-        return ret_prop(self._humidity, interp, num_days)
+    def get_humidity(self, interp = 0, remove_outliers = 0, num_days = None):
+        return ret_prop(self._humidity, interp, remove_outliers, num_days)
 
-    def get_cloud_cover(self, interp = 0, num_days = None):
-        return ret_prop(self._cloud_cover, interp, num_days)
+    def get_cloud_cover(self, interp = 0, remove_outliers = 0, num_days = None):
+        return ret_prop(self._cloud_cover, interp, remove_outliers, num_days)
 
-    def get_windspeed10m_mph(self, interp = 0, num_days = None):
-         return ret_prop(self._windspeed10m_mph, interp, num_days)
+    def get_windspeed10m_mph(self, interp = 0, remove_outliers = 0, num_days = None):
+         return ret_prop(self._windspeed10m_mph, interp, remove_outliers, num_days)
 
-    def get_pressure(self, interp = 0, num_days = None):
-        return ret_prop(self._pressure, interp, num_days)
+    def get_pressure(self, interp = 0, remove_outliers = 0, num_days = None):
+        return ret_prop(self._pressure, interp, remove_outliers, num_days)
 
-    def get_winddir(self, interp = 0, num_days = None):
-        return ret_prop(self._winddir, interp, num_days)
+    def get_winddir(self, interp = 0, remove_outliers = 0, num_days = None):
+        return ret_prop(self._winddir, interp, remove_outliers, num_days)
 
 class Hive(Tk):
     def __init__(self, hive_name, hive_ID):
@@ -294,14 +312,18 @@ class Hive(Tk):
     # def get_bees(self, interp = 0):
     #     return(list(gen_dict_extract("Weight", PROCESS_HIVE(self._hive_name))))
 
-    def get_weight(self, interp = 0, num_days = None):
-        return ret_prop(self._weight["Weight"], interp, num_days)
+    def get_weight(self, interp = 0, remove_outliers = 0, num_days = None):
+        if not self._weight.empty:
+            return ret_prop(self._weight["Weight"], interp, remove_outliers, num_days)
 
-    def get_upper_temp(self, interp = 0, num_days = None):
-        return ret_prop(self._upper_temp, interp, num_days)
+    def get_upper_temp(self, interp = 0, remove_outliers = 0, num_days = None):
+        if not self._upper_temp.empty:
+            return ret_prop(self._upper_temp, interp, remove_outliers, num_days)
 
-    def get_lower_temp(self, interp = 0, num_days = None):
-        return ret_prop(self._lower_temp, interp, num_days)
+    def get_lower_temp(self, interp = 0, remove_outliers = 0, num_days = None):
+        if not self._lower_temp.empty:
+            return ret_prop(self._lower_temp, interp, remove_outliers, num_days)
 
-    def get_humidity(self, interp = 0, num_days = None):
-        return ret_prop(self._humid["Humidity"], interp, num_days)
+    def get_humidity(self, interp = 0, remove_outliers = 0, num_days = None):
+        if not self._humid.empty:
+            return ret_prop(self._humid["Humidity"], interp, remove_outliers, num_days)
