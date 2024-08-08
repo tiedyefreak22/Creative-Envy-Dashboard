@@ -30,7 +30,7 @@ def gen_dict_extract(key, var):
 
 class Timers(Tk):
     def __init__(self, *args, **kwargs):
-        Tk.__init__(self, *args, **kwargs)
+        #Tk.__init__(self, *args, **kwargs)
         self.daily_updater()
         self.hourly_updater()
         self.five_min_updater()
@@ -261,7 +261,7 @@ class BeeWeather(metaclass = Singleton):
 
 class Hive(Tk):
     def __init__(self, hive_name, hive_ID):
-        Tk.__init__(self)
+        #Tk.__init__(self)
         self.hive_name = hive_name
         self.hive_ID = hive_ID
         self._hive_df = None
