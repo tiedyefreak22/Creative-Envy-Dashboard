@@ -157,9 +157,7 @@ class Pane1(Frame): # Weather Dashboard; child to Notebook
                 str(self.controller.shared_data["LF_geometry"][1].get() - 2 * self.controller.shared_data["padding"].get()),
                 int(self.controller.shared_data["padding"].get()),
                 lf_labels[i],
-                lf_values[i][-1],
-                min(lf_values[i]),
-                max(lf_values[i]),
+                lf_values[i],
             ).grid(
                 row = floor((i - 5) / 5) + 1,
                 column = (i - 5) % 5,
