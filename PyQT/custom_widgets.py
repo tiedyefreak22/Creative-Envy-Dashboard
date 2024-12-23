@@ -3,7 +3,7 @@ import sys
 from PyQt5.QtGui import QPixmap, QImage, QColor, QFont
 from PyQt5.QtCore import Qt, QTimer, QTime
 from PyQt5.QtWidgets import *
-# from PyQt5.QtGui import * 
+# from PyQt5.QtGui import *
 # from PyQt5.QtCore import *
 import matplotlib
 import matplotlib.pyplot as plt
@@ -22,6 +22,7 @@ from datetime import datetime, timedelta
 from settings import *
 from functions_and_classes import *
 from math import ceil
+import io
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -53,11 +54,11 @@ class GraphWidget(QtWidgets.QWidget):
         circ = patches.Circle(tuple([(i * self.dpi / 2) for i in self.figsize]), radius=self.figsize[0] * self.dpi / 2, transform=self.ax1.transData, facecolor='none')
         self._line1, = self.ax1.plot(self.lf_values, color=Palettes["darkly"]["colors"]["primary"], clip_on=False)
         canvas1.draw()
-        
+
         # Now we can save it to a numpy array.
         data = np.frombuffer(canvas1.buffer_rgba(), dtype=np.uint8)
         data = data.reshape(canvas1.get_width_height()[::-1] + (4,))
-        
+
         im = self.ax1.imshow(data)
         im.set_clip_path(circ)
         self.ax1.set_axis_off()
@@ -68,7 +69,7 @@ class GraphWidget(QtWidgets.QWidget):
             self._wedges, _ = self.ax2.pie(data, wedgeprops=dict(width=0.15), startangle=-90 + ((data[1] / (2 * sum(data))) * 360), radius=1.5, colors=[Palettes["darkly"]["colors"]["info"], Palettes["darkly"]["colors"]["secondary"]])
         else:
             self._wedges, _ = self.ax2.pie([1, 1], wedgeprops=dict(width=0.15), startangle=0, radius=1.5, colors=[Palettes["darkly"]["colors"]["info"], Palettes["darkly"]["colors"]["secondary"]])
-        
+
         # ------------------------------Labels------------------------------
 
         self.master_label = QLabel(self)
@@ -76,7 +77,7 @@ class GraphWidget(QtWidgets.QWidget):
         self.master_label.setAlignment(Qt.AlignCenter)
         self.master_label.setStyleSheet("background-color: %s; border: 2px solid %s" % (Palettes["darkly"]["colors"]["bg"], Palettes["darkly"]["colors"]["fg"]))
         self.layout.addWidget(self.master_label, 0, 0, 7, 2)
-        
+
         offset = 0.32
         self.main_graph_label = QLabel(str(round(lf_values.values[-1], 1)), self)
         self.main_graph_label.setGeometry(widget_padding, widget_padding, self.min_dim - (2 * widget_padding), self.min_dim - (2 * widget_padding))
@@ -129,7 +130,7 @@ class GraphWidget(QtWidgets.QWidget):
         self.layout.addWidget(self.graph_text, 5, 0, 7, 2)
 
         # ------------------------------Timer------------------------------
-        
+
         self._timer = canvas1.new_timer(300000)
         self._timer.add_callback(self._update_canvas)
         self._timer.start()
@@ -170,7 +171,7 @@ class GraphWidget(QtWidgets.QWidget):
             font_size = 1
         font.setPointSize(font_size)
         self.graph_label_right.setFont(font)
-        
+
         font = self.graph_text.font()
         font_size = int(self.min_dim * (35 / 500))
         if font_size <= 0:
@@ -194,7 +195,7 @@ class GraphWidget(QtWidgets.QWidget):
             int(self.min_dim - 2 * (self.min_dim * offset)),
         )
         self.graph_text.setGeometry(widget_padding, widget_padding, self.min_dim - (2 * widget_padding), self.min_dim - (2 * widget_padding))
-        self.master_label.setStyleSheet("border : 2px solid %s" % Palettes["darkly"]["colors"]["fg"]) 
+        self.master_label.setStyleSheet("border : 2px solid %s" % Palettes["darkly"]["colors"]["fg"])
 
         self.master_label.setAlignment(Qt.AlignCenter)
         self.main_graph_label.setAlignment(Qt.AlignCenter)
@@ -203,7 +204,7 @@ class GraphWidget(QtWidgets.QWidget):
         self.graph_text.setAlignment(Qt.AlignHCenter)
 
 class EmptyLF(QWidget):
-    def __init__(self, parent, controller, width = None, height = None, *args, **kwargs): 
+    def __init__(self, parent, controller, width = None, height = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.parent = parent
         self.controller = controller
@@ -246,42 +247,42 @@ class WeatherWidget(QWidget):
         timer = QTimer(self)
         timer.timeout.connect(self.forecast_updater)
         timer.start(86400000)
-        
+
     def forecast_updater(self):
         if internet_connection:
             response, _, _ = GET_WEATHER_ICON()
             for idx, (text, url) in enumerate(response):
                 with urllib.request.urlopen(url) as u:
-                    raw_data = u.read()            
-                
+                    raw_data = u.read()
+
                 # now create the ImageTk PhotoImage:
-                self.img[idx] = config_pic(io.BytesIO(raw_data), (self.width / 3) - (5 * self.padding), self.height - (5 * self.padding), self.padding)
+                #self.img[idx] = config_pic(io.BytesIO(raw_data), (self.width / 3) - (5 * widget_padding), self.height - (5 * widget_padding), widget_padding)
                 # imagelab1 = Label(
                 #     self,
                 #     image = self.img[idx],
                 # )
                 # imagelab1.place(relx = (0.167 + 0.33 * idx), rely = 0.4, anchor = CENTER)
-    
+
                 # imagelab2 = Label(
                 #     self,
                 #     text = text,
                 #     font = ("Helvetica’", 16),
                 # )
                 # imagelab2.place(relx = (0.167 + 0.33 * idx), rely = 0.85, anchor = CENTER)
-                    
+
     def resizeEvent(self, event):
         self.width = int(self.controller.frameGeometry().width() * 2 / 5)
         self.height = int(self.controller.frameGeometry().height() / 3)
-        
+
         min_dim = min(int(self.width / 2), self.height)
         self.weather_label.setGeometry(widget_padding, widget_padding, min_dim * 2 - (2 * widget_padding), min_dim - (2 * widget_padding))
-        self.weather_label.setStyleSheet("border : 2px solid %s" % Palettes["darkly"]["colors"]["fg"]) 
+        self.weather_label.setStyleSheet("border : 2px solid %s" % Palettes["darkly"]["colors"]["fg"])
         self.weather_label.setAlignment(Qt.AlignCenter)
 
 class CustomSmallImg(QWidget):
     def __init__(self, parent, controller, dpi = 100, *args, **kwargs):
         super(QWidget, self).__init__(parent, *args, **kwargs)
-        
+
         self.parent = parent
         self.controller = controller
         self.width = int(self.controller.frameGeometry().width() / 5)
@@ -297,7 +298,7 @@ class CustomSmallImg(QWidget):
         self.master_label.setAlignment(Qt.AlignCenter)
         self.master_label.setStyleSheet("background-color: %s; border: 2px solid %s" % (Palettes["darkly"]["colors"]["bg"], Palettes["darkly"]["colors"]["fg"]))
         self.layout.addWidget(self.master_label, 0, 0, 3, 3)
-        
+
         self.moon_label = QLabel(self)
         self.moon_label.setGeometry(widget_padding, widget_padding, self.min_dim - (4 * widget_padding), self.min_dim - (4 * widget_padding))
         self.moon_label.setAlignment(Qt.AlignCenter)
@@ -325,7 +326,7 @@ class CustomSmallImg(QWidget):
     def resizeEvent(self, event):
         self.width = int(self.controller.frameGeometry().width() / 5)
         self.height = int(self.controller.frameGeometry().height() / 3)
-        
+
         self.min_dim = min(self.width, self.height)
         self.master_label.setGeometry(widget_padding, widget_padding, self.min_dim - (2 * widget_padding), self.min_dim - (2 * widget_padding))
         self.moon_label.setGeometry(widget_padding, widget_padding, self.min_dim - (4 * widget_padding), self.min_dim - (4 * widget_padding))
@@ -333,21 +334,21 @@ class CustomSmallImg(QWidget):
         self.master_label.setStyleSheet("background-color: %s; border: 2px solid %s" % (Palettes["darkly"]["colors"]["bg"], Palettes["darkly"]["colors"]["fg"]))
         self.master_label.setAlignment(Qt.AlignCenter)
         self.moon_label.setAlignment(Qt.AlignCenter)
-        
+
         self.getImage()
         self.moon_pixmap.scaled(self.min_dim - (4 * widget_padding), self.min_dim - (4 * widget_padding), Qt.KeepAspectRatio, Qt.FastTransformation)
         self.moon_label.setPixmap(self.moon_pixmap)
-        
+
 class CustomClock(QWidget):
-    def __init__(self, parent, controller, dpi = 100, *args, **kwargs): 
+    def __init__(self, parent, controller, dpi = 100, *args, **kwargs):
         super(QWidget, self).__init__(parent, *args, **kwargs)
-        
+
         self.parent = parent
         self.controller = controller
         self.width = int(self.controller.frameGeometry().width() / 5)
         self.height = int(self.controller.frameGeometry().height() / 3)
         self.dpi = dpi
-        
+
         self.layout = QGridLayout()
         self.setLayout(self.layout)
 
@@ -357,7 +358,7 @@ class CustomClock(QWidget):
         self.master_label.setAlignment(Qt.AlignCenter)
         self.master_label.setStyleSheet("background-color: %s; border: 2px solid %s" % (Palettes["darkly"]["colors"]["bg"], Palettes["darkly"]["colors"]["fg"]))
         self.layout.addWidget(self.master_label, 0, 0, 3, 1)
-        
+
         self.time_label = QLabel(self)
         self.time_label.setGeometry(widget_padding, widget_padding, self.min_dim - (2 * widget_padding), self.min_dim - (2 * widget_padding))
         self.time_label.setAlignment(Qt.AlignCenter)
@@ -426,7 +427,7 @@ class CustomClock(QWidget):
         self.time_label.setGeometry(widget_padding, widget_padding, self.min_dim - (2 * widget_padding), self.min_dim - (2 * widget_padding))
         self.sunrise_label.setGeometry(widget_padding, widget_padding, self.min_dim - (2 * widget_padding), self.min_dim - (2 * widget_padding))
         self.sunset_label.setGeometry(widget_padding, widget_padding, self.min_dim - (2 * widget_padding), self.min_dim - (2 * widget_padding))
-        
+
         self.master_label.setStyleSheet("background-color: %s; border: 2px solid %s" % (Palettes["darkly"]["colors"]["bg"], Palettes["darkly"]["colors"]["fg"]))
         self.master_label.setAlignment(Qt.AlignCenter)
         self.time_label.setAlignment(Qt.AlignCenter)
