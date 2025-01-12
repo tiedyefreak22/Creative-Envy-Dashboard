@@ -29,3 +29,4 @@ Palettes = {"darkly": {
 }
 
 internet_connection = check_internet_connection()
+widget_padding = 10

@@ -84,10 +84,9 @@ class Pane2(QWidget):
                     Hive_Processed[0].get_humidity(num_days = 7),
                     Hive_Processed[0].get_humidity(num_days = 7),
                     ]
-        #grid.addWidget(EmptyLF(self, controller, width = screen_width, height = screen_height), 0, 0, 3, 5)
         i = 0
         while i < 15:
             grid.addWidget(GraphWidget(self, controller, lf_labels[i], lf_values[i]), floor((i - 5) / 5) + 1, (i - 5) % 5)
             i = i + 1
-
+        
         self.setLayout(grid)

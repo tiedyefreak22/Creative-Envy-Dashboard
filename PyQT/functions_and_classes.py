@@ -13,7 +13,7 @@ from glob import glob
 import numpy as np
 from scipy.interpolate import CubicSpline, UnivariateSpline, InterpolatedUnivariateSpline, interp1d, splrep, PchipInterpolator
 import re
-from math import floor
+from math import floor, ceil
 import matplotlib.pyplot as plt
 #from decouple import config
 import requests
@@ -35,7 +35,7 @@ from send2trash import send2trash
 import dns.resolver
 import pytz
 import astral, astral.sun
-import pyicloud_get
+#import pyicloud_get
 from sys import platform
 from dotenv import load_dotenv
 from statistics import variance, mean

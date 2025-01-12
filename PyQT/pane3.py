@@ -1,20 +1,15 @@
 import sys
-from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QWidget, QAction, QTabWidget, QVBoxLayout
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QWidget, QAction, QTabWidget, QVBoxLayout, QGridLayout
+from PyQt5.QtGui import QIcon, QPixmap, QImage, QColor, QFont
+from PyQt5.QtCore import pyqtSlot, Qt, QTimer, QTime
+from settings import *
+from custom_widgets import *
 
 class Pane3(QWidget):
     def __init__(self, parent, controller, screen_width, screen_height):
         self.parent = parent
         super(QWidget, self).__init__(parent)
+        grid = QGridLayout(self)
 
-        self.layout = QVBoxLayout(self)
-        self.pushButton = QPushButton("PyQt5 button")
-        self.layout.addWidget(self.pushButton)
-        self.setLayout(self.layout)
-
-    @pyqtSlot()
-    def on_click(self):
-        print("\n")
-        for currentQTableWidgetItem in self.tableWidget.selectedItems():
-            print(currentQTableWidgetItem.row(), currentQTableWidgetItem.column(), currentQTableWidgetItem.text())
+        grid.addWidget(PhotoButton(self, controller), 0, 0)
+        self.setLayout(grid)

@@ -50,7 +50,7 @@ class Pane1(QWidget):
         forecast_data = PROCESS_FORECAST()
         ambient = Ambient()
         ambient.set()
-
+        
         # Pane1 Objects
         # Loop to create LabelFrames
         lf_labels = [
@@ -62,7 +62,7 @@ class Pane1(QWidget):
                     "Temp",
                     "Solar Rad.",
                     "Wind Spd./Dir.",
-                    "Chook Temp",
+                    "Chook Temp", 
                     "Bee Wt.",
                     "Humidity",
                     "UV Index",
@@ -70,7 +70,7 @@ class Pane1(QWidget):
                     "Bee Temp.",
                     "Bee Humid.",
                     ]
-
+        
         lf_values = [
                     "",
                     "",
@@ -80,7 +80,7 @@ class Pane1(QWidget):
                     ambient.get_tempf(num_days = 7),
                     ambient.get_solarradiation(num_days = 7),
                     ambient.get_windspeedmph(num_days = 7),
-                    pd.Series([1]),
+                    pd.Series([1]), 
                     Hive_Processed[0].get_weight(num_days = 7),
                     ambient.get_humidity(num_days = 7),
                     ambient.get_uv(num_days = 7),
@@ -88,25 +88,15 @@ class Pane1(QWidget):
                     Hive_Processed[0].get_upper_temp(num_days = 7),
                     Hive_Processed[0].get_humidity(num_days = 7),
                     ]
+        
+        grid.addWidget(CustomClock(self, controller), 0, 0)
+        grid.addWidget(CustomSmallImg(self, controller), 0, 1)
+        grid.addWidget(WeatherWidget(self, controller), 0, 2, 1, 2)
+        grid.addWidget(EmptyLF(self, controller), 0, 4)
 
-        #grid.addWidget(EmptyLF(self, controller, width = screen_width, height = screen_height), 0, 0, 3, 5)
-        i = 0
-
+        i = 5
         while i < 15:
-            while i < 5:
-                if i == 0:
-                    grid.addWidget(CustomClock(self, controller), floor((i - 5) / 5) + 1, (i - 5) % 5, 1, 1)
-                    i = i + 1
-                if i == 1:
-                    grid.addWidget(CustomSmallImg(self, controller), floor((i - 5) / 5) + 1, (i - 5) % 5, 1, 1)
-                    i = i + 1
-                if i == 2:
-                    grid.addWidget(WeatherWidget(self, controller), floor((i - 5) / 5) + 1, (i - 5) % 5, 1, 2)
-                    i = i + 2
-                else:
-                    grid.addWidget(EmptyLF(self, controller), floor((i - 5) / 5) + 1, (i - 5) % 5, 1, 1)
-                    i = i + 1
             grid.addWidget(GraphWidget(self, controller, lf_labels[i], lf_values[i]), floor((i - 5) / 5) + 1, (i - 5) % 5)
             i = i + 1
-
+        
         self.setLayout(grid)

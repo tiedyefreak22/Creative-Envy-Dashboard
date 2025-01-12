@@ -24,9 +24,11 @@ class App(QMainWindow):
         super().__init__()
         self.title = 'Creative Envy'
         self.setWindowTitle(self.title)
+        self.setMaximumWidth(1920)
+        self.setMaximumHeight(1200)
         self.setGeometry(0, 0, screen_width, screen_height) # Left, Top, Width, Height
         self.showMaximized()
-
+        
         self.table_widget = MyTableWidget(self)
         self.setCentralWidget(self.table_widget)
         self.show()
@@ -52,6 +54,12 @@ class MyTableWidget(QWidget):
         # Add tabs to widget
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
+
+        stylesheet = """ 
+            QTabBar::tab:selected {background: %s;}
+            QTabWidget>QWidget {background: %s;}
+            """ % (Palettes["darkly"]["colors"]["light"], Palettes["darkly"]["colors"]["bg"])
+        self.setStyleSheet(stylesheet)
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
