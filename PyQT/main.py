@@ -62,7 +62,8 @@ class MyTableWidget(QWidget):
         self.setStyleSheet(stylesheet)
 
 if __name__ == '__main__':
-    app = QtWidgets.QApplication(sys.argv)
+    QApplication.setAttribute(Qt.AA_DisableHighDpiScaling)
+    app = QApplication(sys.argv)
     size = app.primaryScreen().size()
     screen_width = size.width()
     screen_height = size.height()

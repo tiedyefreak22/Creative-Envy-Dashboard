@@ -195,14 +195,26 @@ class WeatherWidget(QWidget):
         self.setLayout(self.layout)
         
         self.canvas1 = FigureCanvas(Figure(facecolor=Palettes["darkly"]["colors"]["bg"]))
-        self.layout.addWidget(self.canvas1, 0, 0, 7, 2)
+        self.layout.addWidget(self.canvas1, 0, 0, 7, 3)
         
         self.master_label = QLabel(self)
-        self.layout.addWidget(self.master_label, 0, 0, 7, 2)
+        self.layout.addWidget(self.master_label, 0, 0, 7, 3)
         
         self.weather_text = QLabel(self)
         self.weather_text.setStyleSheet("color: %s" % (Palettes["darkly"]["colors"]["fg"]))
-        self.layout.addWidget(self.weather_text, 5, 0, 7, 2)
+        self.layout.addWidget(self.weather_text, 5, 0, 7, 3)
+
+        self.forecast_thumb1 = QLabel(self)
+        self.weather_text.setStyleSheet("color: %s" % (Palettes["darkly"]["colors"]["fg"]))
+        self.layout.addWidget(self.forecast_thumb1, 5, 0, 7, 3)
+
+        self.forecast_thumb2 = QLabel(self)
+        self.weather_text.setStyleSheet("color: %s" % (Palettes["darkly"]["colors"]["fg"]))
+        self.layout.addWidget(self.forecast_thumb2, 5, 1, 7, 3)
+
+        self.forecast_thumb3 = QLabel(self)
+        self.weather_text.setStyleSheet("color: %s" % (Palettes["darkly"]["colors"]["fg"]))
+        self.layout.addWidget(self.forecast_thumb3, 5, 2, 7, 3)
 
         # ------------------------------Timer------------------------------
         
@@ -214,25 +226,25 @@ class WeatherWidget(QWidget):
     def forecast_updater(self):
         self.weather_text.setText("Forecast")
         # if internet_connection:
-        #     response, _, _ = GET_WEATHER_ICON()
-        #     for idx, (text, url) in enumerate(response):
-        #         with urllib.request.urlopen(url) as u:
-        #             raw_data = u.read()            
+            # response, _, _ = GET_WEATHER_ICON()
+            # for idx, (text, url) in enumerate(response):
+            #     with urllib.request.urlopen(url) as u:
+            #         raw_data = u.read()            
                 
-        #         # now create the ImageTk PhotoImage:
-        #         self.img[idx] = config_pic(io.BytesIO(raw_data), (self.width / 3) - (5 * self.padding), self.height - (5 * self.padding), self.padding)
-                # imagelab1 = Label(
-                #     self,
-                #     image = self.img[idx],
-                # )
-                # imagelab1.place(relx = (0.167 + 0.33 * idx), rely = 0.4, anchor = CENTER)
+            #     # now create the ImageTk PhotoImage:
+            #     self.img[idx] = config_pic(io.BytesIO(raw_data), (self.width / 3) - (5 * self.padding), self.height - (5 * self.padding), self.padding)
+            #     # imagelab1 = Label(
+            #     #     self,
+            #     #     image = self.img[idx],
+            #     # )
+            #     # imagelab1.place(relx = (0.167 + 0.33 * idx), rely = 0.4, anchor = CENTER)
     
-                # imagelab2 = Label(
-                #     self,
-                #     text = text,
-                #     font = ("Helvetica’", 16),
-                # )
-                # imagelab2.place(relx = (0.167 + 0.33 * idx), rely = 0.85, anchor = CENTER)
+            #     # imagelab2 = Label(
+            #     #     self,
+            #     #     text = text,
+            #     #     font = ("Helvetica’", 16),
+            #     # )
+            #     # imagelab2.place(relx = (0.167 + 0.33 * idx), rely = 0.85, anchor = CENTER)
                     
     def resizeEvent(self, event):
         self.width = int(self.controller.width() * 2 / 5)
@@ -269,7 +281,7 @@ class CustomSmallImg(QWidget):
         self.width = int(self.controller.width() / 5)
         self.height = int(self.controller.height() / 3)
         self.min_dim = min(self.width, self.height)
-        print(self.width, self.height)
+
         # ------------------------------Define Widgets------------------------------
 
         self.layout = QGridLayout(self)
@@ -291,6 +303,7 @@ class CustomSmallImg(QWidget):
     def getImage(self):
         if internet_connection:
             GET_MOON_IMAGE()
+
         im = config_pic("moon/" + [i for i in os.listdir("moon/")][0], self.min_dim - (4 * widget_padding), self.min_dim - (4 * widget_padding), 0)
         temp = im.convert('RGBA')
         new_img = QImage(
