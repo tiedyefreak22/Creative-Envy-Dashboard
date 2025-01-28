@@ -1,39 +1,6 @@
-import sys
-from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QWidget, QAction, QTabWidget, QVBoxLayout, QLayout, QGridLayout
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import pyqtSlot
-from PIL import Image
-Image.CUBIC = Image.BICUBIC
-import os, time, sys, queue, datetime
-from csv import writer
-from datetime import datetime, timedelta
-from threading import Thread, Event
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from matplotlib.figure import Figure
-import multiprocessing as mp
-import http.server
-import socketserver
-from contextlib import closing
-from more_itertools import time_limited
-from math import floor
-import aiomultiprocess
-import asyncio
-import threading
-import numpy as np
-#import rawpy
-import imageio
-import time
-import random
-import urllib.request
-import io
-from pathlib import Path
-import pandas as pd
-from IPython.display import display
-from functions_and_classes import *
 from custom_widgets import *
-from pyicloud_get import *
-from timers import *
-from settings import *
+
+Image.CUBIC = Image.BICUBIC
 
 class Pane1(QWidget):
     def __init__(self, parent, controller, screen_width, screen_height):

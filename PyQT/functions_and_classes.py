@@ -1,46 +1,4 @@
-import ssl
-import requests
-import time as t
-from selenium.webdriver.common.by import By
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-import os
-import pandas as pd
-from glob import glob
-import numpy as np
-from scipy.interpolate import CubicSpline, UnivariateSpline, InterpolatedUnivariateSpline, interp1d, splrep, PchipInterpolator
-import re
-from math import floor, ceil
-import matplotlib.pyplot as plt
-#from decouple import config
-import requests
-from io import BytesIO
-from PIL import Image
-from PIL.ImageQt import ImageQt
-import json
-from datetime import date, datetime, timedelta, timezone
-import urllib.request
-import ssl
-import re
-import array
-import time as t
-import csv
-from csv import writer
-import numpy as np
-import itertools
-from send2trash import send2trash
-import dns.resolver
-import pytz
-import astral, astral.sun
-#import pyicloud_get
-from sys import platform
-from dotenv import load_dotenv
-from statistics import variance, mean
-
-load_dotenv()
+from settings import *
 
 def BROODMINDER_GET(hive_name, hive_ID):
     debugging = False
@@ -455,23 +413,6 @@ def PROCESS_FORECAST_MIN_MAX(response):
         # min_wind = min(todays_forecast["wind"])
     return min_temp, max_temp, min_humid, max_humid#, min_wind, max_wind
     print("Finished processing Forecast min/max data.")
-
-def resolve(domain):
-    resolveList = []
-    resolver = dns.resolver.Resolver(); #create a new instance named Resolver
-    answer = resolver.query(domain, "A");
-    return answer    
-
-def check_internet_connection():
-    domainName = "google.com"
-    queryResult = resolve(domainName);
-    try:
-        urllib.request.urlopen("http://" + str(queryResult[0]), timeout = 3)
-        print("Internet connection verified.")
-        return True
-    except urllib.error.URLError:
-        print("Internet connection failed.")
-        return False
 
 def GET_WEATHER_ICON():
     print("Getting weather icon.")

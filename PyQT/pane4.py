@@ -1,8 +1,6 @@
-import sys
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import QIcon, QFont, QColor
-from PyQt5.QtCore import pyqtSlot
-from settings import *
+from custom_widgets import *
+
+Image.CUBIC = Image.BICUBIC
 
 class Pane4(QWidget):
     def __init__(self, parent, controller, screen_width, screen_height):

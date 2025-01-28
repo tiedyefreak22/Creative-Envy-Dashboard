@@ -1,23 +1,21 @@
-import sys
-from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QWidget, QAction, QTabWidget, QVBoxLayout
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import pyqtSlot
-import matplotlib
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_qtagg import FigureCanvas
-from matplotlib.backends.backend_qtagg import \
-    NavigationToolbar2QT as NavigationToolbar
-from matplotlib.backends.qt_compat import QtWidgets
-from matplotlib.figure import Figure
-import matplotlib.patches as patches
+'''
+  library imports
+        |
+    settings.py
+        |
+functions_and_classes.py
+        |
+  custom_widgets.py
+       /\\
+   pane1..4.py
+       \\/
+     main.py
+'''
+
 from pane1 import *
 from pane2 import *
 from pane3 import *
 from pane4 import *
-from settings import *
-
-global screen_width
-global screen_height
 
 class App(QMainWindow):
     def __init__(self):
@@ -62,10 +60,9 @@ class MyTableWidget(QWidget):
         self.setStyleSheet(stylesheet)
 
 if __name__ == '__main__':
-    QApplication.setAttribute(Qt.AA_DisableHighDpiScaling)
     app = QApplication(sys.argv)
     size = app.primaryScreen().size()
-    screen_width = size.width()
-    screen_height = size.height()
+    screen_width = 1920 #size.width()
+    screen_height = 1200 #size.height()
     ex = App()
     sys.exit(app.exec_())
